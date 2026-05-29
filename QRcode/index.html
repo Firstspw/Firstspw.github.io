@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c28;
+      --border: #2a2a3d;
+      --accent: #7c3aed;
+      --accent2: #06b6d4;
+      --glow: rgba(124, 58, 237, 0.35);
+      --glow2: rgba(6, 182, 212, 0.25);
+      --text: #f0eeff;
+      --muted: #6b6b8a;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Kanit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,58,237,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(6,182,212,0.10) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 540px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      border: 1px solid rgba(6,182,212,0.3);
+      padding: 0.3rem 0.9rem;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+      background: rgba(6,182,212,0.05);
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #f0eeff 0%, #a78bfa 50%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 300;
+      margin-top: 0.5rem;
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 0 60px rgba(124,58,237,0.08), 0 20px 60px rgba(0,0,0,0.4);
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    /* Input section */
+    .input-group {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .url-icon {
+      position: absolute;
+      left: 1rem;
+      color: var(--accent);
+      font-size: 1rem;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.82rem;
+      padding: 0.85rem 1rem 0.85rem 2.8rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]::placeholder { color: var(--muted); }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    /* Options row */
+    .options-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .option-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .color-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .color-input-wrap:hover { border-color: var(--accent); }
+
+    input[type="color"] {
+      width: 42px;
+      height: 42px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .color-hex {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      padding: 0 0.75rem;
+    }
+
+    select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.88rem;
+      padding: 0.72rem 1rem;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b8a' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      transition: border-color 0.2s;
+    }
+
+    select:focus { border-color: var(--accent); outline: none; }
+
+    /* Generate button */
+    .btn-generate {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, #9333ea 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.9rem;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(124,58,237,0.3);
+    }
+
+    .btn-generate::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-generate:hover { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(124,58,237,0.45); }
+    .btn-generate:hover::before { opacity: 1; }
+    .btn-generate:active { transform: translateY(0); }
+
+    /* QR output */
+    .qr-section {
+      margin-top: 1.75rem;
+      display: none;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .qr-section.visible { display: block; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider span {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .qr-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .qr-frame {
+      position: relative;
+      padding: 1.25rem;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 0 40px var(--glow), 0 0 80px rgba(6,182,212,0.1);
+      transition: box-shadow 0.3s;
+    }
+
+    .qr-frame:hover {
+      box-shadow: 0 0 60px var(--glow), 0 0 100px var(--glow2);
+    }
+
+    /* Corner decorations */
+    .qr-frame::before, .qr-frame::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+
+    .qr-frame::before {
+      top: -2px; left: -2px;
+      border-width: 2px 0 0 2px;
+      border-radius: 4px 0 0 0;
+    }
+
+    .qr-frame::after {
+      bottom: -2px; right: -2px;
+      border-width: 0 2px 2px 0;
+      border-radius: 0 0 4px 0;
+    }
+
+    #qrcode canvas, #qrcode img { display: block; border-radius: 6px; }
+
+    .qr-url-preview {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .qr-url-preview .dot {
+      width: 7px; height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px var(--success);
+      animation: pulse 2s ease infinite;
+    }
+
+    .qr-url-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Download buttons */
+    .download-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .btn-dl {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.72rem 1rem;
+      border-radius: 10px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-dl-png {
+      background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05));
+      border: 1px solid rgba(6,182,212,0.3);
+      color: var(--accent2);
+    }
+
+    .btn-dl-png:hover {
+      background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(6,182,212,0.1));
+      box-shadow: 0 4px 16px rgba(6,182,212,0.2);
+      transform: translateY(-1px);
+    }
+
+    .btn-dl-copy {
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(124,58,237,0.05));
+      border: 1px solid rgba(124,58,237,0.3);
+      color: #a78bfa;
+    }
+
+    .btn-dl-copy:hover {
+      background: linear-gradient(135deg, rgba(124,58,237,0.25), rgba(124,58,237,0.1));
+      box-shadow: 0 4px 16px var(--glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-dl svg { width: 15px; height: 15px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface2);
+      border: 1px solid var(--success);
+      color: var(--success);
+      padding: 0.65rem 1.5rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(16,185,129,0.2);
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Animations */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Error state */
+    .error-msg {
+      font-size: 0.8rem;
+      color: #f87171;
+      margin-top: 0.4rem;
+      display: none;
+    }
+
+    .error-msg.show { display: block; }
+
+    input.error { border-color: #f87171 !important; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="wrapper">
+    <div class="header">
+      <div class="badge">⚡ QR Generator</div>
+      <h1>แปลงลิ้งเป็น<br/>QR Code</h1>
+      <p class="subtitle">วางลิ้งก์ใดก็ได้ สร้าง QR Code ทันที</p>
+    </div>
+
+    <div class="card">
+      <!-- URL Input -->
+      <div class="input-group">
+        <label class="input-label">ลิ้งก์ / URL</label>
+        <div class="input-wrap">
+          <span class="url-icon">🔗</span>
+          <input type="text" id="urlInput" placeholder="https://example.com" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="error-msg" id="errorMsg">กรุณาใส่ URL ที่ถูกต้อง เช่น https://example.com</div>
+      </div>
+
+      <!-- Options -->
+      <div class="options-row">
+        <div class="option-group">
+          <label>สีของ QR</label>
+          <div class="color-input-wrap">
+            <input type="color" id="colorDark" value="#1a0533" title="เลือกสี QR" />
+            <span class="color-hex" id="colorDarkHex">#1a0533</span>
+          </div>
+        </div>
+        <div class="option-group">
+          <label>สีพื้นหลัง</label>
+          <div class="color-input-wrap">
+            <input type="color" id="colorLight" value="#ffffff" title="เลือกสีพื้นหลัง" />
+            <span class="color-hex" id="colorLightHex">#ffffff</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="options-row">
+        <div class="option-group">
+          <label>ขนาด QR</label>
+          <select id="sizeSelect">
+            <option value="128">เล็ก (128px)</option>
+            <option value="200" selected>กลาง (200px)</option>
+            <option value="256">ใหญ่ (256px)</option>
+            <option value="320">ใหญ่มาก (320px)</option>
+          </select>
+        </div>
+        <div class="option-group">
+          <label>ความคลาดเคลื่อน</label>
+          <select id="ecLevel">
+            <option value="L">ต่ำ (L)</option>
+            <option value="M" selected>ปานกลาง (M)</option>
+            <option value="Q">สูง (Q)</option>
+            <option value="H">สูงสุด (H)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <button class="btn-generate" id="generateBtn" onclick="generate()">
+        ✨ สร้าง QR Code
+      </button>
+
+      <!-- QR Output -->
+      <div class="qr-section" id="qrSection">
+        <div class="divider"><span>QR Code ของคุณ</span></div>
+        <div class="qr-display">
+
+          <div class="qr-frame">
+            <div id="qrcode"></div>
+          </div>
+
+          <div class="qr-url-preview">
+            <div class="dot"></div>
+            <div class="qr-url-text" id="urlPreview"></div>
+          </div>
+
+          <div class="download-row">
+            <button class="btn-dl btn-dl-png" onclick="downloadPNG()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+              </svg>
+              ดาวน์โหลด PNG
+            </button>
+            <button class="btn-dl btn-dl-copy" onclick="copyURL()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+              </svg>
+              คัดลอก URL
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let qrInstance = null;
+
+    // Color hex preview
+    document.getElementById('colorDark').addEventListener('input', function() {
+      document.getElementById('colorDarkHex').textContent = this.value;
+    });
+    document.getElementById('colorLight').addEventListener('input', function() {
+      document.getElementById('colorLightHex').textContent = this.value;
+    });
+
+    // Enter key support
+    document.getElementById('urlInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') generate();
+    });
+
+    function isValidURL(str) {
+      try {
+        const url = new URL(str);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+      } catch { return false; }
+    }
+
+    function generate() {
+      const input = document.getElementById('urlInput');
+      let url = input.value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+
+      // Auto-prepend https:// if missing
+      if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+        input.value = url;
+      }
+
+      if (!url || !isValidURL(url)) {
+        input.classList.add('error');
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      input.classList.remove('error');
+      errorMsg.classList.remove('show');
+
+      const size = parseInt(document.getElementById('sizeSelect').value);
+      const colorDark = document.getElementById('colorDark').value;
+      const colorLight = document.getElementById('colorLight').value;
+      const ecLevel = document.getElementById('ecLevel').value;
+
+      // Clear previous
+      const qrEl = document.getElementById('qrcode');
+      qrEl.innerHTML = '';
+      qrInstance = null;
+
+      // Generate
+      qrInstance = new QRCode(qrEl, {
+        text: url,
+        width: size,
+        height: size,
+        colorDark: colorDark,
+        colorLight: colorLight,
+        correctLevel: QRCode.CorrectLevel[ecLevel]
+      });
+
+      // Show section
+      document.getElementById('urlPreview').textContent = url;
+      const section = document.getElementById('qrSection');
+      section.classList.remove('visible');
+      void section.offsetWidth; // reflow for animation
+      section.classList.add('visible');
+
+      // Scroll into view
+      setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+    }
+
+    function getCanvas() {
+      return document.querySelector('#qrcode canvas');
+    }
+
+    function downloadPNG() {
+      const canvas = getCanvas();
+      if (!canvas) { showToast('⚠️ กรุณาสร้าง QR ก่อน'); return; }
+
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('✅ ดาวน์โหลดสำเร็จ!');
+    }
+
+    function copyURL() {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url) { showToast('⚠️ ไม่มี URL'); return; }
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('📋 คัดลอก URL แล้ว!');
+      }).catch(() => {
+        showToast('⚠️ ไม่สามารถคัดลอกได้');
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+</html>

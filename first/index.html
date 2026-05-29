@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - First</title>
+    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .contact-item {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .skill-category {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .project-links a {
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .project-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+        }
+
+        @media (max-width: 768px) {
+
+            .skills-container,
+            .contact-info {
+                flex-direction: column;
+            }
+        }
+
+        /* เพิ่ม animation สำหรับ header */
+        header {
+            animation: fadeInDown 1s ease-out forwards;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .map-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 8px;
+            padding: 2px;
+            vertical-align: middle;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .map-btn:hover {
+            opacity: 1;
+        }
+
+        .map-btn img {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>First จ้า</h1>
+        <h3>Suphawit Suwannarat</h3>
+        <p>นักพัฒนาเว็บไซต์ | Web Developer</p>
+    </header>
+
+    <section id="about">
+        <h2>เกี่ยวกับฉัน</h2>
+        <p>ฉันเป็นนักศึกษาที่มีความสนใจในด้าน Frontend Development และสนใจในการพัฒนาเว็บไซต์ทั้งส่วน Frontend และ
+            Backend มีทักษะในการใช้ HTML, CSS, JavaScript และมีพื้นฐาน PHP, Python รวมถึง Node.js
+            พร้อมเรียนรู้เทคโนโลยีใหม่ๆ และทำงานร่วมกับผู้อื่นอย่างมีประสิทธิภาพ</p>
+    </section>
+
+    <section id="personal-info">
+        <h2>ข้อมูลส่วนตัว</h2>
+        <ul>
+            <li><strong>ชื่อ - สกุล:</strong>First</li>
+            <li><strong>ชื่อเล่น:</strong> เฟิร์ส</li>
+            <li><strong>อายุ:</strong> 18 ปี</li>
+            <li><strong>วันเกิด:</strong> 17 เมษายน 2551</li>
+            <li><strong>สัญชาติ:</strong> ไทย</li>
+            <li><strong>ครอบครัว:</strong> เป็นบุตรคนที่ 1, บิดาประกอบอาชีพรับราชการ / มารดาประกอบอาชีพค้าขาย</li>
+        </ul>
+    </section>
+
+    <section id="contact">
+        <h2>ช่องทางการติดต่อ</h2>
+        <div class="contact-info">
+            <div class="contact-item">
+                <h3>ติดต่อ</h3>
+                <p>097-220-1312</p>
+            </div>
+            <div class="contact-item">
+                <h3>อีเมล</h3>
+                <a href="first172550@gmail.com" onclick="openGmail(); return false;">first172550@gmail.com</a>
+            </div>
+            <div class="contact-item">
+                <h3>ที่อยู่</h3>
+                <p>49 หมู่ 4 ต.สันผักหวาน อ.หางดง จ.เชียงใหม่ 50230</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="education">
+        <h2>ประวัติการศึกษา</h2>
+        <ul>
+            <li>
+                <strong>2566 - 2568 (ปัจจุบัน)</strong><br>วิลัยเทคนิคเชียงใหม่
+                <button class="map-btn" data-location="วิทยาลัยเทคนิคเชียงใหม่"
+                    onclick="confirmNavigation('https://www.google.com/search?gs_ssp=eJzj4tZP1zc0MqgsKjO3NGC0UjWoMDZISTROtEw0N0yxMEhMSbMyqEg1MUwzMzVPSzY1MDUyMTTzcn2wY_mDHVse7Jj-YMeiBzs2Pdix9MGOjSD2zgawYMuDHTPBClrAIl0PdmwFq2x_sLP5wY7VD3YsfLCzAwCEKEE0&q=%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%A5%E0%B8%B1%E0%B8%A2%E0%B9%80%E0%B8%97%E0%B8%84%E0%B8%99%E0%B8%B4%E0%B8%84%E0%B9%80%E0%B8%8A%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88&rlz=1C1CHBF_enTH1122TH1122&oq=%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%A5%E0%B8%B1%E0%B8%A2%E0%B9%80%E0%B8%97%E0%B8%84%E0%B8%99%E0%B8%B4%E0%B8%84%E0%B9%80%E0%B8%8A%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88&gs_lcrp=EgZjaHJvbWUqFQgBEC4YJxivARjHARiABBiKBRiOBTIHCAAQABiPAjIVCAEQLhgnGK8BGMcBGIAEGIoFGI4FMgcIAhAAGIAEMgcIAxAAGIAEMgcIBBAAGIAEMgcIBRAAGIAEMgcIBhAAGIAEMgYIBxBFGD3SAQgxMTAzajBqN6gCALACAA&sourceid=chrome&ie=UTF-8')">
+                    <img src="google_maps.png" alt="ดูแผนที่" width="20">
+                </button>
+            </li>
+            <li>
+                <strong>2563 - 2566</strong><br>โรงเรียนมัธยมต้น เมตตาศึกษา
+                <button class="map-btn" data-location="โรงเรียนมัธยมต้น เมตตาศึกษา"
+                    onclick="confirmNavigation('https://www.google.com/search?q=%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99%E0%B8%A1%E0%B8%B1%E0%B8%98%E0%B8%A2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%99+%E0%B9%80%E0%B8%A1%E0%B8%95%E0%B8%95%E0%B8%B2%E0%B8%A8%E0%B8%B6%E0%B8%81%E0%B8%A9%E0%B8%B2&sca_esv=571e9f62cdadf4fd&rlz=1C1CHBF_enTH1122TH1122&sxsrf=AE3TifOoYajp8iTMfQSwEb54lTsSAjaxQQ%3A1753167756003&ei=izd_aK-APdee4-EP5byciAk&ved=0ahUKEwjv8c_q8s-OAxVXzzgGHWUeB5EQ4dUDCBA&uact=5&oq=%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99%E0%B8%A1%E0%B8%B1%E0%B8%98%E0%B8%A2%E0%B8%A1%E0%B8%95%E0%B9%89%E0%B8%99+%E0%B9%80%E0%B8%A1%E0%B8%95%E0%B8%95%E0%B8%B2%E0%B8%A8%E0%B8%B6%E0%B8%81%E0%B8%A9%E0%B8%B2&gs_lp=Egxnd3Mtd2l6LXNlcnAiT-C5guC4o-C4h-C5gOC4o-C4teC4ouC4meC4oeC4seC4mOC4ouC4oeC4leC5ieC4mSDguYDguKHguJXguJXguLLguKjguLbguIHguKnguLJIlQVQAFgAcAB4AZABAJgBigGgAYoBqgEDMC4xuAEDyAEA-AEC-AEBmAIAoAIAmAMAkgcAoAeJAbIHALgHAMIHAMgHAA&sclient=gws-wiz-serp')">
+                    <img src="google_maps.png" alt="ดูแผนที่" width="20">
+                </button>
+            </li>
+            <li>
+                <strong>2559 - 2562</strong><br>โรงเรียนประถม พุทธิโศภน
+                <button class="map-btn" data-location="โรงเรียนประถม พุทธิโศภน"
+                    onclick="confirmNavigation('https://www.google.com/search?q=%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%96%E0%B8%A1+%E0%B8%9E%E0%B8%B8%E0%B8%97%E0%B8%98%E0%B9%82%E0%B8%A8%E0%B8%A0%E0%B8%99&sca_esv=571e9f62cdadf4fd&rlz=1C1CHBF_enTH1122TH1122&sxsrf=AE3TifPAqlpqLVddBvW5AQI9jihQ72lA5w%3A1753167977468&ei=aTh_aKKvHKr14-EP6q2M-Qw&ved=0ahUKEwjih53U88-OAxWq-jgGHeoWI88Q4dUDCBA&uact=5&oq=%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%96%E0%B8%A1+%E0%B8%9E%E0%B8%B8%E0%B8%97%E0%B8%98%E0%B9%82%E0%B8%A8%E0%B8%A0%E0%B8%99&gs_lp=Egxnd3Mtd2l6LXNlcnAiQOC5guC4o-C4h-C5gOC4o-C4teC4ouC4meC4m-C4o-C4sOC4luC4oSDguJ7guLjguJfguJjguYLguKjguKDguJkyBxAhGKABGAoyBxAhGKABGApIgg9QjgVYug1wAngAkAEAmAFyoAGJA6oBAzIuMrgBA8gBAPgBAZgCBaACzgLCAgoQABiwAxjWBBhHwgIFECEYoAGYAwCIBgGQBgiSBwMzLjKgB8QYsgcDMS4yuAfCAsIHBTAuNC4xyAcO&sclient=gws-wiz-serp')">
+                    <img src="google_maps.png" alt="ดูแผนที่" width="20">
+                </button>
+            </li>
+        </ul>
+    </section>
+
+    <section id="skills">
+        <h2>ทักษะความสามารถ</h2>
+        <div class="skills-container">
+            <div class="skill-category">
+                <h3>ทักษะด้านการเขียนโปรแกรม</h3>
+                <ul>
+                    <li>HTML, CSS, JavaScript</li>
+                    <li>PHP, Python, Micro Python</li>
+                    <li>Node.js (Express.js)</li>
+                </ul>
+            </div>
+            <div class="skill-category">
+                <h3>เครื่องมือ/เทคโนโลยีที่ใช้งานได้</h3>
+                <ul>
+                    <li>Git / GitHub</li>
+                    <li>VS Code</li>
+                </ul>
+            </div>
+            <div class="skill-category">
+                <h3>ภาษา</h3>
+                <ul>
+                    <li>อังกฤษ (พอใช้ได้)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects">
+        <h2>ผลงาน</h2>
+        <ul>
+            <li>เข้าร่วมรายการ Coding Thailand (รอบประเทศ)</li>
+        </ul>
+        <h3>ผลงานเว็บไซต์</h3>
+        <div class="project-links">
+            <a href="https://firstspw.github.io/Clock.github.io/" target="_blank">เว็บนาฬิกา</a>
+            <a href="https://ffangyy.github.io/" target="_blank">เว็บส่วนตัว</a>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('section');
+            const header = document.querySelector('header');
+
+            // Immediately show header
+            header.style.opacity = '1';
+
+            // Function to check section visibility
+            function checkVisibility() {
+                const windowHeight = window.innerHeight;
+
+                sections.forEach(section => {
+                    if (section.classList.contains('visible')) return;
+
+                    const sectionTop = section.getBoundingClientRect().top;
+                    if (sectionTop < windowHeight * 0.8) {
+                        section.classList.add('visible');
+                    }
+                });
+            }
+
+            // Initial check and scroll event listener
+            checkVisibility();
+            window.addEventListener('scroll', checkVisibility);
+        });
+
+        function confirmNavigation(url) {
+            const locationName = event.target.closest('.map-btn').getAttribute('data-location');
+            if (confirm(`เว็บไซต์จะพาท่านไปยัง Google Map สำหรับ ${locationName}\n\nคุณต้องการไปต่อหรือไม่?`)) {
+                window.open(url, '_blank');
+            }
+        }
+
+        function openGmail(mailtoLink) {
+            // ลองเปิด Gmail โดยตรง
+            const gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=first172550@gmail.com&su=ติดต่อจากเว็บไซต์&body=[กรุณาเขียนข้อความที่นี่]';
+
+            // เปิด Gmail ในหน้าต่างใหม่
+            window.open(gmailUrl, '_blank');
+
+            // ป้องกันการเปิด mailto ด้วย (เลือกอย่างใดอย่างหนึ่ง)
+            // return false;
+
+            // หรือให้เปิดทั้ง mailto และ Gmail
+            return true;
+        }
+    </script>
+</body>
+
+</html>

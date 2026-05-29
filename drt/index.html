@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบกำหนดการคณะกรรมการ</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b3e;
+    --navy-mid: #162654;
+    --navy-light: #1e3370;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-pale: #f5e6bb;
+    --cream: #faf8f2;
+    --white: #ffffff;
+    --gray-50: #f7f8fc;
+    --gray-100: #eef0f6;
+    --gray-200: #d8dce8;
+    --gray-400: #9098b5;
+    --gray-600: #5a6380;
+    --gray-800: #2d3250;
+    --green: #2d7a4f;
+    --green-light: #e8f5ee;
+    --red: #b8293a;
+    --red-light: #fdeef0;
+    --amber: #b86c1a;
+    --amber-light: #fef3e2;
+    --shadow-sm: 0 2px 8px rgba(13,27,62,0.08);
+    --shadow-md: 0 4px 20px rgba(13,27,62,0.14);
+    --shadow-lg: 0 8px 40px rgba(13,27,62,0.20);
+    --border: 1px solid var(--gray-200);
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ======= SCREENS ======= */
+  .screen { display: none; min-height: 100vh; }
+
+  /* ======= LOGIN SCREEN ======= */
+  #screen-login {
+    background: linear-gradient(145deg, var(--navy) 0%, var(--navy-mid) 50%, #0a1628 100%);
+    align-items: center; justify-content: center; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+  .login-bg-pattern {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: repeating-linear-gradient(45deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 50%);
+    background-size: 30px 30px;
+  }
+  .login-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: var(--radius-lg);
+    padding: 48px 52px;
+    width: 100%; max-width: 440px;
+    backdrop-filter: blur(12px);
+    position: relative; z-index: 1;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    animation: loginFadeIn 0.6s ease;
+  }
+  @keyframes loginFadeIn { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform: none; } }
+  .login-emblem {
+    text-align: center; margin-bottom: 32px;
+  }
+  .login-emblem .icon { font-size: 52px; display: block; margin-bottom: 12px; }
+  .login-emblem h1 {
+    font-family: 'Chakra Petch', sans-serif;
+    color: var(--gold-light); font-size: 22px; font-weight: 700;
+    letter-spacing: 0.04em; line-height: 1.3;
+  }
+  .login-emblem p { color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 6px; }
+  .login-divider {
+    height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 24px 0;
+  }
+  .form-group { margin-bottom: 18px; }
+  .form-label { display: block; color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 7px; font-weight: 500; }
+  .form-input {
+    width: 100%; padding: 12px 16px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(201,168,76,0.25);
+    border-radius: var(--radius); color: white; font-family: 'Sarabun', sans-serif; font-size: 15px;
+    transition: all 0.2s;
+    outline: none;
+  }
+  .form-input::placeholder { color: rgba(255,255,255,0.3); }
+  .form-input:focus { border-color: var(--gold); background: rgba(255,255,255,0.1); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
+  .btn-primary {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    border: none; border-radius: var(--radius); color: var(--navy); font-family: 'Sarabun', sans-serif;
+    font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.02em;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,168,76,0.4); }
+  .btn-primary:active { transform: none; }
+  .login-switch { text-align: center; margin-top: 18px; }
+  .login-switch a { color: var(--gold-light); font-size: 13px; cursor: pointer; text-decoration: none; }
+  .login-switch a:hover { text-decoration: underline; }
+  .login-error { background: rgba(184,41,58,0.2); border: 1px solid rgba(184,41,58,0.4); border-radius: 8px; padding: 10px 14px; color: #ff8a95; font-size: 13px; margin-bottom: 14px; display: none; }
+
+  /* ======= APP LAYOUT ======= */
+  #screen-app { flex-direction: column; background: var(--gray-50); }
+
+  /* HEADER */
+  .app-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    padding: 0 28px; height: 62px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 3px 16px rgba(13,27,62,0.3); position: sticky; top: 0; z-index: 100;
+  }
+  .header-brand { display: flex; align-items: center; gap: 12px; }
+  .header-brand .brand-icon { font-size: 24px; }
+  .header-brand .brand-text { font-family: 'Chakra Petch', sans-serif; color: var(--gold-light); font-size: 16px; font-weight: 600; }
+  .header-user { display: flex; align-items: center; gap: 12px; }
+  .user-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 24px; padding: 5px 14px 5px 10px;
+  }
+  .user-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--navy); font-size: 12px; font-weight: 700;
+  }
+  .user-name { color: white; font-size: 13px; font-weight: 500; }
+  .user-role-tag {
+    font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--navy);
+  }
+  .btn-logout {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7); border-radius: 8px; padding: 5px 12px;
+    font-family: 'Sarabun', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-logout:hover { background: rgba(255,255,255,0.14); color: white; }
+
+  /* NAV */
+  .app-nav {
+    background: var(--white); border-bottom: var(--border);
+    padding: 0 28px; display: flex; gap: 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-btn {
+    padding: 14px 20px; background: none; border: none; border-bottom: 3px solid transparent;
+    color: var(--gray-400); font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 7px;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { color: var(--navy-light); }
+  .nav-btn.active { color: var(--navy); border-bottom-color: var(--gold); }
+
+  /* CONTENT */
+  .app-content { flex: 1; padding: 28px; max-width: 960px; width: 100%; margin: 0 auto; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; animation: pageFade 0.3s ease; }
+  @keyframes pageFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* PAGE HEADER */
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .page-title { font-family: 'Chakra Petch', sans-serif; font-size: 22px; color: var(--navy); font-weight: 700; }
+  .page-subtitle { color: var(--gray-400); font-size: 13px; margin-top: 3px; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 9px 18px; border-radius: var(--radius); font-family: 'Sarabun', sans-serif;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    border: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+    color: var(--navy); box-shadow: 0 2px 8px rgba(201,168,76,0.3);
+  }
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(201,168,76,0.4); }
+  .btn-navy { background: var(--navy); color: var(--white); }
+  .btn-navy:hover { background: var(--navy-light); }
+  .btn-outline { background: var(--white); border: var(--border); color: var(--gray-600); }
+  .btn-outline:hover { border-color: var(--navy-light); color: var(--navy); }
+  .btn-danger { background: var(--red-light); color: var(--red); border: 1px solid #f5c0c6; }
+  .btn-danger:hover { background: var(--red); color: white; }
+  .btn-sm { padding: 5px 12px; font-size: 13px; }
+  .btn-xs { padding: 3px 9px; font-size: 12px; border-radius: 6px; }
+
+  /* CARD */
+  .card {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: var(--border); box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 24px; border-bottom: var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(135deg, #fcfbf8 0%, var(--white) 100%);
+  }
+  .card-body { padding: 24px; }
+
+  /* SCHEDULE POSTS */
+  .post-card {
+    background: var(--white); border-radius: var(--radius-lg); border: var(--border);
+    box-shadow: var(--shadow-sm); margin-bottom: 18px; overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .post-card:hover { box-shadow: var(--shadow-md); }
+  .post-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .post-category-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 8px;
+  }
+  .badge-meeting { background: #e8edf8; color: var(--navy); }
+  .badge-event { background: var(--amber-light); color: var(--amber); }
+  .badge-document { background: var(--green-light); color: var(--green); }
+  .post-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .post-title { font-size: 17px; font-weight: 700; color: var(--navy); line-height: 1.4; flex: 1; }
+  .post-meta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
+  .post-meta-item { display: flex; align-items: center; gap: 5px; color: var(--gray-600); font-size: 13px; }
+  .post-meta-item .icon { font-size: 14px; }
+  .post-body { padding: 16px 24px; }
+  .post-desc { color: var(--gray-600); font-size: 14px; line-height: 1.7; }
+  .post-footer { padding: 14px 24px; background: var(--gray-50); border-top: 1px solid var(--gray-100); }
+  .post-author { color: var(--gray-400); font-size: 12px; }
+
+  /* VOTE SECTION */
+  .vote-section { padding: 16px 24px; border-top: 1px solid var(--gray-100); }
+  .vote-title { font-size: 13px; font-weight: 700; color: var(--gray-600); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .vote-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .vote-btn {
+    padding: 8px 18px; border-radius: 24px; border: 2px solid; cursor: pointer;
+    font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 600;
+    transition: all 0.2s; background: var(--white);
+  }
+  .vote-btn.approve { border-color: var(--green); color: var(--green); }
+  .vote-btn.approve:hover, .vote-btn.approve.selected { background: var(--green); color: white; }
+  .vote-btn.reject { border-color: var(--red); color: var(--red); }
+  .vote-btn.reject:hover, .vote-btn.reject.selected { background: var(--red); color: white; }
+  .vote-btn.abstain { border-color: var(--gray-400); color: var(--gray-600); }
+  .vote-btn.abstain:hover, .vote-btn.abstain.selected { background: var(--gray-400); color: white; }
+  .vote-summary { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .vote-stat { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 4px 12px; border-radius: 20px; }
+  .vote-stat.approve { background: var(--green-light); color: var(--green); }
+  .vote-stat.reject { background: var(--red-light); color: var(--red); }
+  .vote-stat.abstain { background: var(--gray-100); color: var(--gray-600); }
+  .vote-progress { height: 6px; background: var(--gray-100); border-radius: 3px; margin: 12px 0 6px; overflow: hidden; display: flex; }
+  .vote-progress-bar { height: 100%; transition: width 0.4s ease; }
+  .vote-names { font-size: 12px; color: var(--gray-400); margin-top: 6px; }
+
+  /* COMMENT SECTION */
+  .comment-section { padding: 16px 24px; border-top: 1px solid var(--gray-100); }
+  .comment-list { margin-bottom: 14px; }
+  .comment-item {
+    background: var(--gray-50); border-radius: 10px; padding: 12px 14px;
+    margin-bottom: 8px; display: flex; gap: 10px;
+  }
+  .comment-avatar {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--navy-light), var(--navy));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold-light); font-size: 11px; font-weight: 700;
+  }
+  .comment-body { flex: 1; }
+  .comment-author { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .comment-text { font-size: 13px; color: var(--gray-600); }
+  .comment-time { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+  .comment-input-row { display: flex; gap: 10px; }
+  .comment-input {
+    flex: 1; padding: 10px 14px; border: var(--border); border-radius: 24px;
+    font-family: 'Sarabun', sans-serif; font-size: 14px; outline: none;
+    transition: border-color 0.2s; background: var(--white);
+  }
+  .comment-input:focus { border-color: var(--navy-light); }
+  .btn-send {
+    padding: 10px 18px; background: var(--navy); color: white; border: none;
+    border-radius: 24px; cursor: pointer; font-family: 'Sarabun', sans-serif;
+    font-size: 14px; font-weight: 600; transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-send:hover { background: var(--navy-light); }
+
+  /* TOGGLE / EXPAND */
+  .expand-btn {
+    background: none; border: none; color: var(--gold); font-family: 'Sarabun', sans-serif;
+    font-size: 13px; font-weight: 600; cursor: pointer; padding: 0;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .expand-btn:hover { color: var(--navy); }
+  .collapsible { display: none; }
+  .collapsible.open { display: block; }
+
+  /* CREATE POST FORM */
+  .form-card { background: var(--white); border-radius: var(--radius-lg); border: var(--border); box-shadow: var(--shadow-sm); padding: 28px; margin-bottom: 24px; }
+  .form-card h3 { font-family: 'Chakra Petch', sans-serif; font-size: 17px; color: var(--navy); margin-bottom: 20px; padding-bottom: 14px; border-bottom: var(--border); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group-app { margin-bottom: 16px; }
+  .form-label-app { display: block; font-size: 13px; font-weight: 700; color: var(--gray-600); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .form-input-app, .form-select-app, .form-textarea-app {
+    width: 100%; padding: 10px 14px; border: var(--border); border-radius: var(--radius);
+    font-family: 'Sarabun', sans-serif; font-size: 14px; color: var(--gray-800);
+    outline: none; transition: border-color 0.2s; background: var(--white);
+  }
+  .form-input-app:focus, .form-select-app:focus, .form-textarea-app:focus { border-color: var(--navy-light); box-shadow: 0 0 0 3px rgba(30,51,112,0.08); }
+  .form-textarea-app { resize: vertical; min-height: 90px; }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 16px; border-top: var(--border); margin-top: 20px; }
+
+  /* CHATROOM */
+  .chat-layout { display: grid; grid-template-columns: 220px 1fr; gap: 18px; height: calc(100vh - 200px); min-height: 500px; }
+  .chat-rooms { background: var(--white); border-radius: var(--radius-lg); border: var(--border); box-shadow: var(--shadow-sm); overflow: hidden; display: flex; flex-direction: column; }
+  .chat-rooms-header { padding: 16px 18px; background: var(--navy); }
+  .chat-rooms-header h4 { color: var(--gold-light); font-size: 13px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+  .room-item {
+    padding: 12px 18px; cursor: pointer; transition: all 0.2s;
+    border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; gap: 8px;
+  }
+  .room-item:hover { background: var(--gray-50); }
+  .room-item.active { background: var(--gold-pale); border-left: 3px solid var(--gold); }
+  .room-item .room-icon { font-size: 16px; }
+  .room-item .room-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .room-item .room-count { margin-left: auto; font-size: 11px; background: var(--navy); color: white; padding: 2px 7px; border-radius: 10px; }
+  .btn-add-room {
+    margin: 12px; padding: 9px; background: var(--gray-50); border: 1px dashed var(--gray-200);
+    border-radius: var(--radius); cursor: pointer; text-align: center; color: var(--gray-400);
+    font-family: 'Sarabun', sans-serif; font-size: 13px; transition: all 0.2s;
+  }
+  .btn-add-room:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-pale); }
+
+  .chat-window { background: var(--white); border-radius: var(--radius-lg); border: var(--border); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; overflow: hidden; }
+  .chat-topbar { padding: 14px 20px; border-bottom: var(--border); background: var(--gray-50); display: flex; align-items: center; gap: 10px; }
+  .chat-topbar .room-name-big { font-weight: 700; color: var(--navy); font-size: 15px; }
+  .chat-topbar .room-desc { color: var(--gray-400); font-size: 12px; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .chat-msg { display: flex; gap: 10px; animation: msgSlide 0.2s ease; }
+  @keyframes msgSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .chat-msg.own { flex-direction: row-reverse; }
+  .chat-msg .msg-avatar {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--navy-light), var(--navy));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold-light); font-size: 12px; font-weight: 700;
+  }
+  .chat-msg.own .msg-avatar { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); }
+  .msg-content { max-width: 60%; }
+  .msg-name { font-size: 11px; font-weight: 700; color: var(--gray-400); margin-bottom: 4px; }
+  .chat-msg.own .msg-name { text-align: right; }
+  .msg-bubble {
+    padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5;
+    background: var(--gray-100); color: var(--gray-800);
+  }
+  .chat-msg.own .msg-bubble { background: var(--navy); color: white; }
+  .msg-time { font-size: 10px; color: var(--gray-400); margin-top: 4px; }
+  .chat-msg.own .msg-time { text-align: right; }
+  .chat-input-area { padding: 14px 20px; border-top: var(--border); display: flex; gap: 10px; background: var(--white); }
+  .chat-input {
+    flex: 1; padding: 11px 16px; border: var(--border); border-radius: 24px;
+    font-family: 'Sarabun', sans-serif; font-size: 14px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: var(--navy); }
+  .chat-send {
+    padding: 11px 20px; background: var(--navy); color: white; border: none;
+    border-radius: 24px; cursor: pointer; font-family: 'Sarabun', sans-serif;
+    font-size: 14px; font-weight: 600; transition: all 0.2s; white-space: nowrap;
+  }
+  .chat-send:hover { background: var(--navy-light); transform: translateX(1px); }
+
+  /* ADMIN PANEL */
+  .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .admin-stat {
+    background: var(--white); border-radius: var(--radius-lg); border: var(--border);
+    padding: 22px 24px; text-align: center; box-shadow: var(--shadow-sm);
+  }
+  .admin-stat .stat-num { font-family: 'Chakra Petch', sans-serif; font-size: 36px; font-weight: 700; color: var(--navy); }
+  .admin-stat .stat-label { font-size: 13px; color: var(--gray-400); margin-top: 4px; }
+  .admin-stat .stat-icon { font-size: 28px; margin-bottom: 8px; }
+  .admin-table { width: 100%; border-collapse: collapse; }
+  .admin-table th, .admin-table td { padding: 12px 14px; text-align: left; font-size: 13px; }
+  .admin-table th { background: var(--navy); color: var(--gold-light); font-weight: 700; letter-spacing: 0.04em; font-family: 'Chakra Petch', sans-serif; font-size: 12px; }
+  .admin-table tr:nth-child(even) { background: var(--gray-50); }
+  .admin-table td { border-bottom: 1px solid var(--gray-100); color: var(--gray-800); }
+  .role-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  }
+  .role-badge.admin { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); }
+  .role-badge.member { background: var(--gray-100); color: var(--gray-600); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+    background: var(--navy); color: white; padding: 12px 20px; border-radius: var(--radius);
+    font-size: 14px; font-weight: 500; box-shadow: var(--shadow-lg);
+    animation: toastIn 0.3s ease; display: flex; align-items: center; gap: 8px;
+    border-left: 4px solid var(--gold);
+  }
+  @keyframes toastIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(13,27,62,0.6); z-index: 1000;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    backdrop-filter: blur(4px); display: none;
+  }
+  .modal-overlay.open { display: flex; animation: modalFade 0.2s ease; }
+  @keyframes modalFade { from { opacity:0; } to { opacity:1; } }
+  .modal-box {
+    background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 520px;
+    box-shadow: var(--shadow-lg); overflow: hidden;
+  }
+  .modal-header {
+    padding: 20px 24px; background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header h3 { color: var(--gold-light); font-family: 'Chakra Petch', sans-serif; font-size: 16px; }
+  .modal-close { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 20px; cursor: pointer; }
+  .modal-close:hover { color: white; }
+  .modal-body { padding: 24px; }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
+  .empty-state .empty-icon { font-size: 52px; display: block; margin-bottom: 16px; opacity: 0.5; }
+  .empty-state h4 { font-size: 16px; color: var(--gray-600); margin-bottom: 8px; }
+  .empty-state p { font-size: 13px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--gray-50); }
+  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+  @media (max-width: 700px) {
+    .chat-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .chat-rooms { max-height: 200px; }
+    .form-row { grid-template-columns: 1fr; }
+    .app-header { padding: 0 14px; }
+    .app-content { padding: 16px; }
+    .app-nav { padding: 0 10px; }
+    .nav-btn { padding: 12px 12px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg-pattern"></div>
+  <div class="login-box">
+    <div class="login-emblem">
+      <span class="icon">🏛️</span>
+      <h1>ระบบกำหนดการ<br>คณะกรรมการ</h1>
+      <p>Committee Scheduling System</p>
+    </div>
+    <div class="login-divider"></div>
+    <div id="login-error" class="login-error"></div>
+
+    <!-- MEMBER LOGIN -->
+    <div id="form-member">
+      <div class="form-group">
+        <label class="form-label">ชื่อผู้ใช้งาน</label>
+        <input id="input-name" class="form-input" type="text" placeholder="กรอกชื่อของท่าน (เช่น นายสมชาย)">
+      </div>
+      <button class="btn-primary" onclick="loginMember()">🚀 เข้าสู่ระบบ</button>
+      <div class="login-switch">
+        <a onclick="showAdminForm()">เข้าสู่ระบบในฐานะผู้ดูแล (Admin) →</a>
+      </div>
+    </div>
+
+    <!-- ADMIN LOGIN -->
+    <div id="form-admin" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">ชื่อผู้ดูแลระบบ</label>
+        <input id="input-admin-name" class="form-input" type="text" placeholder="กรอกชื่อ Admin">
+      </div>
+      <div class="form-group">
+        <label class="form-label">รหัสผ่าน Admin</label>
+        <input id="input-admin-pass" class="form-input" type="password" placeholder="กรอกรหัสผ่าน">
+      </div>
+      <button class="btn-primary" onclick="loginAdmin()">🔑 เข้าสู่ระบบ Admin</button>
+      <div class="login-switch">
+        <a onclick="showMemberForm()">← กลับไปเข้าสู่ระบบทั่วไป</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SCREEN ============ -->
+<div id="screen-app" class="screen">
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-brand">
+      <span class="brand-icon">🏛️</span>
+      <span class="brand-text">ระบบกำหนดการคณะกรรมการ</span>
+    </div>
+    <div class="header-user">
+      <div class="user-badge">
+        <div class="user-avatar" id="header-avatar">ส</div>
+        <span class="user-name" id="header-name">สมชาย</span>
+        <span class="user-role-tag" id="header-role">สมาชิก</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="app-nav">
+    <button class="nav-btn active" onclick="switchPage('schedule')">📅 กำหนดการ</button>
+    <button class="nav-btn" onclick="switchPage('chat')">💬 ห้องพูดคุย</button>
+    <button class="nav-btn admin-only" onclick="switchPage('admin')" style="display:none">⚙️ จัดการระบบ</button>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="app-content">
+
+    <!-- ======= SCHEDULE PAGE ======= -->
+    <div id="page-schedule" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📅 กำหนดการทั้งหมด</div>
+          <div class="page-subtitle">รายการกำหนดการและมติของคณะกรรมการ</div>
+        </div>
+        <button class="btn btn-gold" onclick="openCreatePost()">+ สร้างกำหนดการใหม่</button>
+      </div>
+
+      <!-- Filter -->
+      <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+        <button class="btn btn-sm btn-navy" onclick="filterPosts('all')">ทั้งหมด</button>
+        <button class="btn btn-sm btn-outline" onclick="filterPosts('การประชุม')">📋 การประชุม</button>
+        <button class="btn btn-sm btn-outline" onclick="filterPosts('กิจกรรม')">🎯 กิจกรรม</button>
+        <button class="btn btn-sm btn-outline" onclick="filterPosts('เอกสาร')">📄 เอกสาร/มติ</button>
+      </div>
+
+      <div id="posts-container"></div>
+    </div>
+
+    <!-- ======= CHAT PAGE ======= -->
+    <div id="page-chat" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">💬 ห้องพูดคุย</div>
+          <div class="page-subtitle">สื่อสารและปรึกษาหารือกันในกลุ่มคณะกรรมการ</div>
+        </div>
+      </div>
+      <div class="chat-layout">
+        <!-- Room List -->
+        <div class="chat-rooms">
+          <div class="chat-rooms-header"><h4>📢 ห้องทั้งหมด</h4></div>
+          <div id="room-list"></div>
+          <button class="btn-add-room" onclick="openAddRoom()">+ สร้างห้องใหม่</button>
+        </div>
+        <!-- Chat Window -->
+        <div class="chat-window">
+          <div class="chat-topbar">
+            <span style="font-size:20px" id="chat-room-icon">💬</span>
+            <div>
+              <div class="room-name-big" id="chat-room-name">เลือกห้องสนทนา</div>
+              <div class="room-desc" id="chat-room-desc">กรุณาเลือกห้องจากรายการทางซ้าย</div>
+            </div>
+          </div>
+          <div id="chat-messages" class="chat-messages">
+            <div class="empty-state">
+              <span class="empty-icon">💬</span>
+              <h4>ยังไม่มีข้อความ</h4>
+              <p>เลือกห้องเพื่อเริ่มสนทนา</p>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <input id="chat-input" class="chat-input" placeholder="พิมพ์ข้อความ..." onkeydown="if(event.key==='Enter') sendChat()">
+            <button class="chat-send" onclick="sendChat()">ส่ง ➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= ADMIN PAGE ======= -->
+    <div id="page-admin" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">⚙️ จัดการระบบ</div>
+          <div class="page-subtitle">ภาพรวมและการจัดการสำหรับผู้ดูแลระบบ</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="admin-grid" id="admin-stats"></div>
+
+      <!-- Users Table -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header">
+          <div style="font-weight:700; color:var(--navy); font-family:'Chakra Petch',sans-serif;">👥 ผู้ใช้งานที่ผ่านมา</div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="admin-table">
+            <thead><tr><th>#</th><th>ชื่อ</th><th>บทบาท</th><th>เข้าสู่ระบบล่าสุด</th></tr></thead>
+            <tbody id="admin-users-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Posts Management -->
+      <div class="card">
+        <div class="card-header">
+          <div style="font-weight:700; color:var(--navy); font-family:'Chakra Petch',sans-serif;">📋 จัดการกำหนดการ</div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="admin-table">
+            <thead><tr><th>#</th><th>หัวข้อ</th><th>ประเภท</th><th>วันที่</th><th>โหวต</th><th>จัดการ</th></tr></thead>
+            <tbody id="admin-posts-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-content -->
+</div>
+
+<!-- ============ MODAL: CREATE POST ============ -->
+<div id="modal-create-post" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>📝 สร้างกำหนดการใหม่</h3>
+      <button class="modal-close" onclick="closeModal('modal-create-post')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group-app">
+        <label class="form-label-app">ประเภท</label>
+        <select id="post-type" class="form-select-app">
+          <option value="การประชุม">📋 การประชุม</option>
+          <option value="กิจกรรม">🎯 กิจกรรม</option>
+          <option value="เอกสาร">📄 เอกสาร/มติ</option>
+        </select>
+      </div>
+      <div class="form-group-app">
+        <label class="form-label-app">หัวข้อ *</label>
+        <input id="post-title" class="form-input-app" type="text" placeholder="ระบุหัวข้อกำหนดการ">
+      </div>
+      <div class="form-row">
+        <div class="form-group-app">
+          <label class="form-label-app">วัน-เวลา *</label>
+          <input id="post-datetime" class="form-input-app" type="datetime-local">
+        </div>
+        <div class="form-group-app">
+          <label class="form-label-app">สถานที่ / ลิงก์ประชุม</label>
+          <input id="post-location" class="form-input-app" type="text" placeholder="ห้องประชุม / Zoom link">
+        </div>
+      </div>
+      <div class="form-group-app">
+        <label class="form-label-app">รายละเอียด / วาระ</label>
+        <textarea id="post-detail" class="form-textarea-app" placeholder="ระบุวาระหรือรายละเอียดเพิ่มเติม"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="closeModal('modal-create-post')">ยกเลิก</button>
+        <button class="btn btn-gold" onclick="submitPost()">📌 โพสต์กำหนดการ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: ADD CHAT ROOM ============ -->
+<div id="modal-add-room" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>➕ สร้างห้องสนทนาใหม่</h3>
+      <button class="modal-close" onclick="closeModal('modal-add-room')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group-app">
+        <label class="form-label-app">ไอคอนห้อง</label>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+          <span style="cursor:pointer; font-size:22px;" onclick="selectEmoji(this, '💬')">💬</span>
+          <span style="cursor:pointer; font-size:22px;" onclick="selectEmoji(this, '📋')">📋</span>
+          <span style="cursor:pointer; font-size:22px;" onclick="selectEmoji(this, '📢')">📢</span>
+          <span style="cursor:pointer; font-size:22px;" onclick="selectEmoji(this, '🎯')">🎯</span>
+          <span style="cursor:pointer; font-size:22px;" onclick="selectEmoji(this, '🔔')">🔔</span>
+          <span style="cursor:pointer; font-size:22px;" onclick="selectEmoji(this, '🏛️')">🏛️</span>
+        </div>
+        <input id="room-icon-input" class="form-input-app" value="💬" placeholder="หรือพิมพ์ emoji" style="width:80px;">
+      </div>
+      <div class="form-group-app">
+        <label class="form-label-app">ชื่อห้อง *</label>
+        <input id="room-name-input" class="form-input-app" type="text" placeholder="เช่น ห้องประชุมทั่วไป">
+      </div>
+      <div class="form-group-app">
+        <label class="form-label-app">คำอธิบาย</label>
+        <input id="room-desc-input" class="form-input-app" type="text" placeholder="เช่น สำหรับพูดคุยเรื่องทั่วไป">
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="closeModal('modal-add-room')">ยกเลิก</button>
+        <button class="btn btn-gold" onclick="submitRoom()">✅ สร้างห้อง</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ STATE ============
+let currentUser = null;
+let currentFilter = 'all';
+let currentRoom = null;
+
+const ADMIN_PASSWORD = 'ITadmin';
+
+// ============ STORAGE HELPERS ============
+function getDB(key, def = []) {
+  try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; }
+}
+function setDB(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+}
+
+// ============ INIT DATA ============
+function initData() {
+  if (!localStorage.getItem('rooms')) {
+    setDB('rooms', [
+      { id: 'r1', icon: '📢', name: 'ห้องทั่วไป', desc: 'สำหรับพูดคุยเรื่องทั่วไปของคณะกรรมการ' },
+      { id: 'r2', icon: '📋', name: 'วาระการประชุม', desc: 'หารือเรื่องวาระและนโยบาย' },
+      { id: 'r3', icon: '🎯', name: 'ประสานงาน', desc: 'ประสานงานและติดตามงาน' },
+    ]);
+  }
+  if (!localStorage.getItem('posts')) {
+    const now = new Date();
+    const d1 = new Date(now); d1.setDate(d1.getDate() + 3);
+    const d2 = new Date(now); d2.setDate(d2.getDate() + 7);
+    setDB('posts', [
+      {
+        id: 'p1', type: 'การประชุม', title: 'การประชุมคณะกรรมการครั้งที่ 1/2568',
+        datetime: d1.toISOString().slice(0,16),
+        location: 'ห้องประชุมใหญ่ ชั้น 3 อาคารบริหาร',
+        detail: 'วาระที่ 1: รับรองรายงานการประชุมครั้งที่ผ่านมา\nวาระที่ 2: รายงานผลการดำเนินงานประจำเดือน\nวาระที่ 3: พิจารณาแผนงานไตรมาสถัดไป\nวาระที่ 4: เรื่องอื่น ๆ (ถ้ามี)',
+        author: 'ผู้ดูแลระบบ', createdAt: new Date().toISOString(),
+        votes: {}, comments: []
+      },
+      {
+        id: 'p2', type: 'กิจกรรม', title: 'กิจกรรมสัมมนาพัฒนาศักยภาพกรรมการ ประจำปี 2568',
+        datetime: d2.toISOString().slice(0,16),
+        location: 'โรงแรมเซ็นทารา เชียงใหม่',
+        detail: 'โปรแกรมสัมมนา 1 วัน ว่าด้วยการบริหารจัดการองค์กรและธรรมาภิบาล เชิญกรรมการทุกท่านเข้าร่วม',
+        author: 'ผู้ดูแลระบบ', createdAt: new Date().toISOString(),
+        votes: {}, comments: []
+      }
+    ]);
+  }
+}
+
+// ============ AUTH ============
+function showAdminForm() {
+  document.getElementById('form-member').style.display = 'none';
+  document.getElementById('form-admin').style.display = 'block';
+  document.getElementById('login-error').style.display = 'none';
+}
+function showMemberForm() {
+  document.getElementById('form-admin').style.display = 'none';
+  document.getElementById('form-member').style.display = 'block';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+function loginMember() {
+  const name = document.getElementById('input-name').value.trim();
+  if (!name) { showLoginError('กรุณากรอกชื่อของท่าน'); return; }
+  doLogin(name, 'member');
+}
+
+function loginAdmin() {
+  const name = document.getElementById('input-admin-name').value.trim();
+  const pass = document.getElementById('input-admin-pass').value;
+  if (!name) { showLoginError('กรุณากรอกชื่อ Admin'); return; }
+  if (pass !== ADMIN_PASSWORD) { showLoginError('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่'); return; }
+  doLogin(name, 'admin');
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+
+function doLogin(name, role) {
+  currentUser = { name, role };
+  // Save user to DB
+  let users = getDB('users', {});
+  users[name] = { name, role, lastLogin: new Date().toISOString() };
+  setDB('users', users);
+
+  // Update header
+  document.getElementById('header-name').textContent = name;
+  document.getElementById('header-avatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('header-role').textContent = role === 'admin' ? '👑 Admin' : 'สมาชิก';
+
+  // Show/hide admin nav
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = role === 'admin' ? 'block' : 'none';
+  });
+
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'flex';
+
+  renderPosts();
+  renderRooms();
+  if (role === 'admin') renderAdmin();
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('screen-app').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'flex';
+  document.getElementById('input-name').value = '';
+  document.getElementById('input-admin-name').value = '';
+  document.getElementById('input-admin-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  showMemberForm();
+}
+
+// ============ PAGE SWITCHING ============
+function switchPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const pages = ['schedule', 'chat', 'admin'];
+  const idx = pages.indexOf(page);
+  if (navBtns[idx]) navBtns[idx].classList.add('active');
+
+  if (page === 'admin') renderAdmin();
+  if (page === 'chat') renderRooms();
+}
+
+// ============ POSTS ============
+function openCreatePost() { openModal('modal-create-post'); }
+
+function submitPost() {
+  const title = document.getElementById('post-title').value.trim();
+  const datetime = document.getElementById('post-datetime').value;
+  if (!title || !datetime) { toast('⚠️ กรุณากรอกหัวข้อและวัน-เวลา'); return; }
+
+  const posts = getDB('posts', []);
+  const post = {
+    id: 'p' + Date.now(),
+    type: document.getElementById('post-type').value,
+    title,
+    datetime,
+    location: document.getElementById('post-location').value.trim(),
+    detail: document.getElementById('post-detail').value.trim(),
+    author: currentUser.name,
+    createdAt: new Date().toISOString(),
+    votes: {}, comments: []
+  };
+  posts.unshift(post);
+  setDB('posts', posts);
+  closeModal('modal-create-post');
+  clearPostForm();
+  renderPosts();
+  toast('✅ สร้างกำหนดการเรียบร้อยแล้ว');
+}
+
+function clearPostForm() {
+  ['post-title','post-datetime','post-location','post-detail'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+function filterPosts(f) {
+  currentFilter = f;
+  renderPosts();
+}
+
+function renderPosts() {
+  let posts = getDB('posts', []);
+  if (currentFilter !== 'all') posts = posts.filter(p => p.type === currentFilter);
+
+  const container = document.getElementById('posts-container');
+  if (!posts.length) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-icon">📅</span><h4>ยังไม่มีกำหนดการ</h4><p>กดปุ่ม "สร้างกำหนดการใหม่" เพื่อเพิ่มรายการแรก</p></div>`;
+    return;
+  }
+
+  container.innerHTML = posts.map(p => buildPostCard(p)).join('');
+}
+
+function buildPostCard(p) {
+  const votes = p.votes || {};
+  const approveList = Object.entries(votes).filter(([,v]) => v === 'approve').map(([k]) => k);
+  const rejectList = Object.entries(votes).filter(([,v]) => v === 'reject').map(([k]) => k);
+  const abstainList = Object.entries(votes).filter(([,v]) => v === 'abstain').map(([k]) => k);
+  const total = approveList.length + rejectList.length + abstainList.length;
+  const approveW = total ? Math.round(approveList.length/total*100) : 0;
+  const rejectW = total ? Math.round(rejectList.length/total*100) : 0;
+  const myVote = currentUser ? votes[currentUser.name] : null;
+
+  const dt = new Date(p.datetime);
+  const dateStr = dt.toLocaleDateString('th-TH', { year:'numeric', month:'long', day:'numeric' });
+  const timeStr = dt.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' });
+
+  const badgeClass = p.type === 'การประชุม' ? 'badge-meeting' : p.type === 'กิจกรรม' ? 'badge-event' : 'badge-document';
+  const typeIcon = p.type === 'การประชุม' ? '📋' : p.type === 'กิจกรรม' ? '🎯' : '📄';
+
+  const adminDeleteBtn = (currentUser && currentUser.role === 'admin') ?
+    `<button class="btn btn-xs btn-danger" onclick="deletePost('${p.id}')">🗑️ ลบ</button>` : '';
+
+  const comments = (p.comments || []).slice(-50);
+  const commentsHtml = comments.map(c => `
+    <div class="comment-item">
+      <div class="comment-avatar">${c.author.charAt(0).toUpperCase()}</div>
+      <div class="comment-body">
+        <div class="comment-author">${escHtml(c.author)}</div>
+        <div class="comment-text">${escHtml(c.text)}</div>
+        <div class="comment-time">${formatTime(c.createdAt)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+  <div class="post-card" id="card-${p.id}">
+    <div class="post-header">
+      <div style="flex:1;">
+        <span class="post-category-badge ${badgeClass}">${typeIcon} ${p.type}</span>
+        <div class="post-title-row">
+          <div class="post-title">${escHtml(p.title)}</div>
+          ${adminDeleteBtn}
+        </div>
+        <div class="post-meta">
+          <span class="post-meta-item"><span class="icon">📅</span>${dateStr}</span>
+          <span class="post-meta-item"><span class="icon">🕐</span>${timeStr} น.</span>
+          ${p.location ? `<span class="post-meta-item"><span class="icon">📍</span>${escHtml(p.location)}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    ${p.detail ? `<div class="post-body"><div class="post-desc">${escHtml(p.detail).replace(/\n/g,'<br>')}</div></div>` : ''}
+    <div class="post-footer">
+      <span class="post-author">📝 โพสต์โดย: ${escHtml(p.author)} · ${formatTime(p.createdAt)}</span>
+      <button class="expand-btn" onclick="toggleSection('vote-${p.id}')" style="float:right;">
+        🗳️ แสดงความเห็นชอบ (${total})
+      </button>
+    </div>
+
+    <!-- VOTE SECTION -->
+    <div class="vote-section collapsible" id="vote-${p.id}">
+      <div class="vote-title">🗳️ ลงมติ</div>
+      <div class="vote-btns">
+        <button class="vote-btn approve ${myVote==='approve'?'selected':''}" onclick="castVote('${p.id}','approve')">👍 เห็นชอบ</button>
+        <button class="vote-btn reject ${myVote==='reject'?'selected':''}" onclick="castVote('${p.id}','reject')">👎 ไม่เห็นชอบ</button>
+        <button class="vote-btn abstain ${myVote==='abstain'?'selected':''}" onclick="castVote('${p.id}','abstain')">✋ งดออกเสียง</button>
+      </div>
+      <div class="vote-progress">
+        <div class="vote-progress-bar" style="width:${approveW}%;background:var(--green);"></div>
+        <div class="vote-progress-bar" style="width:${rejectW}%;background:var(--red);"></div>
+        <div class="vote-progress-bar" style="width:${100-approveW-rejectW}%;background:var(--gray-200);"></div>
+      </div>
+      <div class="vote-summary">
+        <span class="vote-stat approve">👍 ${approveList.length} เห็นชอบ</span>
+        <span class="vote-stat reject">👎 ${rejectList.length} ไม่เห็นชอบ</span>
+        <span class="vote-stat abstain">✋ ${abstainList.length} งดออกเสียง</span>
+      </div>
+      ${total ? `<div class="vote-names">
+        ${approveList.length ? `✅ เห็นชอบ: ${approveList.join(', ')}` : ''}
+        ${rejectList.length ? `<br>❌ ไม่เห็นชอบ: ${rejectList.join(', ')}` : ''}
+        ${abstainList.length ? `<br>⚪ งดออกเสียง: ${abstainList.join(', ')}` : ''}
+      </div>` : ''}
+
+      <!-- COMMENT SECTION -->
+      <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--gray-100);">
+        <div class="vote-title">💬 ความคิดเห็น (${comments.length})</div>
+        <div class="comment-list">${commentsHtml || '<div style="color:var(--gray-400);font-size:13px;padding:8px 0;">ยังไม่มีความคิดเห็น</div>'}</div>
+        <div class="comment-input-row">
+          <input class="comment-input" id="comment-input-${p.id}" placeholder="แสดงความคิดเห็น..." onkeydown="if(event.key==='Enter') addComment('${p.id}')">
+          <button class="btn-send" onclick="addComment('${p.id}')">ส่ง</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function castVote(postId, vote) {
+  if (!currentUser) return;
+  const posts = getDB('posts', []);
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  if (!post.votes) post.votes = {};
+  if (post.votes[currentUser.name] === vote) {
+    delete post.votes[currentUser.name]; // undo vote
+  } else {
+    post.votes[currentUser.name] = vote;
+  }
+  setDB('posts', posts);
+  renderPosts();
+  // Re-open the vote section
+  setTimeout(() => {
+    const section = document.getElementById('vote-' + postId);
+    if (section) section.classList.add('open');
+  }, 50);
+  toast('✅ บันทึกมติเรียบร้อย');
+}
+
+function addComment(postId) {
+  const input = document.getElementById('comment-input-' + postId);
+  const text = input.value.trim();
+  if (!text) return;
+  const posts = getDB('posts', []);
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  if (!post.comments) post.comments = [];
+  post.comments.push({ author: currentUser.name, text, createdAt: new Date().toISOString() });
+  setDB('posts', posts);
+  input.value = '';
+  renderPosts();
+  setTimeout(() => {
+    const section = document.getElementById('vote-' + postId);
+    if (section) section.classList.add('open');
+  }, 50);
+}
+
+function deletePost(postId) {
+  if (!confirm('ต้องการลบกำหนดการนี้?')) return;
+  let posts = getDB('posts', []);
+  posts = posts.filter(p => p.id !== postId);
+  setDB('posts', posts);
+  renderPosts();
+  if (currentUser.role === 'admin') renderAdmin();
+  toast('🗑️ ลบกำหนดการเรียบร้อย');
+}
+
+function toggleSection(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+// ============ CHAT ============
+function renderRooms() {
+  const rooms = getDB('rooms', []);
+  const messages = getDB('messages', {});
+  const list = document.getElementById('room-list');
+  list.innerHTML = rooms.map(r => {
+    const count = (messages[r.id] || []).length;
+    return `<div class="room-item ${currentRoom && currentRoom.id===r.id?'active':''}" onclick="selectRoom('${r.id}')">
+      <span class="room-icon">${r.icon}</span>
+      <span class="room-name">${escHtml(r.name)}</span>
+      ${count > 0 ? `<span class="room-count">${count}</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function selectRoom(roomId) {
+  const rooms = getDB('rooms', []);
+  currentRoom = rooms.find(r => r.id === roomId);
+  if (!currentRoom) return;
+  document.getElementById('chat-room-icon').textContent = currentRoom.icon;
+  document.getElementById('chat-room-name').textContent = currentRoom.name;
+  document.getElementById('chat-room-desc').textContent = currentRoom.desc || '';
+  renderRooms();
+  renderMessages();
+}
+
+function renderMessages() {
+  if (!currentRoom) return;
+  const messages = getDB('messages', {});
+  const msgs = messages[currentRoom.id] || [];
+  const container = document.getElementById('chat-messages');
+
+  if (!msgs.length) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-icon">💬</span><h4>ยังไม่มีข้อความ</h4><p>เริ่มการสนทนาในห้องนี้ได้เลย</p></div>`;
+    return;
+  }
+
+  container.innerHTML = msgs.map(m => {
+    const isOwn = currentUser && m.author === currentUser.name;
+    return `<div class="chat-msg ${isOwn?'own':''}">
+      <div class="msg-avatar">${m.author.charAt(0).toUpperCase()}</div>
+      <div class="msg-content">
+        <div class="msg-name">${escHtml(m.author)}</div>
+        <div class="msg-bubble">${escHtml(m.text)}</div>
+        <div class="msg-time">${formatTime(m.createdAt)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !currentRoom) return;
+  const messages = getDB('messages', {});
+  if (!messages[currentRoom.id]) messages[currentRoom.id] = [];
+  messages[currentRoom.id].push({ author: currentUser.name, text, createdAt: new Date().toISOString() });
+  setDB('messages', messages);
+  input.value = '';
+  renderMessages();
+  renderRooms();
+}
+
+function openAddRoom() { openModal('modal-add-room'); }
+
+function selectEmoji(el, emoji) {
+  document.getElementById('room-icon-input').value = emoji;
+}
+
+function submitRoom() {
+  const name = document.getElementById('room-name-input').value.trim();
+  const icon = document.getElementById('room-icon-input').value.trim() || '💬';
+  const desc = document.getElementById('room-desc-input').value.trim();
+  if (!name) { toast('⚠️ กรุณาระบุชื่อห้อง'); return; }
+
+  const rooms = getDB('rooms', []);
+  rooms.push({ id: 'r' + Date.now(), icon, name, desc });
+  setDB('rooms', rooms);
+  closeModal('modal-add-room');
+  document.getElementById('room-name-input').value = '';
+  document.getElementById('room-desc-input').value = '';
+  renderRooms();
+  toast('✅ สร้างห้องสนทนาเรียบร้อย');
+}
+
+// ============ ADMIN ============
+function renderAdmin() {
+  const posts = getDB('posts', []);
+  const users = getDB('users', {});
+  const rooms = getDB('rooms', []);
+  const messages = getDB('messages', {});
+  const totalMsgs = Object.values(messages).reduce((a, v) => a + v.length, 0);
+
+  document.getElementById('admin-stats').innerHTML = `
+    <div class="admin-stat"><div class="stat-icon">📋</div><div class="stat-num">${posts.length}</div><div class="stat-label">กำหนดการทั้งหมด</div></div>
+    <div class="admin-stat"><div class="stat-icon">👥</div><div class="stat-num">${Object.keys(users).length}</div><div class="stat-label">ผู้ใช้งานทั้งหมด</div></div>
+    <div class="admin-stat"><div class="stat-icon">💬</div><div class="stat-num">${rooms.length}</div><div class="stat-label">ห้องสนทนา</div></div>
+    <div class="admin-stat"><div class="stat-icon">📨</div><div class="stat-num">${totalMsgs}</div><div class="stat-label">ข้อความทั้งหมด</div></div>
+  `;
+
+  const usersArr = Object.values(users);
+  document.getElementById('admin-users-table').innerHTML = usersArr.length ?
+    usersArr.map((u, i) => `<tr>
+      <td>${i+1}</td>
+      <td><strong>${escHtml(u.name)}</strong></td>
+      <td><span class="role-badge ${u.role}">${u.role === 'admin' ? '👑 Admin' : '👤 สมาชิก'}</span></td>
+      <td>${formatTime(u.lastLogin)}</td>
+    </tr>`).join('') :
+    '<tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:20px;">ยังไม่มีข้อมูลผู้ใช้</td></tr>';
+
+  document.getElementById('admin-posts-table').innerHTML = posts.length ?
+    posts.map((p, i) => {
+      const votes = p.votes || {};
+      const vCount = Object.keys(votes).length;
+      return `<tr>
+        <td>${i+1}</td>
+        <td><strong>${escHtml(p.title)}</strong></td>
+        <td>${p.type}</td>
+        <td>${new Date(p.datetime).toLocaleDateString('th-TH')}</td>
+        <td>${vCount} คน</td>
+        <td><button class="btn btn-xs btn-danger" onclick="deletePost('${p.id}')">🗑️ ลบ</button></td>
+      </tr>`;
+    }).join('') :
+    '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:20px;">ยังไม่มีกำหนดการ</td></tr>';
+}
+
+// ============ MODAL ============
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ============ TOAST ============
+function toast(msg) {
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+// ============ UTILS ============
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' }) + ' ' + d.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit' });
+}
+
+// ============ BOOT ============
+initData();
+document.getElementById('screen-login').style.display = 'flex';
+document.getElementById('screen-app').style.display = 'none';
+</script>
+</body>
+</html>

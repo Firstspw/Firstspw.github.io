@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@First</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- HUD Corners -->
+  <div class="hud-corner tl"></div>
+  <div class="hud-corner tr"></div>
+  <div class="hud-corner bl"></div>
+  <div class="hud-corner br"></div>
+
+  <!-- Cursor glow -->
+  <div id="cursor-glow"></div>
+
+  <!-- Background video -->
+  <video id="bg-video" loop playsinline>
+    <source src="background.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Start screen -->
+  <div id="startOverlay">
+    <div class="start-inner">
+      <div class="start-ring">
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+      </div>
+      <div id="startText">CLICK TO ENTER</div>
+      <div class="start-sub">@First — Portfolio</div>
+    </div>
+  </div>
+
+  <!-- Mute button -->
+  <button id="muteButton">🔊</button>
+
+  <!-- Main -->
+  <div id="mainContent">
+
+    <div class="profile-section">
+      <div class="profile-ring">
+        <div class="profile-image">
+          <img src="first.png" alt="Profile" />
+        </div>
+      </div>
+      <div class="profile-name"><span class="accent">@</span>First</div>
+      <div class="glitch-bar">
+        <span class="profile-tagline">Developer &nbsp;·&nbsp; Designer &nbsp;·&nbsp; Creator</span>
+      </div>
+    </div>
+
+    <div class="button-container">
+
+      <a href="https://spwweb.github.io/first/" target="_blank">
+        <span class="btn-corner tl"></span>
+        <span class="btn-dot"></span>
+        Me First
+        <span class="btn-corner br"></span>
+      </a>
+
+      <a href="https://spwweb.github.io/clock/" target="_blank">
+        <span class="btn-corner tl"></span>
+        <span class="btn-dot"></span>
+        Clock
+        <span class="btn-corner br"></span>
+      </a>
+
+      <a href="https://spwweb.github.io/QRcode/" target="_blank">
+        <span class="btn-corner tl"></span>
+        <span class="btn-dot"></span>
+        QR Generator
+        <span class="btn-corner br"></span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- HUD status bar -->
+  <div class="hud-status">
+    <span class="hud-dot"></span>
+    SYSTEM ONLINE &nbsp;·&nbsp; <span id="hudTime">00:00:00</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
