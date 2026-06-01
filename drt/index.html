@@ -25,7 +25,6 @@
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
   min-height:100vh;font-size:15px;line-height:1.6;-webkit-tap-highlight-color:transparent}
-
 .screen{display:none;min-height:100vh}
 
 /* LOGIN */
@@ -53,16 +52,39 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
   border:none;border-radius:var(--r);color:var(--navy);font-family:'Sarabun',sans-serif;
   font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.02em;min-height:46px}
 .btn-primary:active{transform:scale(.98)}
-.login-sw{text-align:center;margin-top:14px}
-.login-sw a{color:var(--gold-light);font-size:12px;cursor:pointer}
-.login-sw a:hover{text-decoration:underline}
 .login-err{background:rgba(184,41,58,.2);border:1px solid rgba(184,41,58,.4);border-radius:8px;
   padding:9px 13px;color:#ff8a95;font-size:13px;margin-bottom:12px;display:none}
+.shake-hint{text-align:center;margin-top:14px;color:rgba(255,255,255,.25);font-size:11px;
+  display:flex;align-items:center;justify-content:center;gap:5px;animation:fadeHint 3s ease infinite}
+@keyframes fadeHint{0%,100%{opacity:.3}50%{opacity:.7}}
+
+/* SHAKE ADMIN MODAL */
+.shake-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;
+  display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.shake-modal-overlay.open{display:flex;animation:mFade .2s ease}
+.shake-modal{background:linear-gradient(145deg,var(--navy),var(--navy-mid));border:1px solid rgba(201,168,76,.4);
+  border-radius:20px;padding:28px 24px;width:100%;max-width:320px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);animation:bounceIn .4s cubic-bezier(.68,-.55,.27,1.55)}
+@keyframes bounceIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.shake-modal .sico{font-size:52px;display:block;margin-bottom:14px;animation:wiggle .6s ease .2s both}
+@keyframes wiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(8deg)}}
+.shake-modal h3{color:var(--gold-light);font-family:'Chakra Petch',sans-serif;font-size:16px;margin-bottom:8px}
+.shake-modal p{color:rgba(255,255,255,.6);font-size:13px;margin-bottom:20px;line-height:1.6}
+.shake-modal .sbtn-row{display:flex;gap:10px}
+.sbtn{flex:1;padding:11px;border-radius:var(--r);font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;border:none;transition:all .2s;min-height:44px}
+.sbtn-yes{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy)}
+.sbtn-no{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2)}
+.sbtn-yes:active,.sbtn-no:active{transform:scale(.96)}
+
+/* ADMIN PASSWORD MODAL */
+.admin-pass-modal{background:linear-gradient(145deg,var(--navy),var(--navy-mid));border:1px solid rgba(201,168,76,.4);
+  border-radius:20px;padding:28px 24px;width:100%;max-width:320px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);animation:bounceIn .4s cubic-bezier(.68,-.55,.27,1.55)}
+.admin-pass-modal h3{color:var(--gold-light);font-family:'Chakra Petch',sans-serif;font-size:15px;margin-bottom:16px;text-align:center}
 
 /* APP */
 #scr-app{flex-direction:column;background:var(--g50)}
-
-/* HEADER */
 .app-hdr{background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:0 14px;height:54px;
   display:flex;align-items:center;justify-content:space-between;
   box-shadow:0 3px 16px rgba(13,27,62,.3);position:sticky;top:0;z-index:200}
@@ -204,11 +226,27 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
 .fact{display:flex;gap:8px;justify-content:flex-end;padding-top:13px;border-top:var(--border);margin-top:14px;flex-wrap:wrap}
 
 /* ADMIN */
-.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:18px}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:11px;margin-bottom:18px}
 .astat{background:var(--white);border-radius:var(--rl);border:var(--border);padding:16px 18px;text-align:center;box-shadow:var(--shadow-sm)}
 .astat .snum{font-family:'Chakra Petch',sans-serif;font-size:30px;font-weight:700;color:var(--navy)}
 .astat .slbl{font-size:11px;color:var(--g400);margin-top:3px}
 .astat .sico{font-size:22px;margin-bottom:5px}
+
+/* ROLE CARD GRID — mobile-first role assignment */
+.role-card-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+@media(min-width:480px){.role-card-grid{grid-template-columns:1fr 1fr}}
+.role-user-card{background:var(--white);border:var(--border);border-radius:var(--rl);padding:14px 16px;
+  box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:10px}
+.ruc-top{display:flex;align-items:center;gap:10px}
+.ruc-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--navy-light),var(--navy));
+  display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-size:15px;font-weight:700;flex-shrink:0}
+.ruc-info{flex:1;min-width:0}
+.ruc-name{font-size:14px;font-weight:700;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ruc-last{font-size:11px;color:var(--g400);margin-top:1px}
+.ruc-sel{width:100%;padding:9px 12px;border:var(--border);border-radius:var(--r);font-family:'Sarabun',sans-serif;font-size:13px;background:var(--white);outline:none;cursor:pointer;color:var(--g800)}
+.ruc-sel:focus{border-color:var(--navy-light)}
+.ruc-admin-badge{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;display:inline-block}
 
 /* ROLE BADGES */
 .rbadge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
@@ -229,8 +267,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
 .rtable tr:nth-child(even){background:var(--g50)}
 .rtable td{border-bottom:1px solid var(--g100);color:var(--g800);vertical-align:middle}
 .rtable-w{overflow-x:auto}
-.rsel{padding:5px 9px;border:var(--border);border-radius:8px;font-family:'Sarabun',sans-serif;font-size:12px;background:var(--white);outline:none;cursor:pointer;max-width:150px}
-.rsel:focus{border-color:var(--navy-light)}
 
 /* TOAST */
 .toast{position:fixed;bottom:72px;right:14px;z-index:9999;background:var(--navy);color:#fff;
@@ -274,9 +310,13 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
 .status-live{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--green);font-weight:600;margin-left:8px}
 .status-live::before{content:'';width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block;box-shadow:0 0 5px var(--green)}
 
-/* NEW POST FLASH */
 @keyframes newCard{from{opacity:0;transform:translateY(-8px);box-shadow:0 0 0 3px rgba(201,168,76,.4)}to{opacity:1;transform:none;box-shadow:var(--shadow-sm)}}
 .pcard.new-flash{animation:newCard .5s ease}
+
+/* DUPLICATE NAME WARNING */
+.name-warn{background:rgba(184,41,58,.12);border:1px solid rgba(184,41,58,.3);border-radius:8px;
+  padding:8px 12px;color:#c94050;font-size:12px;margin-top:6px;display:none;align-items:center;gap:6px}
+.name-warn.show{display:flex}
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--g50)}
@@ -286,6 +326,37 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
 </head>
 <body>
 
+<!-- SHAKE ADMIN MODAL -->
+<div class="shake-modal-overlay" id="shake-overlay">
+  <div id="shake-content">
+    <div class="shake-modal" id="shake-ask">
+      <span class="sico">👑</span>
+      <h3>เข้าสู่ระบบแอดมิน</h3>
+      <p>ตรวจพบการเขย่าอุปกรณ์<br>ต้องการเข้าสู่ระบบผู้ดูแลระบบหรือไม่?</p>
+      <div class="sbtn-row">
+        <button class="sbtn sbtn-no" onclick="closeShakeModal()">ยกเลิก</button>
+        <button class="sbtn sbtn-yes" onclick="showAdminPassInput()">✅ ใช่, เข้าสู่ระบบ</button>
+      </div>
+    </div>
+    <div class="admin-pass-modal" id="admin-pass-panel" style="display:none">
+      <h3>🔑 รหัสผ่าน Admin</h3>
+      <div class="fg">
+        <label class="fl">ชื่อผู้ดูแลระบบ</label>
+        <input id="shake-aname" class="fi" type="text" placeholder="ชื่อ Admin">
+      </div>
+      <div class="fg" style="margin-top:10px">
+        <label class="fl">รหัสผ่าน</label>
+        <input id="shake-apass" class="fi" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')confirmAdminLogin()">
+      </div>
+      <div id="shake-err" class="login-err" style="margin-top:10px"></div>
+      <div class="sbtn-row" style="margin-top:14px">
+        <button class="sbtn sbtn-no" onclick="closeShakeModal()">ยกเลิก</button>
+        <button class="sbtn sbtn-yes" onclick="confirmAdminLogin()">🔑 เข้าสู่ระบบ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- LOGIN -->
 <div id="scr-login" class="screen">
   <div class="login-bg"></div>
@@ -293,29 +364,18 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
     <div class="login-logo">
       <span class="li">🏛️</span>
       <h1>ระบบกำหนดการ<br>คณะกรรมการ</h1>
-      <p>Committee Scheduling System v2.0</p>
+      <p>Committee Scheduling System v3.0</p>
     </div>
     <div class="login-div"></div>
     <div id="lerr" class="login-err"></div>
     <div id="fm-member">
       <div class="fg">
         <label class="fl">ชื่อผู้ใช้งาน</label>
-        <input id="inp-name" class="fi" type="text" placeholder="กรอกชื่อของท่าน" autocomplete="name">
+        <input id="inp-name" class="fi" type="text" placeholder="กรอกชื่อของท่าน" autocomplete="name" oninput="checkNameDup()">
+        <div class="name-warn" id="name-warn">⚠️ ชื่อนี้ถูกใช้งานอยู่แล้ว กรุณากรอกชื่ออื่น</div>
       </div>
       <button class="btn-primary" onclick="loginMember()">🚀 เข้าสู่ระบบ</button>
-      <div class="login-sw"><a onclick="showAdminForm()">เข้าสู่ระบบ Admin →</a></div>
-    </div>
-    <div id="fm-admin" style="display:none">
-      <div class="fg">
-        <label class="fl">ชื่อผู้ดูแลระบบ</label>
-        <input id="inp-aname" class="fi" type="text" placeholder="กรอกชื่อ Admin">
-      </div>
-      <div class="fg">
-        <label class="fl">รหัสผ่าน Admin</label>
-        <input id="inp-apass" class="fi" type="password" placeholder="รหัสผ่าน">
-      </div>
-      <button class="btn-primary" onclick="loginAdmin()">🔑 เข้าสู่ระบบ Admin</button>
-      <div class="login-sw"><a onclick="showMemberForm()">← กลับ</a></div>
+      <div class="shake-hint">📱 เขย่าโทรศัพท์เพื่อเข้าโหมด Admin</div>
     </div>
   </div>
 </div>
@@ -360,13 +420,18 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
     <div id="pg-admin" class="page">
       <div class="ph"><div><div class="ptitle">⚙️ จัดการระบบ</div><div class="psub">สำหรับผู้ดูแลระบบเท่านั้น</div></div></div>
       <div class="admin-grid" id="a-stats"></div>
+
+      <!-- ROLE ASSIGNMENT -->
       <div class="card" style="margin-bottom:14px">
-        <div class="card-hdr"><strong style="font-family:'Chakra Petch',sans-serif;font-size:13px;color:var(--navy)">👑 กำหนดบทบาทสมาชิก</strong></div>
-        <div class="card-body" style="padding:0"><div class="rtable-w"><table class="rtable">
-          <thead><tr><th>#</th><th>ชื่อ</th><th>บทบาทปัจจุบัน</th><th>เปลี่ยนบทบาท</th><th>เข้าล่าสุด</th></tr></thead>
-          <tbody id="a-users"></tbody>
-        </table></div></div>
+        <div class="card-hdr">
+          <strong style="font-family:'Chakra Petch',sans-serif;font-size:13px;color:var(--navy)">👑 กำหนดบทบาทสมาชิก</strong>
+        </div>
+        <div class="card-body">
+          <div class="role-card-grid" id="a-users"></div>
+        </div>
       </div>
+
+      <!-- POST MANAGEMENT -->
       <div class="card">
         <div class="card-hdr"><strong style="font-family:'Chakra Petch',sans-serif;font-size:13px;color:var(--navy)">📋 จัดการกำหนดการ</strong></div>
         <div class="card-body" style="padding:0"><div class="rtable-w"><table class="rtable">
@@ -433,12 +498,10 @@ function tryInitFirebase() {
       firebase.initializeApp(fbConfig);
       db = firebase.database();
       useFirebase = true;
-      console.log('✅ Firebase connected');
     }
-  } catch(e) { console.warn('Firebase init failed:', e); useFirebase = false; }
+  } catch(e) { useFirebase = false; }
 }
 
-// localStorage helpers
 function lget(k, def) {
   try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; }
 }
@@ -452,7 +515,7 @@ const ROLES = [
   { k:'president',  l:'🎖️ ประธาน',          c:'rb-president' },
   { k:'vpresident', l:'🥈 รองประธาน',       c:'rb-vpresident' },
   { k:'secretary',  l:'📝 เลขานุการ',       c:'rb-secretary' },
-  { k:'pr',         l:'📣 ประชาสัมพันธ์',    c:'rb-pr' },
+  { k:'pr',         l:'📣 ประชาสัมพันธ์',   c:'rb-pr' },
   { k:'finance',    l:'💰 การเงิน',          c:'rb-finance' },
   { k:'venue',      l:'🏟️ สถานที่',          c:'rb-venue' },
   { k:'avt',        l:'🔧 สมาชิก อวท.',      c:'rb-avt' },
@@ -468,25 +531,121 @@ const rbHtml = k => { const r = getRoleInfo(k); return `<span class="rbadge ${r.
 let CU = null;
 let curFilter = 'all';
 let postsListener = null;
-let knownPostIds = new Set(); // track existing IDs for new-flash animation
+let knownPostIds = new Set();
+
+const SESSION_KEY = 'committee_session_v3';
+function saveSession(user) { lset(SESSION_KEY, { name: user.name, role: user.role }); }
+function loadSession() { return lget(SESSION_KEY, null); }
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
 
 // ============================================================
-// SESSION PERSISTENCE — keep user logged in across refresh
+// SHAKE DETECTION
 // ============================================================
-const SESSION_KEY = 'committee_session_v2';
+let shakeThreshold = 15;
+let lastX = null, lastY = null, lastZ = null;
+let shakeTriggered = false;
+let shakeTimeout = null;
 
-function saveSession(user) {
-  lset(SESSION_KEY, { name: user.name, role: user.role, savedAt: new Date().toISOString() });
+function initShakeDetect() {
+  if (!window.DeviceMotionEvent) return;
+
+  // iOS 13+ requires permission
+  if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    // We'll attach to a click on the page for iOS
+    document.addEventListener('click', requestMotionPermission, { once: true });
+  } else {
+    window.addEventListener('devicemotion', handleMotion);
+  }
 }
 
-function loadSession() {
-  const s = lget(SESSION_KEY, null);
-  if (!s || !s.name) return null;
-  return s;
+function requestMotionPermission() {
+  DeviceMotionEvent.requestPermission().then(state => {
+    if (state === 'granted') window.addEventListener('devicemotion', handleMotion);
+  }).catch(() => {});
 }
 
-function clearSession() {
-  localStorage.removeItem(SESSION_KEY);
+function handleMotion(e) {
+  const acc = e.accelerationIncludingGravity;
+  if (!acc) return;
+  const { x, y, z } = acc;
+  if (lastX === null) { lastX=x; lastY=y; lastZ=z; return; }
+  const delta = Math.abs(x-lastX) + Math.abs(y-lastY) + Math.abs(z-lastZ);
+  lastX=x; lastY=y; lastZ=z;
+
+  if (delta > shakeThreshold && !shakeTriggered) {
+    shakeTriggered = true;
+    clearTimeout(shakeTimeout);
+    shakeTimeout = setTimeout(() => { shakeTriggered = false; }, 3000);
+
+    // only trigger if on login screen and not already admin
+    if (document.getElementById('scr-login').style.display !== 'none') {
+      showShakeModal();
+    }
+  }
+}
+
+function showShakeModal() {
+  document.getElementById('shake-ask').style.display = '';
+  document.getElementById('admin-pass-panel').style.display = 'none';
+  document.getElementById('shake-overlay').classList.add('open');
+  // vibrate feedback
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+}
+
+function closeShakeModal() {
+  document.getElementById('shake-overlay').classList.remove('open');
+  document.getElementById('shake-err').style.display = 'none';
+  document.getElementById('shake-apass').value = '';
+  document.getElementById('shake-aname').value = '';
+  shakeTriggered = false;
+}
+
+function showAdminPassInput() {
+  document.getElementById('shake-ask').style.display = 'none';
+  document.getElementById('admin-pass-panel').style.display = '';
+  setTimeout(() => document.getElementById('shake-aname').focus(), 100);
+}
+
+function confirmAdminLogin() {
+  const name = document.getElementById('shake-aname').value.trim();
+  const pass = document.getElementById('shake-apass').value;
+  const errEl = document.getElementById('shake-err');
+  errEl.style.display = 'none';
+
+  if (!name) { errEl.textContent = '⚠️ กรุณากรอกชื่อ Admin'; errEl.style.display = 'block'; return; }
+  if (pass !== ADMIN_PASS) { errEl.textContent = '⚠️ รหัสผ่านไม่ถูกต้อง'; errEl.style.display = 'block'; return; }
+
+  closeShakeModal();
+  doLogin(name, 'admin');
+}
+
+// ============================================================
+// NAME DUPLICATE CHECK
+// ============================================================
+function checkNameDup() {
+  const name = document.getElementById('inp-name').value.trim();
+  const warnEl = document.getElementById('name-warn');
+  if (!name) { warnEl.classList.remove('show'); return; }
+
+  const users = lget('users', {});
+  // Name is "taken" if another user is currently logged in with that name
+  // We check if it exists but allow the SAME person to log back in
+  const savedSession = loadSession();
+  if (users[name] && savedSession && savedSession.name === name) {
+    warnEl.classList.remove('show'); return;
+  }
+  // If the user exists and is currently in an active session different from stored
+  // For simplicity: just check if name exists in users with a recent login (within 1 hour)
+  if (users[name]) {
+    const lastLogin = users[name].lastLogin;
+    if (lastLogin) {
+      const diff = Date.now() - new Date(lastLogin).getTime();
+      if (diff < 3600000) { // 1 hour
+        warnEl.classList.add('show'); return;
+      }
+    }
+  }
+  warnEl.classList.remove('show');
 }
 
 // ============================================================
@@ -524,34 +683,28 @@ window.addEventListener('resize', applyResp);
 // ============================================================
 // AUTH
 // ============================================================
-function showAdminForm() {
-  document.getElementById('fm-member').style.display = 'none';
-  document.getElementById('fm-admin').style.display = 'block';
-  hideErr();
-}
-function showMemberForm() {
-  document.getElementById('fm-admin').style.display = 'none';
-  document.getElementById('fm-member').style.display = 'block';
-  hideErr();
-}
 function showErr(m) { const e=document.getElementById('lerr'); e.textContent='⚠️ '+m; e.style.display='block'; }
 function hideErr() { document.getElementById('lerr').style.display='none'; }
 
 function loginMember() {
   const name = document.getElementById('inp-name').value.trim();
   if (!name) { showErr('กรุณากรอกชื่อของท่าน'); return; }
-  const users = lget('users', {});
-  const saved = users[name];
-  const role = (saved && saved.role) ? saved.role : 'member';
-  doLogin(name, role);
-}
 
-function loginAdmin() {
-  const name = document.getElementById('inp-aname').value.trim();
-  const pass = document.getElementById('inp-apass').value;
-  if (!name) { showErr('กรุณากรอกชื่อ Admin'); return; }
-  if (pass !== ADMIN_PASS) { showErr('รหัสผ่านไม่ถูกต้อง'); return; }
-  doLogin(name, 'admin');
+  // Duplicate name check — block if another active session has same name
+  const users = lget('users', {});
+  const savedSession = loadSession();
+  if (users[name] && !(savedSession && savedSession.name === name)) {
+    const lastLogin = users[name].lastLogin;
+    if (lastLogin) {
+      const diff = Date.now() - new Date(lastLogin).getTime();
+      if (diff < 3600000) {
+        showErr('ชื่อนี้ถูกใช้งานอยู่แล้ว กรุณากรอกชื่ออื่น'); return;
+      }
+    }
+  }
+
+  const role = (users[name] && users[name].role) ? users[name].role : 'member';
+  doLogin(name, role);
 }
 
 function doLogin(name, role, silent=false) {
@@ -563,11 +716,8 @@ function doLogin(name, role, silent=false) {
   users[name] = { name, role: finalRole, lastLogin: new Date().toISOString() };
   lset('users', users);
   CU = { name, role: finalRole };
-
-  // save session for refresh persistence
   saveSession(CU);
 
-  // update header
   document.getElementById('hname').textContent = name;
   document.getElementById('hav').textContent = name.charAt(0).toUpperCase();
   const ri = getRoleInfo(finalRole);
@@ -587,16 +737,14 @@ function doLogin(name, role, silent=false) {
 function logout() {
   clearSession();
   if (useFirebase && db && postsListener) {
-    db.ref('posts').off('value', postsListener);
-    postsListener = null;
+    db.ref('posts').off('value', postsListener); postsListener = null;
   }
   CU = null; knownPostIds.clear();
   document.getElementById('scr-app').style.display = 'none';
   document.getElementById('scr-login').style.display = 'flex';
   document.getElementById('inp-name').value = '';
-  document.getElementById('inp-aname').value = '';
-  document.getElementById('inp-apass').value = '';
-  hideErr(); showMemberForm();
+  document.getElementById('name-warn').classList.remove('show');
+  hideErr();
 }
 
 // ============================================================
@@ -611,7 +759,7 @@ function goPage(p) {
 }
 
 // ============================================================
-// POSTS — Real-time via Firebase, fallback to localStorage
+// POSTS
 // ============================================================
 function renderPosts() {
   const box = document.getElementById('posts-box');
@@ -635,32 +783,19 @@ function renderPosts() {
 function renderPostsList(allPosts, fromFirebase) {
   const posts = curFilter === 'all' ? allPosts : allPosts.filter(p => p.type === curFilter);
   const box = document.getElementById('posts-box');
-
   if (!posts.length) {
     box.innerHTML = '<div class="empty"><span class="ei">📅</span><h4>ยังไม่มีกำหนดการ</h4><p>กดปุ่ม "สร้างใหม่" เพื่อเพิ่มรายการแรก</p></div>';
-    knownPostIds.clear();
-    return;
+    knownPostIds.clear(); return;
   }
-
-  // figure out which IDs are new (for flash animation on real-time updates)
   const newIds = new Set();
   if (fromFirebase && knownPostIds.size > 0) {
     posts.forEach(p => { if (!knownPostIds.has(p.id)) newIds.add(p.id); });
   }
-  const newKnown = new Set(posts.map(p => p.id));
-
-  // preserve open collapse sections
   const openSecs = new Set();
   document.querySelectorAll('.collapsible.open').forEach(el => openSecs.add(el.id));
-
   box.innerHTML = posts.map(p => buildCard(p, newIds.has(p.id))).join('');
-  knownPostIds = newKnown;
-
-  // restore open sections
-  openSecs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('open');
-  });
+  knownPostIds = new Set(posts.map(p => p.id));
+  openSecs.forEach(id => { const el=document.getElementById(id); if(el) el.classList.add('open'); });
 }
 
 function buildCard(p, isNew=false) {
@@ -673,21 +808,17 @@ function buildCard(p, isNew=false) {
   const aW   = tot ? Math.round(appr.length/tot*100) : 0;
   const rW   = tot ? Math.round(rej.length/tot*100)  : 0;
   const myV  = CU ? votes[CU.name] : null;
-
   const dt = new Date(p.datetime);
   const dStr = dt.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
   const tStr = dt.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
   const bCls = p.type==='การประชุม'?'bm':p.type==='กิจกรรม'?'be':'bd';
   const tIco = p.type==='การประชุม'?'📋':p.type==='กิจกรรม'?'🎯':'📄';
-
   const canDelete = CU && (CU.role==='admin' || CU.name===p.author);
   const del = canDelete ? `<button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">🗑️</button>` : '';
-
   const users = lget('users', {});
   const authRole = (users[p.author]||{}).role||'member';
   const comms = Array.isArray(p.comments) ? p.comments :
     (p.comments && typeof p.comments === 'object') ? Object.values(p.comments) : [];
-
   const cHtml = comms.map(c => {
     const ur = (users[c.author]||{}).role||'member';
     const ri = getRoleInfo(ur);
@@ -700,14 +831,10 @@ function buildCard(p, isNew=false) {
       </div>
     </div>`;
   }).join('');
-
   return `<div class="pcard${isNew?' new-flash':''}" id="c-${p.id}">
   <div class="pcard-hdr">
     <span class="pbadge ${bCls}">${tIco} ${p.type}</span>
-    <div class="ptrow">
-      <div class="ptitle-post">${esc(p.title)}</div>
-      ${del}
-    </div>
+    <div class="ptrow"><div class="ptitle-post">${esc(p.title)}</div>${del}</div>
     <div class="pmeta">
       <span class="pmeta-i">📅 ${dStr}</span>
       <span class="pmeta-i">🕐 ${tStr} น.</span>
@@ -768,9 +895,7 @@ function castVote(pid, v) {
   if (!CU) return;
   if (useFirebase && db) {
     const ref = db.ref(`posts/${pid}/votes/${CU.name}`);
-    ref.once('value').then(snap => {
-      if (snap.val() === v) ref.remove(); else ref.set(v);
-    });
+    ref.once('value').then(snap => { if (snap.val()===v) ref.remove(); else ref.set(v); });
   } else {
     const posts = lget('posts',[]);
     const p = posts.find(x=>x.id===pid); if(!p) return;
@@ -842,35 +967,46 @@ function togSec(id) { document.getElementById(id).classList.toggle('open'); }
 function renderAdmin() {
   const posts = lget('posts',[]);
   const users = lget('users',{});
+  const usersArr = Object.values(users);
 
   document.getElementById('a-stats').innerHTML = `
     <div class="astat"><div class="sico">📋</div><div class="snum">${posts.length}</div><div class="slbl">กำหนดการ</div></div>
-    <div class="astat"><div class="sico">👥</div><div class="snum">${Object.keys(users).length}</div><div class="slbl">ผู้ใช้งาน</div></div>
+    <div class="astat"><div class="sico">👥</div><div class="snum">${usersArr.length}</div><div class="slbl">ผู้ใช้งาน</div></div>
+    <div class="astat"><div class="sico">👑</div><div class="snum">${usersArr.filter(u=>u.role==='president').length}</div><div class="slbl">ประธาน</div></div>
+    <div class="astat"><div class="sico">🗳️</div><div class="snum">${posts.reduce((s,p)=>s+Object.keys(p.votes||{}).length,0)}</div><div class="slbl">มติทั้งหมด</div></div>
   `;
 
-  const usersArr = Object.values(users);
+  // Role card grid
   document.getElementById('a-users').innerHTML = usersArr.length ?
-    usersArr.map((u,i)=>`<tr>
-      <td>${i+1}</td>
-      <td><strong>${esc(u.name)}</strong></td>
-      <td>${rbHtml(u.role)}</td>
-      <td>${u.role==='admin'?'<span style="color:var(--g400);font-size:11px">—</span>':
-        `<select class="rsel" onchange="setRole('${esc(u.name)}',this.value)">
-          <option value="">เลือก...</option>
-          ${ROLES.filter(r=>r.k!=='admin').map(r=>`<option value="${r.k}" ${u.role===r.k?'selected':''}>${r.l}</option>`).join('')}
-        </select>`}</td>
-      <td style="font-size:11px;color:var(--g400)">${fmt(u.lastLogin)}</td>
-    </tr>`).join('') :
-    '<tr><td colspan="5" style="text-align:center;color:var(--g400);padding:18px">ยังไม่มีผู้ใช้งาน</td></tr>';
+    usersArr.map(u => {
+      const ri = getRoleInfo(u.role);
+      const isAdmin = u.role === 'admin';
+      return `<div class="role-user-card">
+        <div class="ruc-top">
+          <div class="ruc-av">${esc(u.name).charAt(0).toUpperCase()}</div>
+          <div class="ruc-info">
+            <div class="ruc-name">${esc(u.name)}</div>
+            <div class="ruc-last">เข้าล่าสุด: ${fmt(u.lastLogin)}</div>
+          </div>
+        </div>
+        ${isAdmin
+          ? `<div class="ruc-admin-badge">👑 ผู้ดูแลระบบ</div>`
+          : `<select class="ruc-sel" onchange="setRole('${esc(u.name)}',this.value)">
+              ${ROLES.filter(r=>r.k!=='admin').map(r=>`<option value="${r.k}" ${u.role===r.k?'selected':''}>${r.l}</option>`).join('')}
+            </select>`
+        }
+      </div>`;
+    }).join('') :
+    '<div style="color:var(--g400);font-size:13px;padding:10px;text-align:center">ยังไม่มีผู้ใช้งาน</div>';
 
   document.getElementById('a-posts').innerHTML = posts.length ?
     posts.map((p,i)=>`<tr>
       <td>${i+1}</td>
-      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${esc(p.title)}</strong></td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${esc(p.title)}</strong></td>
       <td>${p.type}</td>
       <td style="font-size:11px">${new Date(p.datetime).toLocaleDateString('th-TH')}</td>
       <td>${Object.keys(p.votes||{}).length}</td>
-      <td><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">🗑️ ลบ</button></td>
+      <td><button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">🗑️</button></td>
     </tr>`).join('') :
     '<tr><td colspan="6" style="text-align:center;color:var(--g400);padding:18px">ยังไม่มีกำหนดการ</td></tr>';
 }
@@ -882,14 +1018,14 @@ function setRole(name, role) {
   users[name].role = role;
   lset('users', users);
   if (CU && CU.name===name) {
-    CU.role = role;
-    saveSession(CU);
+    CU.role = role; saveSession(CU);
     document.getElementById('hrole').textContent = getRoleInfo(role).l;
     document.querySelectorAll('.admin-only').forEach(el => {
       el.style.display = role === 'admin' ? '' : 'none';
     });
   }
-  renderAdmin(); toast(`✅ กำหนด "${name}" เป็น ${getRoleInfo(role).l}`);
+  renderAdmin();
+  toast(`✅ กำหนด "${name}" เป็น ${getRoleInfo(role).l}`);
 }
 
 // ============================================================
@@ -925,19 +1061,19 @@ function fmt(iso) {
 }
 
 // ============================================================
-// BOOT — restore session if available
+// BOOT
 // ============================================================
 tryInitFirebase();
 initLocalData();
 applyResp();
+initShakeDetect();
 
 const savedSession = loadSession();
 if (savedSession && savedSession.name) {
-  // restore user session without showing login
   const users = lget('users', {});
   const storedUser = users[savedSession.name];
   const role = storedUser ? storedUser.role : savedSession.role;
-  doLogin(savedSession.name, role, true); // silent=true, no welcome toast on refresh
+  doLogin(savedSession.name, role, true);
 } else {
   document.getElementById('scr-login').style.display = 'flex';
   document.getElementById('scr-app').style.display = 'none';
