@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ระบบกำหนดการคณะกรรมการ</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
@@ -27,7 +26,6 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
   min-height:100vh;font-size:15px;line-height:1.6;-webkit-tap-highlight-color:transparent}
 
-/* SCREENS */
 .screen{display:none;min-height:100vh}
 
 /* LOGIN */
@@ -205,54 +203,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
 @media(max-width:480px){.frow{grid-template-columns:1fr}}
 .fact{display:flex;gap:8px;justify-content:flex-end;padding-top:13px;border-top:var(--border);margin-top:14px;flex-wrap:wrap}
 
-/* CHAT */
-.chat-layout{display:grid;grid-template-columns:190px 1fr;gap:14px;height:calc(100dvh - 170px);min-height:440px}
-@media(max-width:700px){.chat-layout{grid-template-columns:1fr;height:auto;gap:10px}}
-.crpanel{background:var(--white);border-radius:var(--rl);border:var(--border);box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column}
-@media(max-width:700px){.crpanel{max-height:170px}}
-.crh{padding:11px 14px;background:var(--navy)}
-.crh h4{color:var(--gold-light);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-.cr-list{flex:1;overflow-y:auto}
-.ritem{padding:10px 14px;cursor:pointer;transition:all .2s;border-bottom:1px solid var(--g100);display:flex;align-items:center;gap:7px;-webkit-tap-highlight-color:transparent}
-.ritem:hover{background:var(--g50)}
-.ritem.active{background:var(--gold-pale);border-left:3px solid var(--gold)}
-.ritem .ri{font-size:15px}
-.ritem .rn{font-size:12px;font-weight:600;color:var(--navy);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ritem .rc{font-size:10px;background:var(--navy);color:#fff;padding:1px 6px;border-radius:10px;flex-shrink:0}
-.btn-addr{margin:9px;padding:8px;background:var(--g50);border:1px dashed var(--g200);border-radius:var(--r);cursor:pointer;text-align:center;color:var(--g400);font-family:'Sarabun',sans-serif;font-size:12px;transition:all .2s}
-.btn-addr:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-pale)}
-
-.chat-win{background:var(--white);border-radius:var(--rl);border:var(--border);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;overflow:hidden}
-@media(max-width:700px){.chat-win{height:calc(100dvh - 400px);min-height:280px}}
-.ctopbar{padding:11px 14px;border-bottom:var(--border);background:var(--g50);display:flex;align-items:center;gap:8px}
-.ctopbar .ctitle{font-weight:700;color:var(--navy);font-size:13px}
-.ctopbar .cdesc{color:var(--g400);font-size:11px}
-.cmsgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.cmsg{display:flex;gap:8px;animation:msgSlide .2s ease}
-@keyframes msgSlide{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.cmsg.own{flex-direction:row-reverse}
-.mav{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--navy-light),var(--navy));display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-size:11px;font-weight:700}
-.cmsg.own .mav{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy)}
-.mcontent{max-width:70%}
-.mname{font-size:10px;font-weight:700;color:var(--g400);margin-bottom:3px}
-.mroletag{font-size:9px;color:var(--g400);font-style:italic;margin-left:3px}
-.cmsg.own .mname{text-align:right}
-.mbubble{padding:8px 12px;border-radius:16px;font-size:13px;line-height:1.5;background:var(--g100);color:var(--g800);word-break:break-word}
-.cmsg.own .mbubble{background:var(--navy);color:#fff}
-.mtime{font-size:9px;color:var(--g400);margin-top:2px}
-.cmsg.own .mtime{text-align:right}
-.cin-area{padding:10px 14px;border-top:var(--border);display:flex;gap:7px;background:var(--white)}
-.chat-in{flex:1;padding:10px 13px;border:var(--border);border-radius:24px;font-family:'Sarabun',sans-serif;font-size:14px;outline:none;transition:border-color .2s;min-height:44px}
-.chat-in:focus{border-color:var(--navy)}
-.chat-send{padding:10px 14px;background:var(--navy);color:#fff;border:none;border-radius:24px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;white-space:nowrap;min-height:44px;-webkit-tap-highlight-color:transparent}
-.chat-send:hover{background:var(--navy-light)}
-
-/* ONLINE DOT */
-.online-dot{width:8px;height:8px;background:#2ecc71;border-radius:50%;display:inline-block;margin-right:4px;box-shadow:0 0 6px #2ecc71}
-
-/* TYPING INDICATOR */
-.typing-ind{font-size:11px;color:var(--g400);padding:4px 14px;font-style:italic;display:none}
-
 /* ADMIN */
 .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:18px}
 .astat{background:var(--white);border-radius:var(--rl);border:var(--border);padding:16px 18px;text-align:center;box-shadow:var(--shadow-sm)}
@@ -320,9 +270,13 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
 .spinner{width:28px;height:28px;border:3px solid var(--g200);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite;margin:24px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* STATUS BADGE */
+/* STATUS */
 .status-live{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--green);font-weight:600;margin-left:8px}
 .status-live::before{content:'';width:7px;height:7px;background:var(--green);border-radius:50%;display:inline-block;box-shadow:0 0 5px var(--green)}
+
+/* NEW POST FLASH */
+@keyframes newCard{from{opacity:0;transform:translateY(-8px);box-shadow:0 0 0 3px rgba(201,168,76,.4)}to{opacity:1;transform:none;box-shadow:var(--shadow-sm)}}
+.pcard.new-flash{animation:newCard .5s ease}
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--g50)}
@@ -382,7 +336,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
 
   <nav class="nav-top" id="nav-top">
     <button class="ntbtn active" data-p="schedule" onclick="goPage('schedule')">📅 กำหนดการ</button>
-    <button class="ntbtn" data-p="chat" onclick="goPage('chat')">💬 ห้องพูดคุย</button>
     <button class="ntbtn admin-only" data-p="admin" onclick="goPage('admin')" style="display:none">⚙️ จัดการ</button>
   </nav>
 
@@ -401,34 +354,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
         <button class="btn btn-sm btn-outline fbtn" onclick="doFilter('เอกสาร',this)">📄 เอกสาร</button>
       </div>
       <div id="posts-box"></div>
-    </div>
-
-    <!-- CHAT PAGE -->
-    <div id="pg-chat" class="page">
-      <div class="ph">
-        <div><div class="ptitle">💬 ห้องพูดคุย</div><div class="psub">สนทนาแบบ Real-time <span class="status-live">Live</span></div></div>
-      </div>
-      <div class="chat-layout">
-        <div class="crpanel">
-          <div class="crh"><h4>📢 ห้องทั้งหมด</h4></div>
-          <div class="cr-list" id="room-list"></div>
-          <button class="btn-addr" onclick="openModal('m-room')">+ สร้างห้องใหม่</button>
-        </div>
-        <div class="chat-win">
-          <div class="ctopbar">
-            <span style="font-size:18px" id="cr-icon">💬</span>
-            <div><div class="ctitle" id="cr-name">เลือกห้องสนทนา</div><div class="cdesc" id="cr-desc">กรุณาเลือกห้องจากรายการ</div></div>
-          </div>
-          <div id="chat-msgs" class="cmsgs">
-            <div class="empty"><span class="ei">💬</span><h4>ยังไม่มีข้อความ</h4><p>เลือกห้องเพื่อเริ่มสนทนา</p></div>
-          </div>
-          <div class="typing-ind" id="typing-ind"></div>
-          <div class="cin-area">
-            <input id="chat-in" class="chat-in" placeholder="พิมพ์ข้อความ..." onkeydown="if(event.key==='Enter')sendMsg()">
-            <button class="chat-send" onclick="sendMsg()">ส่ง ➤</button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- ADMIN PAGE -->
@@ -454,11 +379,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
   </div>
   <div style="height:max(60px,env(safe-area-inset-bottom))"></div>
 
-  <!-- BOTTOM NAV -->
   <nav class="nav-bot" id="nav-bot">
     <div class="nb-inner">
       <button class="nbtab active" data-p="schedule" onclick="goPage('schedule')"><span class="ti">📅</span>กำหนดการ</button>
-      <button class="nbtab" data-p="chat" onclick="goPage('chat')"><span class="ti">💬</span>ห้องพูดคุย</button>
       <button class="nbtab admin-only" data-p="admin" onclick="goPage('admin')" style="display:none"><span class="ti">⚙️</span>จัดการ</button>
     </div>
   </nav>
@@ -487,38 +410,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--g50);color:var(--g800);
   </div>
 </div>
 
-<!-- MODAL: ROOM -->
-<div id="m-room" class="modal">
-  <div class="mbox">
-    <div class="mhdr"><h3>➕ สร้างห้องสนทนา</h3><button class="mclose" onclick="closeModal('m-room')">✕</button></div>
-    <div class="mbody">
-      <div class="drag-h"></div>
-      <div class="fga"><label class="fla">ไอคอน</label>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-          <span style="cursor:pointer;font-size:24px" onclick="setRI('💬')">💬</span>
-          <span style="cursor:pointer;font-size:24px" onclick="setRI('📋')">📋</span>
-          <span style="cursor:pointer;font-size:24px" onclick="setRI('📢')">📢</span>
-          <span style="cursor:pointer;font-size:24px" onclick="setRI('🎯')">🎯</span>
-          <span style="cursor:pointer;font-size:24px" onclick="setRI('🔔')">🔔</span>
-          <span style="cursor:pointer;font-size:24px" onclick="setRI('🏛️')">🏛️</span>
-          <span style="cursor:pointer;font-size:24px" onclick="setRI('🤝')">🤝</span>
-          <span style="cursor:pointer;font-size:24px" onclick="setRI('📣')">📣</span>
-        </div>
-        <input id="ri" class="fia" value="💬" style="width:70px">
-      </div>
-      <div class="fga"><label class="fla">ชื่อห้อง *</label><input id="rname" class="fia" type="text" placeholder="เช่น ห้องประชุมทั่วไป"></div>
-      <div class="fga"><label class="fla">คำอธิบาย</label><input id="rdesc" class="fia" type="text" placeholder="สำหรับพูดคุยเรื่อง..."></div>
-      <div class="fact">
-        <button class="btn btn-outline btn-sm" onclick="closeModal('m-room')">ยกเลิก</button>
-        <button class="btn btn-gold btn-sm" onclick="submitRoom()">✅ สร้างห้อง</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
 // ============================================================
-// FIREBASE CONFIG — ใช้ Firebase Realtime Database (ฟรี)
+// FIREBASE CONFIG
 // ============================================================
 const fbConfig = {
   apiKey: "AIzaSyDPPiENQ6NC_UUWpKSHTX8LZ4ZQJYC-fSY",
@@ -527,13 +421,9 @@ const fbConfig = {
   projectId: "director-5bd76",
   storageBucket: "director-5bd76.firebasestorage.app",
   messagingSenderId: "141715587875",
-  appId: "1:141715587875:web:150d829c46a53de8024296",
-  measurementId: "G-V2BMQWE0CP"
+  appId: "1:141715587875:web:150d829c46a53de8024296"
 };
 
-// ============================================================
-// LOCAL STORAGE FALLBACK (ทำงานได้แม้ไม่มี Firebase)
-// ============================================================
 let useFirebase = false;
 let db = null;
 
@@ -543,56 +433,66 @@ function tryInitFirebase() {
       firebase.initializeApp(fbConfig);
       db = firebase.database();
       useFirebase = true;
-      console.log('✅ Firebase connected:', fbConfig.projectId);
+      console.log('✅ Firebase connected');
     }
   } catch(e) { console.warn('Firebase init failed:', e); useFirebase = false; }
 }
 
-// LOCAL DB (localStorage) as primary / fallback
+// localStorage helpers
 function lget(k, def) {
   try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch { return def; }
 }
 function lset(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
 
 // ============================================================
-// ROLES CONFIG
+// ROLES
 // ============================================================
 const ROLES = [
-  { k:'admin',      l:'👑 Admin',         c:'rb-admin' },
-  { k:'president',  l:'🎖️ ประธาน',        c:'rb-president' },
-  { k:'vpresident', l:'🥈 รองประธาน',     c:'rb-vpresident' },
-  { k:'secretary',  l:'📝 เลขานุการ',     c:'rb-secretary' },
-  { k:'pr',         l:'📣 ประชาสัมพันธ์',  c:'rb-pr' },
-  { k:'finance',    l:'💰 การเงิน',        c:'rb-finance' },
-  { k:'venue',      l:'🏟️ สถานที่',        c:'rb-venue' },
-  { k:'avt',        l:'🔧 สมาชิก อวท.',    c:'rb-avt' },
-  { k:'member',     l:'👤 สมาชิก',         c:'rb-member' },
+  { k:'admin',      l:'👑 Admin',           c:'rb-admin' },
+  { k:'president',  l:'🎖️ ประธาน',          c:'rb-president' },
+  { k:'vpresident', l:'🥈 รองประธาน',       c:'rb-vpresident' },
+  { k:'secretary',  l:'📝 เลขานุการ',       c:'rb-secretary' },
+  { k:'pr',         l:'📣 ประชาสัมพันธ์',    c:'rb-pr' },
+  { k:'finance',    l:'💰 การเงิน',          c:'rb-finance' },
+  { k:'venue',      l:'🏟️ สถานที่',          c:'rb-venue' },
+  { k:'avt',        l:'🔧 สมาชิก อวท.',      c:'rb-avt' },
+  { k:'member',     l:'👤 สมาชิก',           c:'rb-member' },
 ];
 const ADMIN_PASS = 'ITadmin';
-
 const getRoleInfo = k => ROLES.find(r => r.k === k) || ROLES[ROLES.length-1];
 const rbHtml = k => { const r = getRoleInfo(k); return `<span class="rbadge ${r.c}">${r.l}</span>`; };
 
 // ============================================================
 // STATE
 // ============================================================
-let CU = null; // current user
+let CU = null;
 let curFilter = 'all';
-let curRoom = null;
-let chatListeners = {};
 let postsListener = null;
+let knownPostIds = new Set(); // track existing IDs for new-flash animation
 
 // ============================================================
-// INIT
+// SESSION PERSISTENCE — keep user logged in across refresh
+// ============================================================
+const SESSION_KEY = 'committee_session_v2';
+
+function saveSession(user) {
+  lset(SESSION_KEY, { name: user.name, role: user.role, savedAt: new Date().toISOString() });
+}
+
+function loadSession() {
+  const s = lget(SESSION_KEY, null);
+  if (!s || !s.name) return null;
+  return s;
+}
+
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+// ============================================================
+// INIT LOCAL DATA
 // ============================================================
 function initLocalData() {
-  if (!lget('rooms', null)) {
-    lset('rooms', [
-      { id:'r1', icon:'📢', name:'ห้องทั่วไป',    desc:'พูดคุยเรื่องทั่วไปของคณะกรรมการ' },
-      { id:'r2', icon:'📋', name:'วาระการประชุม',  desc:'หารือเรื่องวาระและนโยบาย' },
-      { id:'r3', icon:'🤝', name:'ประสานงาน',       desc:'ประสานงานและติดตามงาน' },
-    ]);
-  }
   if (!lget('posts', null)) {
     const n = new Date();
     const d1 = new Date(n); d1.setDate(d1.getDate()+3);
@@ -645,6 +545,7 @@ function loginMember() {
   const role = (saved && saved.role) ? saved.role : 'member';
   doLogin(name, role);
 }
+
 function loginAdmin() {
   const name = document.getElementById('inp-aname').value.trim();
   const pass = document.getElementById('inp-apass').value;
@@ -653,8 +554,7 @@ function loginAdmin() {
   doLogin(name, 'admin');
 }
 
-function doLogin(name, role) {
-  // preserve role from DB unless this is an admin login
+function doLogin(name, role, silent=false) {
   const users = lget('users', {});
   let finalRole = role;
   if (role !== 'admin' && users[name] && users[name].role) {
@@ -662,16 +562,17 @@ function doLogin(name, role) {
   }
   users[name] = { name, role: finalRole, lastLogin: new Date().toISOString() };
   lset('users', users);
-
   CU = { name, role: finalRole };
 
-  // Update header
+  // save session for refresh persistence
+  saveSession(CU);
+
+  // update header
   document.getElementById('hname').textContent = name;
   document.getElementById('hav').textContent = name.charAt(0).toUpperCase();
   const ri = getRoleInfo(finalRole);
   document.getElementById('hrole').textContent = ri.l;
 
-  // Admin visibility
   document.querySelectorAll('.admin-only').forEach(el => {
     el.style.display = finalRole === 'admin' ? '' : 'none';
   });
@@ -680,18 +581,16 @@ function doLogin(name, role) {
   document.getElementById('scr-app').style.display = 'flex';
   applyResp();
   goPage('schedule');
-  renderRooms();
+  if (!silent) toast(`👋 ยินดีต้อนรับ ${name}`);
 }
 
 function logout() {
-  // detach firebase listeners
-  if (useFirebase && db) {
-    if (postsListener) db.ref('posts').off('value', postsListener);
-    Object.keys(chatListeners).forEach(rid => {
-      if (chatListeners[rid]) db.ref('messages/'+rid).off('value', chatListeners[rid]);
-    });
+  clearSession();
+  if (useFirebase && db && postsListener) {
+    db.ref('posts').off('value', postsListener);
+    postsListener = null;
   }
-  CU = null; curRoom = null; chatListeners = {};
+  CU = null; knownPostIds.clear();
   document.getElementById('scr-app').style.display = 'none';
   document.getElementById('scr-login').style.display = 'flex';
   document.getElementById('inp-name').value = '';
@@ -708,42 +607,63 @@ function goPage(p) {
   document.getElementById('pg-'+p).classList.add('active');
   document.querySelectorAll('[data-p]').forEach(b => b.classList.toggle('active', b.dataset.p === p));
   if (p==='admin')    renderAdmin();
-  if (p==='chat')     renderRooms();
   if (p==='schedule') renderPosts();
 }
 
 // ============================================================
-// POSTS  (localStorage + optional Firebase)
+// POSTS — Real-time via Firebase, fallback to localStorage
 // ============================================================
 function renderPosts() {
   const box = document.getElementById('posts-box');
-  box.innerHTML = '<div class="spinner"></div>';
+  if (!box.innerHTML || box.innerHTML.indexOf('pcard') === -1) {
+    box.innerHTML = '<div class="spinner"></div>';
+  }
 
   if (useFirebase && db) {
-    if (postsListener) db.ref('posts').off('value', postsListener);
+    if (postsListener) { db.ref('posts').off('value', postsListener); postsListener = null; }
     postsListener = db.ref('posts').orderByChild('createdAt').on('value', snap => {
       let posts = [];
       snap.forEach(c => posts.unshift({ id:c.key, ...c.val() }));
-      renderPostsList(posts);
+      renderPostsList(posts, true);
     });
   } else {
     const posts = lget('posts', []);
-    let filtered = curFilter === 'all' ? posts : posts.filter(p => p.type === curFilter);
-    renderPostsList(filtered);
+    renderPostsList(posts, false);
   }
 }
 
-function renderPostsList(allPosts) {
+function renderPostsList(allPosts, fromFirebase) {
   const posts = curFilter === 'all' ? allPosts : allPosts.filter(p => p.type === curFilter);
   const box = document.getElementById('posts-box');
+
   if (!posts.length) {
     box.innerHTML = '<div class="empty"><span class="ei">📅</span><h4>ยังไม่มีกำหนดการ</h4><p>กดปุ่ม "สร้างใหม่" เพื่อเพิ่มรายการแรก</p></div>';
+    knownPostIds.clear();
     return;
   }
-  box.innerHTML = posts.map(buildCard).join('');
+
+  // figure out which IDs are new (for flash animation on real-time updates)
+  const newIds = new Set();
+  if (fromFirebase && knownPostIds.size > 0) {
+    posts.forEach(p => { if (!knownPostIds.has(p.id)) newIds.add(p.id); });
+  }
+  const newKnown = new Set(posts.map(p => p.id));
+
+  // preserve open collapse sections
+  const openSecs = new Set();
+  document.querySelectorAll('.collapsible.open').forEach(el => openSecs.add(el.id));
+
+  box.innerHTML = posts.map(p => buildCard(p, newIds.has(p.id))).join('');
+  knownPostIds = newKnown;
+
+  // restore open sections
+  openSecs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('open');
+  });
 }
 
-function buildCard(p) {
+function buildCard(p, isNew=false) {
   const votes = p.votes || {};
   const vArr = Object.entries(votes);
   const appr = vArr.filter(([,v])=>v==='approve').map(([k])=>k);
@@ -760,13 +680,14 @@ function buildCard(p) {
   const bCls = p.type==='การประชุม'?'bm':p.type==='กิจกรรม'?'be':'bd';
   const tIco = p.type==='การประชุม'?'📋':p.type==='กิจกรรม'?'🎯':'📄';
 
-  const del = (CU && CU.role==='admin') ?
-    `<button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">🗑️</button>` : '';
+  const canDelete = CU && (CU.role==='admin' || CU.name===p.author);
+  const del = canDelete ? `<button class="btn btn-xs btn-danger" onclick="delPost('${p.id}')">🗑️</button>` : '';
 
   const users = lget('users', {});
   const authRole = (users[p.author]||{}).role||'member';
+  const comms = Array.isArray(p.comments) ? p.comments :
+    (p.comments && typeof p.comments === 'object') ? Object.values(p.comments) : [];
 
-  const comms = (p.comments||[]);
   const cHtml = comms.map(c => {
     const ur = (users[c.author]||{}).role||'member';
     const ri = getRoleInfo(ur);
@@ -780,7 +701,7 @@ function buildCard(p) {
     </div>`;
   }).join('');
 
-  return `<div class="pcard" id="c-${p.id}">
+  return `<div class="pcard${isNew?' new-flash':''}" id="c-${p.id}">
   <div class="pcard-hdr">
     <span class="pbadge ${bCls}">${tIco} ${p.type}</span>
     <div class="ptrow">
@@ -848,16 +769,17 @@ function castVote(pid, v) {
   if (useFirebase && db) {
     const ref = db.ref(`posts/${pid}/votes/${CU.name}`);
     ref.once('value').then(snap => {
-      if (snap.val() === v) ref.remove();
-      else ref.set(v);
+      if (snap.val() === v) ref.remove(); else ref.set(v);
     });
   } else {
     const posts = lget('posts',[]);
     const p = posts.find(x=>x.id===pid); if(!p) return;
     if (!p.votes) p.votes={};
     if (p.votes[CU.name]===v) delete p.votes[CU.name]; else p.votes[CU.name]=v;
-    lset('posts', posts); renderPosts();
-    setTimeout(()=>{ const s=document.getElementById('vs-'+pid); if(s) s.classList.add('open'); },30);
+    lset('posts', posts);
+    const wasOpen = document.getElementById('vs-'+pid)?.classList.contains('open');
+    renderPosts();
+    if (wasOpen) setTimeout(()=>{ const s=document.getElementById('vs-'+pid); if(s) s.classList.add('open'); }, 30);
   }
   toast('✅ บันทึกมติเรียบร้อย');
 }
@@ -873,8 +795,10 @@ function addCmt(pid) {
     const p = posts.find(x=>x.id===pid); if(!p) return;
     if(!p.comments) p.comments=[];
     p.comments.push(cmt);
-    lset('posts', posts); renderPosts();
-    setTimeout(()=>{ const s=document.getElementById('vs-'+pid); if(s) s.classList.add('open'); },30);
+    lset('posts', posts);
+    const wasOpen = document.getElementById('vs-'+pid)?.classList.contains('open');
+    renderPosts();
+    if (wasOpen) setTimeout(()=>{ const s=document.getElementById('vs-'+pid); if(s) s.classList.add('open'); }, 30);
   }
   inp.value='';
 }
@@ -886,7 +810,7 @@ function delPost(pid) {
   } else {
     let posts = lget('posts',[]); posts = posts.filter(p=>p.id!==pid);
     lset('posts', posts); renderPosts();
-    if(CU.role==='admin') renderAdmin();
+    if(CU && CU.role==='admin') renderAdmin();
   }
   toast('🗑️ ลบกำหนดการเรียบร้อย');
 }
@@ -898,11 +822,11 @@ function submitPost() {
   const post = { type:document.getElementById('pt').value, title, datetime:dt,
     location:document.getElementById('ploc').value.trim(),
     detail:document.getElementById('pdetail').value.trim(),
-    author:CU.name, createdAt:new Date().toISOString(), votes:{}, comments:[] };
+    author:CU.name, createdAt:new Date().toISOString(), votes:{}, comments:{} };
   if (useFirebase && db) {
     db.ref('posts').push(post);
   } else {
-    const posts = lget('posts',[]); posts.unshift({ id:'p'+Date.now(), ...post });
+    const posts = lget('posts',[]); posts.unshift({ id:'p'+Date.now(), ...post, comments:[] });
     lset('posts', posts); renderPosts();
   }
   closeModal('m-post');
@@ -913,116 +837,18 @@ function submitPost() {
 function togSec(id) { document.getElementById(id).classList.toggle('open'); }
 
 // ============================================================
-// CHAT  (real-time via Firebase or localStorage poll)
-// ============================================================
-function renderRooms() {
-  const rooms = lget('rooms',[]);
-  const msgs  = lget('messages',{});
-  document.getElementById('room-list').innerHTML = rooms.map(r => {
-    const cnt = (msgs[r.id]||[]).length;
-    return `<div class="ritem ${curRoom&&curRoom.id===r.id?'active':''}" onclick="selRoom('${r.id}')">
-      <span class="ri">${r.icon}</span>
-      <span class="rn">${esc(r.name)}</span>
-      ${cnt?`<span class="rc">${cnt}</span>`:''}
-    </div>`;
-  }).join('');
-}
-
-function selRoom(rid) {
-  const rooms = lget('rooms',[]);
-  curRoom = rooms.find(r=>r.id===rid); if(!curRoom) return;
-  document.getElementById('cr-icon').textContent = curRoom.icon;
-  document.getElementById('cr-name').textContent = curRoom.name;
-  document.getElementById('cr-desc').textContent = curRoom.desc||'';
-  renderRooms();
-
-  if (useFirebase && db) {
-    // detach old listener
-    if (chatListeners[rid]) db.ref('messages/'+rid).off('value', chatListeners[rid]);
-    chatListeners[rid] = db.ref('messages/'+rid).limitToLast(100).on('value', snap => {
-      const msgs = [];
-      snap.forEach(c => msgs.push({ id:c.key, ...c.val() }));
-      renderMsgs(msgs);
-    });
-  } else {
-    const msgs = (lget('messages',{}))[rid] || [];
-    renderMsgs(msgs);
-  }
-}
-
-function renderMsgs(msgs) {
-  const users = lget('users',{});
-  const box = document.getElementById('chat-msgs');
-  if (!msgs.length) {
-    box.innerHTML='<div class="empty"><span class="ei">💬</span><h4>ยังไม่มีข้อความ</h4><p>เริ่มสนทนาได้เลย</p></div>';
-    return;
-  }
-  box.innerHTML = msgs.map(m => {
-    const isOwn = CU && m.author===CU.name;
-    const ur = (users[m.author]||{}).role||'member';
-    const ri = getRoleInfo(ur);
-    return `<div class="cmsg ${isOwn?'own':''}">
-      <div class="mav">${esc(m.author).charAt(0).toUpperCase()}</div>
-      <div class="mcontent">
-        <div class="mname">${esc(m.author)}<span class="mroletag">${ri.l}</span></div>
-        <div class="mbubble">${esc(m.text)}</div>
-        <div class="mtime">${fmt(m.createdAt)}</div>
-      </div>
-    </div>`;
-  }).join('');
-  box.scrollTop = box.scrollHeight;
-}
-
-function sendMsg() {
-  const inp = document.getElementById('chat-in');
-  const text = inp.value.trim(); if(!text||!curRoom) return;
-  const msg = { author:CU.name, text, createdAt:new Date().toISOString() };
-  if (useFirebase && db) {
-    db.ref('messages/'+curRoom.id).push(msg);
-  } else {
-    const msgs = lget('messages',{});
-    if (!msgs[curRoom.id]) msgs[curRoom.id]=[];
-    msgs[curRoom.id].push(msg);
-    lset('messages', msgs);
-    renderMsgs(msgs[curRoom.id]);
-    renderRooms();
-  }
-  inp.value='';
-}
-
-function setRI(e) { document.getElementById('ri').value=e; }
-
-function submitRoom() {
-  const name = document.getElementById('rname').value.trim();
-  if (!name) { toast('⚠️ กรุณาระบุชื่อห้อง'); return; }
-  const room = { id:'r'+Date.now(), icon:document.getElementById('ri').value.trim()||'💬',
-    name, desc:document.getElementById('rdesc').value.trim() };
-  const rooms = lget('rooms',[]); rooms.push(room); lset('rooms', rooms);
-  closeModal('m-room');
-  document.getElementById('rname').value=''; document.getElementById('rdesc').value='';
-  renderRooms(); toast('✅ สร้างห้องสนทนาเรียบร้อย');
-}
-
-// ============================================================
 // ADMIN
 // ============================================================
 function renderAdmin() {
   const posts = lget('posts',[]);
   const users = lget('users',{});
-  const rooms = lget('rooms',[]);
-  const msgs  = lget('messages',{});
-  const totMsg = Object.values(msgs).reduce((a,v)=>a+v.length,0);
 
   document.getElementById('a-stats').innerHTML = `
     <div class="astat"><div class="sico">📋</div><div class="snum">${posts.length}</div><div class="slbl">กำหนดการ</div></div>
     <div class="astat"><div class="sico">👥</div><div class="snum">${Object.keys(users).length}</div><div class="slbl">ผู้ใช้งาน</div></div>
-    <div class="astat"><div class="sico">💬</div><div class="snum">${rooms.length}</div><div class="slbl">ห้องสนทนา</div></div>
-    <div class="astat"><div class="sico">📨</div><div class="snum">${totMsg}</div><div class="slbl">ข้อความ</div></div>
   `;
 
   const usersArr = Object.values(users);
-  const roleopts = ROLES.filter(r=>r.k!=='admin').map(r=>`<option value="${r.k}">${r.l}</option>`).join('');
-
   document.getElementById('a-users').innerHTML = usersArr.length ?
     usersArr.map((u,i)=>`<tr>
       <td>${i+1}</td>
@@ -1057,7 +883,11 @@ function setRole(name, role) {
   lset('users', users);
   if (CU && CU.name===name) {
     CU.role = role;
+    saveSession(CU);
     document.getElementById('hrole').textContent = getRoleInfo(role).l;
+    document.querySelectorAll('.admin-only').forEach(el => {
+      el.style.display = role === 'admin' ? '' : 'none';
+    });
   }
   renderAdmin(); toast(`✅ กำหนด "${name}" เป็น ${getRoleInfo(role).l}`);
 }
@@ -1095,28 +925,23 @@ function fmt(iso) {
 }
 
 // ============================================================
-// FIREBASE SETUP GUIDE (แสดงเมื่อยังไม่ได้ตั้งค่า)
-// ============================================================
-function showFirebaseGuide() {
-  const guide = document.createElement('div');
-  guide.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:var(--navy);color:white;padding:12px 16px;font-size:12px;z-index:9998;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap';
-  guide.innerHTML = `
-    <span>💡 <strong>เปิดใช้ Firebase Real-time:</strong> แก้ไข fbConfig ในโค้ด JS แล้วใส่ databaseURL จาก Firebase Console</span>
-    <span style="font-size:11px;opacity:.7">ขณะนี้ใช้ localStorage (ข้อมูลอยู่ในเครื่องนี้)</span>
-    <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,.2);border:none;color:white;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px">✕</button>
-  `;
-  document.body.appendChild(guide);
-}
-
-// ============================================================
-// BOOT
+// BOOT — restore session if available
 // ============================================================
 tryInitFirebase();
 initLocalData();
-document.getElementById('scr-login').style.display = 'flex';
-document.getElementById('scr-app').style.display = 'none';
 applyResp();
-if (!useFirebase) setTimeout(showFirebaseGuide, 1500);
+
+const savedSession = loadSession();
+if (savedSession && savedSession.name) {
+  // restore user session without showing login
+  const users = lget('users', {});
+  const storedUser = users[savedSession.name];
+  const role = storedUser ? storedUser.role : savedSession.role;
+  doLogin(savedSession.name, role, true); // silent=true, no welcome toast on refresh
+} else {
+  document.getElementById('scr-login').style.display = 'flex';
+  document.getElementById('scr-app').style.display = 'none';
+}
 </script>
 </body>
 </html>
