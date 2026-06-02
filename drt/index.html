@@ -965,6 +965,7 @@ function doLogin(name,role,silent=false){
   resetAllTriggers();
   applyResp();
   goPage('schedule');
+  watchKickedUsers();
   if(!silent)toast(`👋 ยินดีต้อนรับ ${name}`);
 }
 
@@ -1167,7 +1168,7 @@ async function submitPost(){
   if(!title||!dt){toast('⚠️ กรุณากรอกหัวข้อและวัน-เวลา');return;}
 
   const btn=document.getElementById('submit-btn');
-  btn.disabled=true;btn.textContent='⏳ กำลังบันทึก...';
+  btn.disabled=true;
 
   try{
     const postId='p'+Date.now();
@@ -1223,6 +1224,7 @@ function renderAdmin(){
       <div class="ruc-top">
         <div class="ruc-av">${esc(u.name).charAt(0).toUpperCase()}</div>
         <div class="ruc-info"><div class="ruc-name">${esc(u.name)}</div><div class="ruc-last">เข้าล่าสุด: ${fmt(u.lastLogin)}</div></div>
+        <button class="btn btn-xs btn-danger" style="margin-left:auto;flex-shrink:0" onclick="deleteUser('${esc(u.name)}')">🗑️ ลบ</button>
       </div>
       ${u.role==='admin'?`<div class="ruc-admin-badge">👑 ผู้ดูแลระบบ</div>`:
         `<select class="ruc-sel" onchange="setRole('${esc(u.name)}',this.value)">
@@ -1250,6 +1252,30 @@ function setRole(name,role){
   if(CU&&CU.name===name){CU.role=role;saveSession(CU);document.getElementById('hrole').textContent=getRoleInfo(role).l;
     document.querySelectorAll('.admin-only').forEach(el=>{el.style.display=role==='admin'?'':'none';});}
   renderAdmin();toast(`✅ กำหนด "${name}" เป็น ${getRoleInfo(role).l}`);
+}
+
+function deleteUser(name){
+  if(!confirm(`ต้องการลบผู้ใช้ "${name}" ออกจากระบบ?`))return;
+  const users=lget('users',{});
+  delete users[name];
+  lset('users',users);
+  if(useFirebase&&db){
+    db.ref('kicked_users/'+encodeURIComponent(name)).set(Date.now());
+  }
+  if(CU&&CU.name===name){logout();toast('⚠️ บัญชีของคุณถูกลบออกจากระบบ');return;}
+  renderAdmin();
+  toast(`🗑️ ลบผู้ใช้ "${name}" เรียบร้อย`);
+}
+
+function watchKickedUsers(){
+  if(!useFirebase||!db||!CU)return;
+  db.ref('kicked_users/'+encodeURIComponent(CU.name)).on('value',snap=>{
+    if(snap.val()){
+      db.ref('kicked_users/'+encodeURIComponent(CU.name)).off();
+      logout();
+      setTimeout(()=>toast('⚠️ บัญชีของคุณถูกลบออกจากระบบโดยผู้ดูแล'),100);
+    }
+  });
 }
 
 // ── Modal ─────────────────────────────────────────────────
