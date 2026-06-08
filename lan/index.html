@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>LinguaFlame — ติดตามการเรียนภาษา</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +28,8 @@
   --radius-sm: 10px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+input, textarea, select, button { touch-action: manipulation; }
+input, textarea { font-size: 16px !important; } /* prevent iOS zoom */
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Prompt', 'Sarabun', sans-serif;
@@ -35,6 +37,7 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 body::before {
   content: '';
@@ -211,7 +214,7 @@ body::before {
   cursor: pointer; transition: all .2s;
 }
 .btn-restore:hover { background: rgba(124,106,247,.25); }
-.today-stats { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.today-stats { display: flex; flex-direction: row; gap: 10px; align-items: stretch; }
 .stat-box {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-sm); padding: 12px 18px; text-align: center;
@@ -308,7 +311,7 @@ body::before {
 .link-icon { font-size: 1.4rem; flex-shrink: 0; }
 .link-info .link-name { font-size: .88rem; font-weight: 600; color: var(--text); }
 .link-info .link-sub { font-size: .75rem; color: var(--text3); }
-.link-add-row { display: flex; gap: 8px; margin-top: 12px; }
+.link-add-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .link-add-row input {
   flex: 1; padding: 10px 12px;
   background: var(--surface); border: 1px solid var(--border);
@@ -389,12 +392,102 @@ body::before {
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:700px) {
-  .today-hero { flex-direction: column; }
-  .today-stats { flex-direction: row; align-items: stretch; }
+  .today-hero { flex-direction: column; gap: 16px; padding: 20px; }
+  .today-flame { font-size: 3.5rem; }
+  .today-info h1 { font-size: 1.3rem; }
+  .today-stats { flex-direction: row; align-items: stretch; width: 100%; }
+  .stat-box { flex: 1; padding: 10px 12px; }
+  .stat-box .stat-num { font-size: 1.4rem; }
+  .today-info .today-actions { flex-direction: column; gap: 8px; }
+  .btn-do-checkin, .btn-undo, .btn-restore { width: 100%; text-align: center; }
 }
+
 @media(max-width:440px) {
-  .content { padding: 14px 10px; }
-  .modal { padding: 24px 18px; }
+  .content { padding: 12px 10px; }
+  .modal { padding: 22px 16px; width: 94%; border-radius: 18px; }
+  .modal h2 { font-size: 1.25rem; }
+
+  /* Topbar compact */
+  .topbar { padding: 10px 14px; }
+  .topbar-brand .brand-name { font-size: .95rem; }
+  .streak-pill { padding: 5px 10px; font-size: .78rem; gap: 4px; }
+  .topbar-right { gap: 8px; }
+
+  /* Hero */
+  .today-hero { padding: 16px; border-radius: 18px; margin-bottom: 16px; }
+  .today-flame { font-size: 3rem; }
+  .today-info h1 { font-size: 1.2rem; }
+  .today-info .today-sub { font-size: .82rem; margin-bottom: 12px; }
+
+  /* Cards */
+  .card { padding: 16px; border-radius: 14px; }
+  .card-title { font-size: .72rem; margin-bottom: 10px; }
+
+  /* Grids */
+  .grid-2 { gap: 12px; margin-bottom: 16px; }
+  .grid-3 { gap: 10px; margin-bottom: 16px; }
+
+  /* Calendar */
+  .cal-day { font-size: .72rem; border-radius: 6px; }
+  .cal-day-name { font-size: .62rem; padding: 2px; }
+  .cal-nav { padding: 5px 10px; font-size: .85rem; }
+  .cal-month { font-size: .9rem; }
+  .edit-toggle { font-size: .72rem; padding: 5px 8px; }
+
+  /* Week row */
+  .week-day { padding: 8px 2px; }
+  .week-day .wd-name { font-size: .6rem; }
+  .week-day .wd-icon { font-size: 1rem; }
+  .week-day .wd-date { font-size: .6rem; }
+
+  /* Links */
+  .links-grid { grid-template-columns: 1fr; gap: 8px; }
+  .link-card { padding: 10px 12px; }
+  .link-add-row { flex-direction: column; gap: 8px; }
+  .link-add-row input, .link-add-btn { width: 100%; }
+  .link-add-btn { padding: 10px; text-align: center; }
+
+  /* Notes */
+  .note-textarea { min-height: 70px; font-size: .85rem; }
+  .saved-notes { max-height: 180px; }
+
+  /* Badges */
+  .badge { font-size: .72rem; padding: 5px 10px; }
+
+  /* Progress */
+  .prog-label { font-size: .78rem; }
+
+  /* Welcome banner */
+  .welcome-banner { padding: 14px 16px; }
+  .welcome-banner h2 { font-size: .95rem; }
+  .welcome-banner p { font-size: .8rem; }
+  .welcome-banner::before { display: none; }
+
+  /* Buttons */
+  .btn-primary { padding: 13px; font-size: .95rem; }
+  .btn-checkin { font-size: .92rem; }
+
+  /* Toast */
+  .toast { bottom: 16px; font-size: .82rem; padding: 10px 18px; max-width: 90vw; white-space: normal; text-align: center; }
+
+  /* Modal tabs */
+  .modal-tabs { margin-bottom: 18px; }
+  .modal-tab { padding: 9px; font-size: .85rem; }
+
+  /* Form */
+  .form-group { margin-bottom: 14px; }
+  .form-group input { padding: 11px 14px; font-size: .9rem; }
+  .form-group label { font-size: .76rem; }
+
+  /* Checkin modal */
+  .checkin-modal .flame-anim { font-size: 3rem; }
+  .checkin-modal h2 { font-size: 1.35rem; }
+  .checkin-modal .motivation { font-size: .82rem; margin-bottom: 18px; }
+  .checkin-actions { flex-direction: column; gap: 8px; }
+  .btn-secondary, .btn-checkin { flex: unset; width: 100%; padding: 13px; }
+
+  /* Avatar dropdown */
+  .avatar-dropdown { right: -4px; min-width: 140px; }
 }
 
 /* ─── PROFILE PANEL ─── */
