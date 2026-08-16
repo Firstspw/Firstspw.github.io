@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>first@portfolio — Suphawit Suwannarat</title>
+    <link rel="icon" href="icon.png" type="image/png">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Google Fonts: Prompt (Thai body) + JetBrains Mono (code accents) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* ===== Design tokens — "dev terminal" palette ===== */
+            --bg: #060910;
+            --bg-alt: #0c1220;
+            --ink: #eef3fb;
+            --ink-dim: #8b97ae;
+            --ink-faint: #5b6579;
+            --cyan: #00f0c0;
+            --cyan-dim: #0ea391;
+            --magenta: #ff3f8e;
+            --violet: #8b6bff;
+            --amber: #ffb648;
+            --line: rgba(148, 178, 214, 0.16);
+            --glass: rgba(12, 18, 32, 0.66);
+            --glass-strong: rgba(9, 13, 24, 0.86);
+            --radius: 18px;
+            --radius-sm: 12px;
+            --shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.65);
+            --shadow-glow: 0 0 0 1px rgba(0, 240, 192, 0.12), 0 20px 50px -20px rgba(0, 240, 192, 0.25);
+            --mono: 'JetBrains Mono', ui-monospace, monospace;
+            --sans: 'Prompt', sans-serif;
+            --ease: cubic-bezier(.16, 1, .3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::selection {
+            background: var(--cyan);
+            color: #04140f;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--cyan), var(--violet));
+            border-radius: 10px;
+        }
+
+        body {
+            font-family: var(--sans);
+            color: var(--ink);
+            background: var(--bg);
+            line-height: 1.7;
+            padding: 28px 24px 60px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ================= Background layers ================= */
+        .video-bg {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -3;
+            opacity: 0.6;
+            filter: saturate(0.9) brightness(0.85);
+        }
+
+        .video-overlay {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 40% at 20% 0%, rgba(139, 107, 255, 0.16), transparent 60%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 240, 192, 0.12), transparent 60%),
+                linear-gradient(180deg, rgba(6, 9, 16, 0.55), rgba(6, 9, 16, 0.7) 40%, rgba(6, 9, 16, 0.9) 100%);
+            z-index: -2;
+        }
+
+        #fxCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ================= Cursor ================= */
+        .cursor-dot,
+        .cursor-ring {
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        .cursor-ring {
+            width: 34px;
+            height: 34px;
+            border: 1.5px solid rgba(0, 240, 192, 0.55);
+            transition: width .2s var(--ease), height .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease);
+        }
+
+        .cursor-ring.hovering {
+            width: 54px;
+            height: 54px;
+            border-color: var(--magenta);
+            background: rgba(255, 63, 142, 0.08);
+        }
+
+        /* ================= Scroll progress ================= */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--cyan), var(--violet), var(--magenta));
+            z-index: 9999;
+            box-shadow: 0 0 12px rgba(0, 240, 192, 0.6);
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ================= Reveal utility ================= */
+        [data-reveal] {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity .8s var(--ease), transform .8s var(--ease);
+        }
+
+        [data-reveal].is-visible {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* ================= Hidden content toggle ================= */
+        .hidden-content {
+            display: none;
+        }
+
+        .hidden-content.show {
+            display: block;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            [data-reveal] {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* ================= Terminal window component ================= */
+        .term {
+            background: var(--glass);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+            margin-bottom: 26px;
+            overflow: hidden;
+            transition: box-shadow .4s var(--ease), border-color .4s var(--ease), transform .4s var(--ease);
+        }
+
+        .term:hover {
+            border-color: rgba(0, 240, 192, 0.35);
+            box-shadow: var(--shadow), var(--shadow-glow);
+        }
+
+        .term__bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .term__dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .term__dot--red {
+            background: #ff5f57;
+        }
+
+        .term__dot--yellow {
+            background: #febc2e;
+        }
+
+        .term__dot--green {
+            background: #28c840;
+        }
+
+        .term__title {
+            margin-left: 8px;
+            font-family: var(--mono);
+            font-size: 0.82em;
+            color: var(--ink-dim);
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .term__body {
+            padding: 34px 32px;
+        }
+
+        h2 {
+            font-family: var(--mono);
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 26px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--ink);
+        }
+
+        h2 .h2-tag {
+            color: var(--cyan);
+        }
+
+        h2 i {
+            color: var(--cyan);
+            background: rgba(0, 240, 192, 0.1);
+            padding: 9px;
+            border-radius: 10px;
+            font-size: 0.75em;
+        }
+
+        h3 {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        /* ================= Hero / profile terminal ================= */
+        .hero-term .term__body {
+            padding: 40px 36px;
+        }
+
+        .hero-body {
+            display: flex;
+            align-items: center;
+            gap: 42px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-wrap {
+            flex-shrink: 0;
+            position: relative;
+            width: 172px;
+        }
+
+        .avatar-ring {
+            width: 172px;
+            height: 172px;
+            border-radius: 50%;
+            padding: 4px;
+            background: conic-gradient(from 0deg, var(--cyan), var(--violet), var(--magenta), var(--cyan));
+            animation: spin 6s linear infinite;
+            box-shadow: 0 0 40px -6px rgba(0, 240, 192, 0.45);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .avatar-ring img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--bg-alt);
+            background: var(--bg-alt);
+            display: block;
+        }
+
+        .status-pill {
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass-strong);
+            border: 1px solid var(--line);
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-family: var(--mono);
+            font-size: 0.72em;
+            color: var(--ink-dim);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+            box-shadow: var(--shadow);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #28c840;
+            box-shadow: 0 0 8px #28c840;
+            animation: pulse-dot 1.6s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.35;
+            }
+        }
+
+        .hero-info {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .prompt-line {
+            font-family: var(--mono);
+            font-size: 0.85em;
+            color: var(--cyan-dim);
+            margin-bottom: 10px;
+        }
+
+        .prompt-colon {
+            color: var(--ink-faint);
+        }
+
+        .prompt-path {
+            color: var(--violet);
+        }
+
+        .prompt-dollar {
+            color: var(--ink-faint);
+            margin-right: 6px;
+        }
+
+        .hero-info h1 {
+            font-size: 3.1em;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(120deg, var(--ink) 30%, var(--cyan) 60%, var(--violet));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.1;
+        }
+
+        .hero-info h1 .thin {
+            font-weight: 300;
+            -webkit-text-fill-color: var(--ink-dim);
+            color: var(--ink-dim);
+        }
+
+        .role-line {
+            font-family: var(--mono);
+            font-size: 1.12em;
+            color: var(--ink-dim);
+            margin: 10px 0 22px;
+            min-height: 1.4em;
+        }
+
+        .role-line #typedRole {
+            color: var(--ink);
+        }
+
+        .caret {
+            display: inline-block;
+            color: var(--cyan);
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            49% {
+                opacity: 1;
+            }
+
+            50%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            color: var(--ink-dim);
+        }
+
+        .chip i {
+            color: var(--cyan);
+        }
+
+        .chip--accent {
+            border-color: rgba(0, 240, 192, 0.3);
+            color: var(--ink);
+        }
+
+        /* ================= Countdown panel ================= */
+        .countdown-panel {
+            background: linear-gradient(135deg, rgba(0, 240, 192, 0.07), rgba(139, 107, 255, 0.09));
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 20px 24px;
+        }
+
+        .countdown-panel__title {
+            font-family: var(--mono);
+            font-size: 0.95em;
+            font-weight: 600;
+            margin-bottom: 14px;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .countdown-grid {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-cell {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            padding: 12px 18px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 76px;
+        }
+
+        .countdown-cell .num {
+            font-family: var(--mono);
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--amber);
+            text-shadow: 0 0 18px rgba(255, 182, 72, 0.4);
+            line-height: 1.15;
+        }
+
+        .countdown-cell .lbl {
+            font-size: 0.8em;
+            color: var(--ink-faint);
+        }
+
+        .countdown-status {
+            margin-top: 14px;
+            font-weight: 500;
+            color: var(--ink-dim);
+        }
+
+        /* ================= Party / confetti ================= */
+        .party-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9997;
+            display: none;
+        }
+
+        .party-active .party-overlay {
+            display: block;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -20px;
+            animation: confettiFall linear infinite;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .birthday-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--glass-strong);
+            backdrop-filter: blur(14px);
+            padding: 44px 60px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(255, 63, 142, 0.4);
+            border: 1px solid rgba(255, 63, 142, 0.4);
+            z-index: 10000;
+            display: none;
+            animation: bouncein 1s infinite;
+        }
+
+        .party-active .birthday-message {
+            display: block;
+        }
+
+        .birthday-message h2 {
+            font-size: 2.2em;
+            color: var(--magenta);
+            border: none;
+            margin: 0;
+            justify-content: center;
+        }
+
+        @keyframes bouncein {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.04);
+            }
+        }
+
+        /* ================= Reveal button ================= */
+        .reveal-btn {
+            position: fixed;
+            bottom: 28px;
+            left: 28px;
+            background: var(--glass-strong);
+            color: var(--ink);
+            border: 1px solid rgba(0, 240, 192, 0.35);
+            padding: 16px 26px;
+            border-radius: 50px;
+            font-family: var(--mono);
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            transition: 0.3s var(--ease);
+            backdrop-filter: blur(12px);
+        }
+
+        .reveal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow), 0 0 30px rgba(0, 240, 192, 0.3);
+            border-color: var(--cyan);
+        }
+
+        .reveal-btn__prompt {
+            color: var(--cyan);
+        }
+
+        /* ================= Audio widget ================= */
+        .audio-widget {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--glass-strong);
+            backdrop-filter: blur(12px);
+            padding: 12px 18px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            z-index: 1000;
+            border: 1px solid var(--line);
+        }
+
+        .audio-toggle {
+            background: linear-gradient(135deg, var(--cyan), var(--cyan-dim));
+            color: #04140f;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s var(--ease);
+            font-size: 1em;
+            flex-shrink: 0;
+        }
+
+        .audio-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(0, 240, 192, 0.5);
+        }
+
+        .eq {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 22px;
+        }
+
+        .eq-bar {
+            width: 3px;
+            background: linear-gradient(var(--cyan), var(--violet));
+            border-radius: 2px;
+            height: 6px;
+            animation: eqIdle 1.2s ease-in-out infinite;
+        }
+
+        .eq-bar:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .eq-bar:nth-child(2) {
+            animation-delay: .15s;
+        }
+
+        .eq-bar:nth-child(3) {
+            animation-delay: .3s;
+        }
+
+        .eq-bar:nth-child(4) {
+            animation-delay: .45s;
+        }
+
+        .eq-bar:nth-child(5) {
+            animation-delay: .6s;
+        }
+
+        @keyframes eqIdle {
+
+            0%,
+            100% {
+                height: 5px;
+            }
+
+            50% {
+                height: 16px;
+            }
+        }
+
+        .audio-widget input[type="range"] {
+            width: 90px;
+            accent-color: var(--cyan);
+            cursor: pointer;
+        }
+
+        .audio-label {
+            min-width: 38px;
+            font-family: var(--mono);
+            font-size: 0.78em;
+            color: var(--ink-dim);
+        }
+
+        /* ================= Key-value list (about.json) ================= */
+        .kv-list {
+            list-style: none;
+        }
+
+        .kv-list li {
+            padding: 14px 0;
+            border-bottom: 1px dashed var(--line);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .kv-list li:last-child {
+            border-bottom: none;
+        }
+
+        .kv-key {
+            font-family: var(--mono);
+            color: var(--cyan);
+            min-width: 130px;
+            font-size: 0.95em;
+        }
+
+        .kv-key::before {
+            content: '"';
+            color: var(--ink-faint);
+        }
+
+        .kv-key::after {
+            content: '":';
+            color: var(--ink-faint);
+        }
+
+        .kv-value {
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        /* ================= Education timeline ================= */
+        .timeline {
+            list-style: none;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: linear-gradient(var(--cyan), var(--violet), var(--magenta));
+            opacity: 0.4;
+        }
+
+        .timeline__item {
+            position: relative;
+            padding-bottom: 30px;
+        }
+
+        .timeline__item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline__dot {
+            position: absolute;
+            left: -30px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 0 4px rgba(0, 240, 192, 0.15), 0 0 14px rgba(0, 240, 192, 0.6);
+        }
+
+        .timeline__year {
+            font-family: var(--mono);
+            color: var(--amber);
+            font-size: 0.85em;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .timeline__content h3 {
+            display: inline-block;
+            margin-right: 12px;
+            font-size: 1.05em;
+        }
+
+        .map-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            cursor: pointer;
+            padding: 6px 14px;
+            border-radius: 30px;
+            transition: 0.2s;
+            color: var(--ink-dim);
+            font-size: 0.82em;
+            font-family: var(--mono);
+        }
+
+        .map-btn:hover {
+            background: rgba(0, 240, 192, 0.1);
+            color: var(--cyan);
+            border-color: var(--cyan);
+        }
+
+        /* ================= Skills ================= */
+        .skills-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 26px;
+        }
+
+        .skill-category__head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .skill-category__head i {
+            color: var(--cyan);
+            font-size: 1.1em;
+        }
+
+        .skill-category__head h3 {
+            margin: 0;
+            font-family: var(--mono);
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .skill-row {
+            margin-bottom: 14px;
+        }
+
+        .skill-row__label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88em;
+            color: var(--ink-dim);
+            margin-bottom: 6px;
+        }
+
+        .skill-row__label .pct {
+            font-family: var(--mono);
+            color: var(--cyan);
+        }
+
+        .skill-track {
+            height: 7px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--cyan), var(--violet));
+            transition: width 1.4s var(--ease);
+            box-shadow: 0 0 10px rgba(0, 240, 192, 0.5);
+        }
+
+        /* ================= Projects / achievement ================= */
+        .work-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 24px;
+            margin-top: 22px;
+        }
+
+        .work-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.3s var(--ease), border-color .3s var(--ease);
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .work-card:hover {
+            border-color: rgba(0, 240, 192, 0.4);
+            box-shadow: 0 25px 45px -15px rgba(0, 240, 192, 0.25);
+        }
+
+        .achievement-card {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .achievement-ribbon {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            z-index: 2;
+            background: linear-gradient(120deg, var(--amber), var(--magenta));
+            color: #1a0e05;
+            font-family: var(--mono);
+            font-size: 0.72em;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 6px 18px rgba(255, 182, 72, 0.4);
+        }
+
+        .work-card img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            display: block;
+        }
+
+        .work-card .work-content {
+            padding: 20px 22px;
+        }
+
+        .work-card .work-content h4 {
+            font-size: 1.05em;
+            margin-bottom: 6px;
+        }
+
+        .work-card .work-content p {
+            color: var(--ink-dim);
+            font-size: 0.92em;
+        }
+
+        .clock-face {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            border: 2.5px solid var(--cyan);
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 240, 192, 0.4);
+        }
+
+        .clock-hand {
+            position: absolute;
+            background: var(--ink);
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            border-radius: 2px;
+        }
+
+        .clock-hand--h {
+            width: 3px;
+            height: 18px;
+            transform: translateX(-50%) rotate(0deg);
+            animation: rotateHour 12s linear infinite;
+        }
+
+        .clock-hand--m {
+            width: 2px;
+            height: 26px;
+            background: var(--cyan);
+            transform: translateX(-50%) rotate(0deg);
+            animation: rotateMinute 3s linear infinite;
+        }
+
+        @keyframes rotateHour {
+            to {
+                transform: translateX(-50%) rotate(360deg);
+            }
+        }
+
+        @keyframes rotateMinute {
+            to {
+                transform: translateX(-50%) rotate(360deg);
+            }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 11px 22px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.92em;
+            transition: 0.25s var(--ease);
+            margin-right: 10px;
+            margin-bottom: 8px;
+            font-family: var(--mono);
+        }
+
+        .btn:hover {
+            background: var(--cyan);
+            color: #04140f;
+            box-shadow: 0 0 22px rgba(0, 240, 192, 0.45);
+            transform: translateY(-2px);
+        }
+
+        /* ================= Contact ================= */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            padding: 22px;
+            border-radius: var(--radius-sm);
+            transition: 0.25s var(--ease);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .contact-item:hover {
+            border-color: rgba(0, 240, 192, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .contact-item i.contact-icon {
+            font-size: 1.4em;
+            color: var(--cyan);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .contact-item h3 {
+            font-family: var(--mono);
+            font-size: 0.82em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            letter-spacing: 0.5px;
+            margin: 0 0 6px;
+        }
+
+        .contact-item p,
+        .contact-item a {
+            color: var(--ink);
+            font-weight: 500;
+            text-decoration: none;
+            word-break: break-word;
+        }
+
+        .contact-copy {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: var(--ink-faint);
+            font-size: 0.85em;
+        }
+
+        /* ================= Lightbox ================= */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 5, 10, 0.94);
+            backdrop-filter: blur(14px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            cursor: pointer;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 88%;
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 0 60px rgba(0, 240, 192, 0.25);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 26px;
+            right: 26px;
+            color: var(--ink);
+            font-size: 34px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.08);
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.25s;
+            border: 1px solid var(--line);
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 63, 142, 0.2);
+            border-color: var(--magenta);
+            transform: scale(1.08) rotate(90deg);
+        }
+
+        /* ================= Toast ================= */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--glass-strong);
+            border: 1px solid rgba(0, 240, 192, 0.4);
+            color: var(--ink);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-family: var(--mono);
+            font-size: 0.85em;
+            z-index: 10001;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s var(--ease);
+            box-shadow: var(--shadow);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ================= Footer ================= */
+        footer {
+            text-align: center;
+            padding: 30px 0 10px;
+            color: var(--ink-faint);
+            font-family: var(--mono);
+            font-size: 0.85em;
+        }
+
+        /* ================= Responsive ================= */
+        @media (max-width: 640px) {
+            body {
+                padding: 18px 14px 50px;
+            }
+
+            .cursor-dot,
+            .cursor-ring {
+                display: none;
+            }
+
+            .term__body {
+                padding: 26px 20px;
+            }
+
+            .hero-term .term__body {
+                padding: 28px 20px;
+            }
+
+            .hero-body {
+                flex-direction: column;
+                text-align: center;
+                gap: 26px;
+            }
+
+            .hero-info h1 {
+                font-size: 2.3em;
+            }
+
+            .chip-row {
+                justify-content: center;
+            }
+
+            .countdown-grid {
+                justify-content: center;
+            }
+
+            .audio-widget {
+                bottom: 16px;
+                right: 16px;
+                padding: 10px 14px;
+                gap: 9px;
+            }
+
+            .audio-widget input[type="range"] {
+                width: 60px;
+            }
+
+            .reveal-btn {
+                bottom: 16px;
+                left: 16px;
+                padding: 13px 20px;
+                font-size: 0.82em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ✅ พื้นหลังวิดีโอ (เริ่มแบบปิดเสียงตามนโยบายเบราว์เซอร์ แล้วเปิดเสียงได้จากปุ่มควบคุม) -->
+    <video class="video-bg" autoplay muted loop playsinline id="bgVideo">
+        <source src="video.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+    <canvas id="fxCanvas"></canvas>
+
+    <!-- ✅ เคอร์เซอร์ -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- ✅ แถบความคืบหน้าการเลื่อน -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- ✅ ปุ่มควบคุมเสียงจากวิดีโอพื้นหลัง + Equalizer -->
+    <div class="audio-widget">
+        <button class="audio-toggle" id="musicToggle" onclick="toggleMusic(event)" aria-label="เปิด/ปิดเสียงวิดีโอ">
+            <i class="fas fa-volume-xmark"></i>
+        </button>
+        <div class="eq" id="eq">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+        </div>
+        <input type="range" id="volumeSlider" min="0" max="100" value="35" oninput="changeVolume(this.value)" onclick="event.stopPropagation()">
+        <span class="audio-label" id="volumeValue">35%</span>
+    </div>
+
+    <!-- ✅ ปุ่มแสดงข้อมูล -->
+    <button class="reveal-btn" id="showInfoBtn">
+        <span class="reveal-btn__prompt">&gt;</span> <span id="revealBtnText">./view-profile.sh</span>
+    </button>
+
+    <!-- ✅ ปาร์ตี้เอฟเฟกต์ -->
+    <div class="party-overlay" id="partyOverlay"></div>
+    <div class="birthday-message" id="birthdayMessage">
+        <h2>🎉 สุขสันต์วันเกิด! 🎂</h2>
+        <p style="font-size: 1.4em; margin-top: 18px;">อายุครบ <span id="newAge">19</span> ปีแล้ว!</p>
+        <p style="margin-top: 18px;">🎈 🎊 🎁</p>
+    </div>
+
+    <!-- ✅ Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImg" src="" alt="Full size">
+    </div>
+
+    <!-- ✅ Toast -->
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+
+        <!-- ✅ โปรไฟล์ (แสดงตลอด) — hero terminal -->
+        <section class="term hero-term" data-reveal>
+            <div class="term__bar">
+                <span class="term__dot term__dot--red"></span>
+                <span class="term__dot term__dot--yellow"></span>
+                <span class="term__dot term__dot--green"></span>
+                <span class="term__title"><i class="fas fa-terminal"></i> first@chiangmai — profile.sh</span>
+            </div>
+            <div class="term__body hero-body">
+                <div class="avatar-wrap tilt">
+                    <div class="avatar-ring">
+                        <img src="pro.png" alt="Profile First"
+                            onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22200%22%20viewBox%3D%220%200%20200%20200%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%230c1220%22%2F%3E%3Ctext%20x%3D%22100%22%20y%3D%22120%22%20font-size%3D%2260%22%20text-anchor%3D%22middle%22%20fill%3D%22%2300f0c0%22%20font-family%3D%22monospace%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                    </div>
+                    <span class="status-pill"><span class="status-dot"></span> available for opportunities</span>
+                </div>
+                <div class="hero-info">
+                    <p class="prompt-line">first@chiangmai<span class="prompt-colon">:</span><span
+                            class="prompt-path">~</span><span class="prompt-dollar">$</span> whoami</p>
+                    <h1>First <span class="thin">Suphawit</span></h1>
+                    <p class="role-line"><span id="typedRole"></span><span class="caret">▌</span></p>
+                    <div class="chip-row">
+                        <span class="chip"><i class="fas fa-cake-candles"></i> 17 เม.ย. 2551</span>
+                        <span class="chip"><i class="fas fa-venus-mars"></i> ชาย</span>
+                        <span class="chip"><i class="fas fa-flag"></i> ไทย</span>
+                        <span class="chip"><i class="fas fa-map-marker-alt"></i> เชียงใหม่</span>
+                        <span class="chip chip--accent"><i class="fas fa-calendar-alt"></i> อายุ <span
+                                id="currentAge">17</span> ปี</span>
+                    </div>
+
+                    <!-- ✅ นับถอยหลังวันเกิด -->
+                    <div class="countdown-panel">
+                        <p class="countdown-panel__title"><i class="fas fa-birthday-cake"></i>
+                            birthday.countdown()</p>
+                        <div class="countdown-grid" id="countdown">
+                            <div class="countdown-cell">
+                                <div class="num" id="days">00</div>
+                                <div class="lbl">วัน</div>
+                            </div>
+                            <div class="countdown-cell">
+                                <div class="num" id="hours">00</div>
+                                <div class="lbl">ชั่วโมง</div>
+                            </div>
+                            <div class="countdown-cell">
+                                <div class="num" id="minutes">00</div>
+                                <div class="lbl">นาที</div>
+                            </div>
+                            <div class="countdown-cell">
+                                <div class="num" id="seconds">00</div>
+                                <div class="lbl">วินาที</div>
+                            </div>
+                        </div>
+                        <p class="countdown-status" id="birthdayStatus"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ✅ เนื้อหาที่ซ่อนไว้ -->
+        <div class="hidden-content" id="hiddenContent">
+
+            <!-- about.json -->
+            <section class="term" data-reveal>
+                <div class="term__bar">
+                    <span class="term__dot term__dot--red"></span>
+                    <span class="term__dot term__dot--yellow"></span>
+                    <span class="term__dot term__dot--green"></span>
+                    <span class="term__title"><i class="fas fa-user-circle"></i> about.json</span>
+                </div>
+                <div class="term__body">
+                    <h2><span class="h2-tag">#</span> ข้อมูลส่วนตัว</h2>
+                    <ul class="kv-list">
+                        <li><span class="kv-key">fullName</span><span class="kv-value">นายศุภวิชญ์ สุวรรณรัตน์
+                                (First)</span></li>
+                        <li><span class="kv-key">nickname</span><span class="kv-value">เฟิร์ส</span></li>
+                        <li><span class="kv-key">age</span><span class="kv-value"><span id="personalAge">17</span>
+                                ปี</span></li>
+                        <li><span class="kv-key">birthday</span><span class="kv-value">17 เมษายน 2551</span></li>
+                        <li><span class="kv-key">nationality</span><span class="kv-value">ไทย</span></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- education.log -->
+            <section class="term" data-reveal>
+                <div class="term__bar">
+                    <span class="term__dot term__dot--red"></span>
+                    <span class="term__dot term__dot--yellow"></span>
+                    <span class="term__dot term__dot--green"></span>
+                    <span class="term__title"><i class="fas fa-graduation-cap"></i> education.log</span>
+                </div>
+                <div class="term__body">
+                    <h2><span class="h2-tag">#</span> ประวัติการศึกษา</h2>
+                    <ol class="timeline">
+                        <li class="timeline__item" data-reveal>
+                            <span class="timeline__dot"></span>
+                            <div class="timeline__content">
+                                <span class="timeline__year"><i class="far fa-calendar-alt"></i> 2566 –
+                                    2568</span>
+                                <h3>วิทยาลัยเทคนิคเชียงใหม่</h3>
+                                <button class="map-btn" data-location="วิทยาลัยเทคนิคเชียงใหม่"
+                                    onclick="confirmNavigation('https://www.google.com/search?q=วิทยาลัยเทคนิคเชียงใหม่')"><i
+                                        class="fas fa-map-marked-alt"></i> แผนที่</button>
+                            </div>
+                        </li>
+                        <li class="timeline__item" data-reveal>
+                            <span class="timeline__dot"></span>
+                            <div class="timeline__content">
+                                <span class="timeline__year"><i class="far fa-calendar-alt"></i> 2563 –
+                                    2566</span>
+                                <h3>โรงเรียนมัธยมต้น เมตตาศึกษา</h3>
+                                <button class="map-btn" data-location="โรงเรียนเมตตาศึกษา"
+                                    onclick="confirmNavigation('https://www.google.com/search?q=โรงเรียนเมตตาศึกษา+เชียงใหม่')"><i
+                                        class="fas fa-map-marked-alt"></i> แผนที่</button>
+                            </div>
+                        </li>
+                        <li class="timeline__item" data-reveal>
+                            <span class="timeline__dot"></span>
+                            <div class="timeline__content">
+                                <span class="timeline__year"><i class="far fa-calendar-alt"></i> 2559 –
+                                    2562</span>
+                                <h3>โรงเรียนประถม พุทธิโศภน</h3>
+                                <button class="map-btn" data-location="โรงเรียนพุทธิโศภน"
+                                    onclick="confirmNavigation('https://www.google.com/search?q=โรงเรียนพุทธิโศภน+เชียงใหม่')"><i
+                                        class="fas fa-map-marked-alt"></i> แผนที่</button>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- skills.config -->
+            <section class="term" data-reveal>
+                <div class="term__bar">
+                    <span class="term__dot term__dot--red"></span>
+                    <span class="term__dot term__dot--yellow"></span>
+                    <span class="term__dot term__dot--green"></span>
+                    <span class="term__title"><i class="fas fa-code-branch"></i> skills.config</span>
+                </div>
+                <div class="term__body">
+                    <h2><span class="h2-tag">#</span> ทักษะ &amp; เทคโนโลยี</h2>
+                    <div class="skills-categories">
+                        <div class="skill-category" data-reveal>
+                            <div class="skill-category__head"><i class="fas fa-code"></i>
+                                <h3>Frontend</h3>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>HTML</span><span
+                                        class="pct">90%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="90"></div>
+                                </div>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>CSS</span><span
+                                        class="pct">85%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="85"></div>
+                                </div>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>JavaScript</span><span
+                                        class="pct">80%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="80"></div>
+                                </div>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>Responsive
+                                        Design</span><span class="pct">85%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="85"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skill-category" data-reveal>
+                            <div class="skill-category__head"><i class="fas fa-server"></i>
+                                <h3>Backend</h3>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>PHP</span><span
+                                        class="pct">65%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="65"></div>
+                                </div>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>Python
+                                        (MicroPython)</span><span class="pct">60%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="60"></div>
+                                </div>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>Node.js
+                                        (Express)</span><span class="pct">55%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="55"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skill-category" data-reveal>
+                            <div class="skill-category__head"><i class="fas fa-tools"></i>
+                                <h3>Tools</h3>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>Git &amp;
+                                        GitHub</span><span class="pct">75%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="75"></div>
+                                </div>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>VS Code</span><span
+                                        class="pct">90%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="90"></div>
+                                </div>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>Figma
+                                        (พื้นฐาน)</span><span class="pct">50%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="50"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skill-category" data-reveal>
+                            <div class="skill-category__head"><i class="fas fa-language"></i>
+                                <h3>ภาษา</h3>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>ไทย
+                                        (Native)</span><span class="pct">100%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="100"></div>
+                                </div>
+                            </div>
+                            <div class="skill-row"><span class="skill-row__label"><span>อังกฤษ
+                                        (สื่อสารได้)</span><span class="pct">60%</span></span>
+                                <div class="skill-track">
+                                    <div class="skill-fill" data-level="60"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- projects -->
+            <section class="term" data-reveal>
+                <div class="term__bar">
+                    <span class="term__dot term__dot--red"></span>
+                    <span class="term__dot term__dot--yellow"></span>
+                    <span class="term__dot term__dot--green"></span>
+                    <span class="term__title"><i class="fas fa-briefcase"></i> projects/</span>
+                </div>
+                <div class="term__body">
+                    <h2><span class="h2-tag">#</span> ผลงาน &amp; เว็บไซต์</h2>
+
+                    <div class="work-gallery">
+                        <div class="work-card achievement-card tilt" onclick="openLightbox('work.png')">
+                            <span class="achievement-ribbon"><i class="fas fa-trophy"></i> Achievement
+                                Unlocked</span>
+                            <img src="work.png" alt="ใบประกาศนียบัตร Coding Thailand 2025"
+                                onerror="this.style.backgroundColor='#0c1220'; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22200%22%3E%3Crect%20width%3D%22400%22%20height%3D%22200%22%20fill%3D%22%230c1220%22%2F%3E%3Ctext%20x%3D%22200%22%20y%3D%22110%22%20font-size%3D%2222%22%20fill%3D%22%2300f0c0%22%20text-anchor%3D%22middle%22%3ECertificate%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                            <div class="work-content">
+                                <h4>🏆 Coding Thailand 2025: AI-Driven Future</h4>
+                                <p>ใบประกาศนียบัตรเข้าร่วมแข่งขันระดับประเทศ "National Coding &amp; AI
+                                    Competition" · คลิกเพื่อดูแบบเต็มจอ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 22px;">
+                        <a href="https://firstspw.github.io/Clock.github.io/" target="_blank" class="btn"><i
+                                class="fas fa-clock"></i> เว็บนาฬิกา</a>
+                        <a href="https://ffangyy.github.io/" target="_blank" class="btn"><i
+                                class="fas fa-user-astronaut"></i> เว็บส่วนตัว</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- contact.sh -->
+            <section class="term" data-reveal>
+                <div class="term__bar">
+                    <span class="term__dot term__dot--red"></span>
+                    <span class="term__dot term__dot--yellow"></span>
+                    <span class="term__dot term__dot--green"></span>
+                    <span class="term__title"><i class="fas fa-address-card"></i> contact.sh</span>
+                </div>
+                <div class="term__body">
+                    <h2><span class="h2-tag">#</span> ช่องทางติดต่อ</h2>
+                    <div class="contact-grid">
+                        <div class="contact-item" onclick="openGmail()">
+                            <i class="fas fa-envelope contact-icon"></i>
+                            <h3>อีเมล</h3>
+                            <a href="#" onclick="return false;">first172550@gmail.com</a>
+                            <i class="fas fa-paper-plane contact-copy"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ระบบเสียง + Visualizer (Web Audio API)
+        // ==========================================
+        let isMusicPlaying = false;
+        let audioCtx = null, analyser = null, sourceNode = null, dataArray = null;
+        const eqBars = () => document.querySelectorAll('#eq .eq-bar');
+        const bgVideo = document.getElementById('bgVideo');
+
+        // ใช้เสียงจากไฟล์วิดีโอพื้นหลัง (video.mp4) เป็น "เพลง" โดยตรง
+        // แทนที่จะโหลดไฟล์เพลงแยกต่างหาก — วิดีโอเริ่มแบบ muted ตามนโยบายเบราว์เซอร์
+        // แล้วค่อยปลดเสียงเมื่อผู้ใช้กดปุ่มเล่น/คลิกหน้าเว็บ
+
+        function setupAnalyser() {
+            if (sourceNode) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                sourceNode = audioCtx.createMediaElementSource(bgVideo);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 32;
+                sourceNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                requestAnimationFrame(drawEQ);
+            } catch (e) {
+                console.log('visualizer unavailable, using idle animation');
+            }
+        }
+
+        function drawEQ() {
+            const bars = eqBars();
+            if (isMusicPlaying && analyser && dataArray) {
+                analyser.getByteFrequencyData(dataArray);
+                bars.forEach((bar, i) => {
+                    const v = dataArray[i * 2] || 4;
+                    const h = Math.max(4, Math.min(22, (v / 255) * 22));
+                    bar.style.animation = 'none';
+                    bar.style.height = h + 'px';
+                });
+            } else {
+                bars.forEach(bar => { bar.style.animation = ''; });
+            }
+            requestAnimationFrame(drawEQ);
+        }
+
+        function playMusic() {
+            setupAnalyser();
+            bgVideo.play().catch(() => { });
+            bgVideo.muted = false;
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            isMusicPlaying = true;
+            updateMusicButton();
+        }
+
+        function pauseMusic() {
+            bgVideo.muted = true;
+            isMusicPlaying = false;
+            updateMusicButton();
+        }
+
+        function toggleMusic(event) {
+            if (event) event.stopPropagation();
+            isMusicPlaying ? pauseMusic() : playMusic();
+        }
+
+        function changeVolume(value) {
+            const vol = value / 100;
+            bgVideo.volume = vol;
+            document.getElementById('volumeValue').textContent = value + '%';
+        }
+
+        function updateMusicButton() {
+            const btn = document.getElementById('musicToggle');
+            btn.innerHTML = isMusicPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            bgVideo.volume = 0.35;
+            bgVideo.play().catch(() => { });
+        });
+
+        // ปลดล็อกเสียงจากการคลิกครั้งแรกของผู้ใช้เท่านั้น (ตามนโยบายเบราว์เซอร์)
+        // ใช้ { once: true } เพื่อไม่ให้ไปเปิดเสียงซ้ำทับตอนที่ผู้ใช้กดปุ่มปิดเสียงทีหลัง
+        document.body.addEventListener('click', function () {
+            if (!isMusicPlaying) playMusic();
+        }, { once: true });
+
+        // ==========================================
+        // ระบบคำนวณอายุและนับถอยหลัง
+        // ==========================================
+        const BIRTHDAY = { day: 17, month: 4, year: 2551 };
+
+        function calculateAge() {
+            const now = new Date();
+            const birthDate = new Date(BIRTHDAY.year - 543, BIRTHDAY.month - 1, BIRTHDAY.day);
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+            let nextBirthday = new Date(now.getFullYear(), BIRTHDAY.month - 1, BIRTHDAY.day);
+            if (nextBirthday < now) nextBirthday = new Date(now.getFullYear() + 1, BIRTHDAY.month - 1, BIRTHDAY.day);
+            const diffTime = nextBirthday - now;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+            const diffSeconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+            return { age, diffDays, diffHours, diffMinutes, diffSeconds };
+        }
+
+        function isBirthdayToday() {
+            const now = new Date();
+            return now.getDate() === BIRTHDAY.day && (now.getMonth() + 1) === BIRTHDAY.month;
+        }
+
+        let partyActive = false;
+
+        function updateDisplay() {
+            const { age, diffDays, diffHours, diffMinutes, diffSeconds } = calculateAge();
+            document.getElementById('currentAge').textContent = age;
+            const personalAgeEl = document.getElementById('personalAge');
+            if (personalAgeEl) personalAgeEl.textContent = age;
+            document.getElementById('days').textContent = String(diffDays).padStart(2, '0');
+            document.getElementById('hours').textContent = String(diffHours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(diffMinutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(diffSeconds).padStart(2, '0');
+
+            const statusEl = document.getElementById('birthdayStatus');
+            const birthday = isBirthdayToday();
+            if (birthday) {
+                statusEl.innerHTML = '🎂 วันนี้เป็นวันเกิด! สุขสันต์วันเกิด! 🎉';
+                if (!partyActive) { startParty(age); partyActive = true; }
+            } else {
+                statusEl.innerHTML = `🎈 อีก ${diffDays} วัน ${diffHours} ชั่วโมง ก็จะถึงวันเกิดปีที่ ${age + 1} แล้ว!`;
+                if (partyActive) { stopParty(); partyActive = false; }
+            }
+        }
+
+        function startParty(age) {
+            document.body.classList.add('party-active');
+            document.getElementById('newAge').textContent = age;
+            const overlay = document.getElementById('partyOverlay');
+            overlay.innerHTML = '';
+            const shapes = ['50%', '4px', '0'];
+            for (let i = 0; i < 70; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+                confetti.style.animationDelay = Math.random() * 2.5 + 's';
+                confetti.style.background = `hsl(${Math.random() * 360}, 85%, 62%)`;
+                confetti.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+                overlay.appendChild(confetti);
+            }
+        }
+
+        function stopParty() {
+            document.body.classList.remove('party-active');
+            document.getElementById('partyOverlay').innerHTML = '';
+        }
+
+        // ==========================================
+        // Lightbox / นำทาง / อีเมล
+        // ==========================================
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        function confirmNavigation(url) {
+            const btn = event.target.closest('.map-btn');
+            const loc = btn ? btn.getAttribute('data-location') : 'สถานที่';
+            if (confirm(`🔍 ค้นหาข้อมูล "${loc}" บน Google Maps?`)) {
+                window.open(url, '_blank');
+            }
+        }
+
+        function openGmail() {
+            window.open('https://mail.google.com/mail/?view=cm&fs=1&to=first172550@gmail.com&su=ติดต่อจาก Portfolio', '_blank');
+        }
+
+        // ==========================================
+        // คัดลอก + Toast
+        // ==========================================
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function copyText(text, label) {
+            event.stopPropagation();
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => showToast(`✓ คัดลอก${label}แล้ว`));
+            } else {
+                showToast(`${label}: ${text}`);
+            }
+        }
+
+        // ==========================================
+        // แสดง/ซ่อนเนื้อหา
+        // ==========================================
+        const showInfoBtn = document.getElementById('showInfoBtn');
+        const hiddenContent = document.getElementById('hiddenContent');
+        const revealBtnText = document.getElementById('revealBtnText');
+
+        showInfoBtn.addEventListener('click', () => {
+            hiddenContent.classList.toggle('show');
+            const isShown = hiddenContent.classList.contains('show');
+            revealBtnText.textContent = isShown ? './hide-profile.sh' : './view-profile.sh';
+            if (isShown) {
+                document.querySelectorAll('#hiddenContent [data-reveal]').forEach(el => revealObserver.observe(el));
+            }
+        });
+
+        // ==========================================
+        // Reveal-on-scroll (IntersectionObserver)
+        // ==========================================
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll('[data-reveal]:not(#hiddenContent [data-reveal])').forEach(el => revealObserver.observe(el));
+
+        // ==========================================
+        // Typing effect
+        // ==========================================
+        const roles = ['Web Developer', 'Frontend Developer', 'Backend Developer', 'Test Engineer', 'Coding Thailand 2025 Competitor', 'นักศึกษาสายคอมพิวเตอร์'];
+        const typedEl = document.getElementById('typedRole');
+        let roleIndex = 0, charIndex = 0, deleting = false;
+
+        function typeLoop() {
+            const current = roles[roleIndex];
+            if (!deleting) {
+                charIndex++;
+                typedEl.textContent = current.slice(0, charIndex);
+                if (charIndex === current.length) {
+                    deleting = true;
+                    setTimeout(typeLoop, 1400);
+                    return;
+                }
+            } else {
+                charIndex--;
+                typedEl.textContent = current.slice(0, charIndex);
+                if (charIndex === 0) {
+                    deleting = false;
+                    roleIndex = (roleIndex + 1) % roles.length;
+                }
+            }
+            setTimeout(typeLoop, deleting ? 35 : 65);
+        }
+        typeLoop();
+
+        // ==========================================
+        // Skill bars fill on view
+        // ==========================================
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.skill-fill').forEach(fill => {
+                        fill.style.width = fill.getAttribute('data-level') + '%';
+                    });
+                    skillObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        document.querySelectorAll('.skill-category').forEach(el => skillObserver.observe(el));
+
+        // ==========================================
+        // Scroll progress
+        // ==========================================
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement;
+            const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+            document.getElementById('scrollProgress').style.width = (scrolled || 0) + '%';
+        });
+
+        // ==========================================
+        // Custom cursor + tilt (desktop only)
+        // ==========================================
+        const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        if (isFinePointer) {
+            const dot = document.getElementById('cursorDot');
+            const ring = document.getElementById('cursorRing');
+            let mx = 0, my = 0, rx = 0, ry = 0;
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX; my = e.clientY;
+                dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+            });
+            function animRing() {
+                rx += (mx - rx) * 0.18;
+                ry += (my - ry) * 0.18;
+                ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+                requestAnimationFrame(animRing);
+            }
+            animRing();
+            document.querySelectorAll('a, button, .work-card, .contact-item, .chip').forEach(el => {
+                el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+            });
+
+            document.querySelectorAll('.tilt').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const r = card.getBoundingClientRect();
+                    const px = (e.clientX - r.left) / r.width - 0.5;
+                    const py = (e.clientY - r.top) / r.height - 0.5;
+                    card.style.transform = `perspective(700px) rotateY(${px * 8}deg) rotateX(${-py * 8}deg) translateY(-2px)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                });
+            });
+        } else {
+            document.getElementById('cursorDot').style.display = 'none';
+            document.getElementById('cursorRing').style.display = 'none';
+        }
+
+        // ==========================================
+        // Particle code-glyph background canvas
+        // ==========================================
+        const canvas = document.getElementById('fxCanvas');
+        const ctx = canvas.getContext('2d');
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let particles = [];
+        const glyphs = ['{ }', '</>', ';', '=>', '01', '10', '#', '&&', '( )', 'AI'];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function initParticles() {
+            const count = window.innerWidth < 640 ? 14 : 28;
+            particles = Array.from({ length: count }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                s: 11 + Math.random() * 10,
+                speed: 0.15 + Math.random() * 0.35,
+                drift: (Math.random() - 0.5) * 0.3,
+                glyph: glyphs[Math.floor(Math.random() * glyphs.length)],
+                alpha: 0.05 + Math.random() * 0.1
+            }));
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = '14px JetBrains Mono, monospace';
+            particles.forEach(p => {
+                ctx.fillStyle = `rgba(0, 240, 192, ${p.alpha})`;
+                ctx.font = p.s + 'px JetBrains Mono, monospace';
+                ctx.fillText(p.glyph, p.x, p.y);
+                p.y -= p.speed;
+                p.x += p.drift;
+                if (p.y < -20) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
+            });
+            if (!reduceMotion) requestAnimationFrame(drawParticles);
+        }
+
+        resizeCanvas();
+        initParticles();
+        drawParticles();
+        window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+
+        // ==========================================
+        // เริ่มต้น
+        // ==========================================
+        updateDisplay();
+        setInterval(updateDisplay, 1000);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+    </script>
+</body>
+
+</html>
