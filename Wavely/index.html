@@ -5,826 +5,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0b0b10">
-    <title>Wavely — Music Hub (Ad-Free)</title>
+    <title>Wavely — Music Hub (Ad-Free & Fixed)</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --bg: #0b0b10;
-            --bg2: #12121a;
-            --card: #181823;
-            --card2: #242436;
-            --txt: #ffffff;
-            --dim: #a0a0b8;
-            --acc: #1ed760;
-            --yt: #ff3b5c;
-            --acc2: #7c5cff;
-            --bar: 92px;
-            --m-nav: 60px;
-        }
-
-        html,
-        body {
-            height: 100%;
-            overflow: hidden;
-            background: var(--bg);
-        }
-
-        body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Noto Sans Thai', sans-serif;
-            color: var(--txt);
-        }
-
-        #app {
-            display: grid;
-            grid-template-columns: 248px 1fr;
-            grid-template-rows: 1fr var(--bar);
-            height: 100vh;
-            height: 100dvh;
-        }
-
-        /* Sidebar Desktop */
-        aside {
-            background: #08080d;
-            padding: 18px 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            border-right: 1px solid #ffffff1a;
-            overflow-y: auto;
-        }
-
-        .logo {
-            font-size: 22px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            padding-left: 8px;
-            background: linear-gradient(90deg, var(--acc), var(--acc2));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .nav {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 9px;
-            color: var(--dim);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: .18s;
-            user-select: none;
-        }
-
-        .nav:hover {
-            background: #ffffff1f;
-            color: var(--txt);
-        }
-
-        .nav.on {
-            background: #ffffff2a;
-            color: #ffffff;
-            font-weight: 700;
-        }
-
-        .nav svg {
-            width: 19px;
-            height: 19px;
-            fill: currentColor;
-            flex: none;
-        }
-
-        .sep {
-            height: 1px;
-            background: #ffffff1a;
-            margin: 12px 6px;
-        }
-
-        .lbl {
-            font-size: 11px;
-            color: #8585aa;
-            letter-spacing: 1.3px;
-            padding: 6px 12px;
-            font-weight: 800;
-        }
-
-        .cat {
-            font-size: 13.5px;
-            color: var(--dim);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: .15s;
-            user-select: none;
-        }
-
-        .cat:hover {
-            color: var(--txt);
-            background: #ffffff14;
-        }
-
-        .cat.on {
-            color: var(--acc);
-            background: #1ed76029;
-            font-weight: 700;
-        }
-
-        .addbtn {
-            margin-top: 14px;
-            padding: 11px;
-            border-radius: 24px;
-            border: 0;
-            cursor: pointer;
-            background: linear-gradient(90deg, var(--acc), #12b954);
-            color: #000000;
-            font-weight: 800;
-            font-size: 13.5px;
-            transition: .2s;
-        }
-
-        .addbtn:hover {
-            transform: scale(1.03);
-        }
-
-        /* Main Content */
-        main {
-            overflow-y: auto;
-            padding: 18px 26px 40px;
-            background: radial-gradient(880px 380px at 12% -14%, #7c5cff24, transparent), var(--bg);
-            -webkit-overflow-scrolling: touch;
-        }
-
-        main::-webkit-scrollbar,
-        aside::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        main::-webkit-scrollbar-thumb,
-        aside::-webkit-scrollbar-thumb {
-            background: #ffffff2f;
-            border-radius: 9px;
-        }
-
-        .top {
-            display: flex;
-            gap: 9px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-            position: sticky;
-            top: -18px;
-            padding: 12px 0;
-            background: linear-gradient(var(--bg) 80%, transparent);
-            z-index: 6;
-        }
-
-        .search {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--card);
-            border: 1px solid #ffffff29;
-            border-radius: 30px;
-            padding: 10px 16px;
-            transition: .2s;
-        }
-
-        .search:focus-within {
-            border-color: var(--acc);
-            box-shadow: 0 0 0 3px #1ed76029;
-        }
-
-        .search input {
-            flex: 1;
-            background: none;
-            border: 0;
-            color: var(--txt);
-            font-size: 13.5px;
-            outline: none;
-            width: 100%;
-        }
-
-        .search input::placeholder {
-            color: #8888a0;
-        }
-
-        .search svg {
-            width: 17px;
-            height: 17px;
-            fill: var(--dim);
-            flex: none;
-            cursor: pointer;
-        }
-
-        h2 {
-            font-size: 19px;
-            margin: 20px 0 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 12px;
-        }
-
-        h2 em {
-            font-style: normal;
-            font-size: 12px;
-            color: var(--acc);
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 11px;
-            cursor: pointer;
-            transition: .25s;
-            position: relative;
-            border: 1px solid #ffffff0d;
-        }
-
-        .card:hover {
-            background: var(--card2);
-            transform: translateY(-4px);
-            border-color: #ffffff26;
-        }
-
-        .card.now {
-            border-color: var(--acc);
-            background: var(--card2);
-        }
-
-        .card .ph {
-            position: relative;
-        }
-
-        .card img {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 9px;
-            object-fit: cover;
-            box-shadow: 0 8px 20px #00000099;
-            background: #20202c;
-            display: block;
-        }
-
-        .card b {
-            display: block;
-            margin: 10px 0 3px;
-            font-size: 13.5px;
-            line-height: 1.35;
-            max-height: 2.7em;
-            overflow: hidden;
-            color: var(--txt);
-        }
-
-        .card small {
-            color: var(--dim);
-            font-size: 11.5px;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .tag {
-            position: absolute;
-            top: 7px;
-            left: 7px;
-            font-size: 9px;
-            font-weight: 800;
-            padding: 3px 6px;
-            border-radius: 5px;
-            background: #000000cc;
-            backdrop-filter: blur(4px);
-            letter-spacing: .5px;
-            color: var(--acc);
-        }
-
-        .fab {
-            position: absolute;
-            right: 8px;
-            bottom: 8px;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: var(--acc);
-            display: grid;
-            place-items: center;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: .25s;
-            box-shadow: 0 8px 18px #000000bb;
-        }
-
-        .card:hover .fab {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .fab svg {
-            width: 16px;
-            height: 16px;
-            fill: #000000;
-            margin-left: 2px;
-        }
-
-        .row {
-            display: grid;
-            grid-template-columns: 24px 44px 1fr 30px;
-            gap: 11px;
-            align-items: center;
-            padding: 8px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: .15s;
-            border-bottom: 1px solid #ffffff0a;
-        }
-
-        .row:hover {
-            background: #ffffff1f;
-        }
-
-        .row.now {
-            background: #1ed7601f;
-            border-left: 3px solid var(--acc);
-        }
-
-        .row.now b {
-            color: var(--acc);
-        }
-
-        .row img {
-            width: 44px;
-            height: 44px;
-            border-radius: 6px;
-            object-fit: cover;
-            background: #20202c;
-        }
-
-        .row i {
-            color: var(--dim);
-            font-style: normal;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .row b {
-            font-size: 13.5px;
-            font-weight: 600;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: var(--txt);
-        }
-
-        .row small {
-            color: var(--dim);
-            font-size: 11.5px;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .heart {
-            opacity: .4;
-            transition: .2s;
-            display: grid;
-            place-items: center;
-        }
-
-        .heart.on {
-            opacity: 1;
-        }
-
-        .heart.on svg {
-            fill: var(--acc);
-        }
-
-        .heart svg {
-            width: 17px;
-            height: 17px;
-            fill: var(--dim);
-        }
-
-        /* Player Footer */
-        footer {
-            grid-column: 1/-1;
-            background: #0e0e15;
-            border-top: 1px solid #ffffff1a;
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            align-items: center;
-            padding: 0 16px;
-            gap: 14px;
-            z-index: 10;
-        }
-
-        .meta {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            min-width: 0;
-        }
-
-        .meta img {
-            width: 48px;
-            height: 48px;
-            border-radius: 7px;
-            object-fit: cover;
-            background: #20202c;
-        }
-
-        .meta b {
-            font-size: 13px;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: var(--txt);
-        }
-
-        .meta small {
-            color: var(--dim);
-            font-size: 11px;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .ctr {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .btns {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .btns button {
-            background: none;
-            border: 0;
-            cursor: pointer;
-            color: var(--dim);
-            display: grid;
-            place-items: center;
-            transition: .18s;
-        }
-
-        .btns button:hover {
-            color: var(--txt);
-        }
-
-        .btns button.act {
-            color: var(--acc);
-        }
-
-        .btns svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
-
-        #pp {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--txt);
-        }
-
-        #pp svg {
-            width: 15px;
-            height: 15px;
-            fill: #000000;
-        }
-
-        .prog {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            max-width: 460px;
-        }
-
-        .prog span {
-            font-size: 10.5px;
-            color: var(--dim);
-            min-width: 30px;
-            text-align: center;
-        }
-
-        input[type=range] {
-            -webkit-appearance: none;
-            appearance: none;
-            flex: 1;
-            height: 4px;
-            border-radius: 4px;
-            background: #ffffff33;
-            cursor: pointer;
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--txt);
-        }
-
-        .vol {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-
-        .vol input {
-            max-width: 80px;
-        }
-
-        .vol svg {
-            width: 16px;
-            height: 16px;
-            fill: var(--dim);
-            flex: none;
-        }
-
-        /* Modals & Toast */
-        .ov {
-            position: fixed;
-            inset: 0;
-            background: #000000cc;
-            backdrop-filter: blur(8px);
-            display: grid;
-            place-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: .3s;
-            z-index: 80;
-            padding: 18px;
-        }
-
-        .ov.on {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal {
-            background: var(--bg2);
-            border: 1px solid #ffffff29;
-            border-radius: 18px;
-            padding: 22px;
-            width: min(440px, 92vw);
-            transform: scale(.92);
-            transition: .3s;
-            box-shadow: 0 30px 80px #000000cc;
-        }
-
-        .ov.on .modal {
-            transform: scale(1);
-        }
-
-        .modal h3 {
-            margin-bottom: 8px;
-            font-size: 17px;
-        }
-
-        .modal p {
-            color: var(--dim);
-            font-size: 12.5px;
-            line-height: 1.6;
-            margin-bottom: 14px;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 10px;
-            border: 1px solid #ffffff29;
-            background: #0d0d14;
-            color: var(--txt);
-            font-size: 13px;
-            outline: none;
-            margin-bottom: 12px;
-        }
-
-        .mbtn {
-            width: 100%;
-            padding: 11px;
-            border: 0;
-            border-radius: 24px;
-            background: var(--acc);
-            color: #000000;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .mbtn.g {
-            background: #ffffff17;
-            color: var(--txt);
-            margin-top: 8px;
-        }
-
-        #toast {
-            position: fixed;
-            bottom: calc(var(--bar) + 18px);
-            left: 50%;
-            transform: translate(-50%, 26px);
-            background: var(--acc);
-            color: #000000;
-            padding: 10px 20px;
-            border-radius: 26px;
-            font-weight: 700;
-            font-size: 12.5px;
-            opacity: 0;
-            transition: .3s;
-            z-index: 95;
-            pointer-events: none;
-            max-width: 90vw;
-            text-align: center;
-            box-shadow: 0 10px 25px #000000aa;
-        }
-
-        #toast.on {
-            opacity: 1;
-            transform: translate(-50%, 0);
-        }
-
-        .mobile-nav {
-            display: none;
-        }
-
-        .empty {
-            color: var(--dim);
-            text-align: center;
-            padding: 40px 18px;
-            font-size: 13.5px;
-            line-height: 1.8;
-        }
+            --bg: #0b0b10; --bg2: #12121a; --card: #181823; --card2: #242436;
+            --txt: #ffffff; --dim: #a0a0b8; --acc: #1ed760; --acc2: #7c5cff;
+            --bar: 92px; --m-nav: 60px;
+        }
+        html, body { height: 100%; overflow: hidden; background: var(--bg); }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Noto Sans Thai', sans-serif; color: var(--txt); }
+        #app { display: grid; grid-template-columns: 248px 1fr; grid-template-rows: 1fr var(--bar); height: 100vh; height: 100dvh; }
+
+        aside { background: #08080d; padding: 18px 12px; display: flex; flex-direction: column; gap: 3px; border-right: 1px solid #ffffff1a; overflow-y: auto; }
+        .logo { font-size: 22px; font-weight: 800; margin-bottom: 16px; padding-left: 8px; background: linear-gradient(90deg, var(--acc), var(--acc2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px; color: var(--dim); cursor: pointer; font-size: 14px; font-weight: 600; transition: .18s; user-select: none; }
+        .nav:hover { background: #ffffff1f; color: var(--txt); }
+        .nav.on { background: #ffffff2a; color: #ffffff; font-weight: 700; }
+        .nav svg { width: 19px; height: 19px; fill: currentColor; flex: none; }
+        .sep { height: 1px; background: #ffffff1a; margin: 12px 6px; }
+        .lbl { font-size: 11px; color: #8585aa; letter-spacing: 1.3px; padding: 6px 12px; font-weight: 800; }
+        .cat { font-size: 13.5px; color: var(--dim); padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: .15s; user-select: none; }
+        .cat:hover { color: var(--txt); background: #ffffff14; }
+        .cat.on { color: var(--acc); background: #1ed76029; font-weight: 700; }
+        .addbtn { margin-top: 14px; padding: 11px; border-radius: 24px; border: 0; cursor: pointer; background: linear-gradient(90deg, var(--acc), #12b954); color: #000000; font-weight: 800; font-size: 13.5px; transition: .2s; }
+        .addbtn:hover { transform: scale(1.03); }
+
+        main { overflow-y: auto; padding: 18px 26px 40px; background: radial-gradient(880px 380px at 12% -14%, #7c5cff24, transparent), var(--bg); -webkit-overflow-scrolling: touch; }
+        main::-webkit-scrollbar, aside::-webkit-scrollbar { width: 6px; }
+        main::-webkit-scrollbar-thumb, aside::-webkit-scrollbar-thumb { background: #ffffff2f; border-radius: 9px; }
+
+        .top { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; position: sticky; top: -18px; padding: 12px 0; background: linear-gradient(var(--bg) 80%, transparent); z-index: 6; }
+        .search { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid #ffffff29; border-radius: 30px; padding: 10px 16px; transition: .2s; }
+        .search:focus-within { border-color: var(--acc); box-shadow: 0 0 0 3px #1ed76029; }
+        .search input { flex: 1; background: none; border: 0; color: var(--txt); font-size: 13.5px; outline: none; width: 100%; }
+        .search input::placeholder { color: #8888a0; }
+        .search svg { width: 17px; height: 17px; fill: var(--dim); flex: none; cursor: pointer; }
+
+        h2 { font-size: 19px; margin: 20px 0 12px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+        h2 em { font-style: normal; font-size: 12px; color: var(--acc); font-weight: 700; cursor: pointer; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border-radius: 12px; padding: 11px; cursor: pointer; transition: .25s; position: relative; border: 1px solid #ffffff0d; }
+        .card:hover { background: var(--card2); transform: translateY(-4px); border-color: #ffffff26; }
+        .card.now { border-color: var(--acc); background: var(--card2); }
+        .card .ph { position: relative; }
+        .card img { width: 100%; aspect-ratio: 1; border-radius: 9px; object-fit: cover; box-shadow: 0 8px 20px #00000099; background: #20202c; display: block; }
+        .card b { display: block; margin: 10px 0 3px; font-size: 13.5px; line-height: 1.35; max-height: 2.7em; overflow: hidden; color: var(--txt); }
+        .card small { color: var(--dim); font-size: 11.5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .tag { position: absolute; top: 7px; left: 7px; font-size: 9px; font-weight: 800; padding: 3px 6px; border-radius: 5px; background: #000000cc; backdrop-filter: blur(4px); letter-spacing: .5px; color: var(--acc); }
+        .fab { position: absolute; right: 8px; bottom: 8px; width: 38px; height: 38px; border-radius: 50%; background: var(--acc); display: grid; place-items: center; opacity: 0; transform: translateY(8px); transition: .25s; box-shadow: 0 8px 18px #000000bb; }
+        .card:hover .fab { opacity: 1; transform: translateY(0); }
+        .fab svg { width: 16px; height: 16px; fill: #000000; margin-left: 2px; }
+
+        .row { display: grid; grid-template-columns: 24px 44px 1fr 30px; gap: 11px; align-items: center; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: .15s; border-bottom: 1px solid #ffffff0a; }
+        .row:hover { background: #ffffff1f; }
+        .row.now { background: #1ed7601f; border-left: 3px solid var(--acc); }
+        .row.now b { color: var(--acc); }
+        .row img { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; background: #20202c; }
+        .row i { color: var(--dim); font-style: normal; font-size: 12px; text-align: center; }
+        .row b { font-size: 13.5px; font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--txt); }
+        .row small { color: var(--dim); font-size: 11.5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .heart { opacity: .4; transition: .2s; display: grid; place-items: center; }
+        .heart.on { opacity: 1; }
+        .heart.on svg { fill: var(--acc); }
+        .heart svg { width: 17px; height: 17px; fill: var(--dim); }
+
+        footer { grid-column: 1/-1; background: #0e0e15; border-top: 1px solid #ffffff1a; display: grid; grid-template-columns: 1fr 2fr 1fr; align-items: center; padding: 0 16px; gap: 14px; z-index: 10; }
+        .meta { display: flex; align-items: center; gap: 11px; min-width: 0; }
+        .meta img { width: 48px; height: 48px; border-radius: 7px; object-fit: cover; background: #20202c; }
+        .meta b { font-size: 13px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--txt); }
+        .meta small { color: var(--dim); font-size: 11px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .ctr { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .btns { display: flex; align-items: center; gap: 16px; }
+        .btns button { background: none; border: 0; cursor: pointer; color: var(--dim); display: grid; place-items: center; transition: .18s; }
+        .btns button:hover { color: var(--txt); }
+        .btns button.act { color: var(--acc); }
+        .btns svg { width: 18px; height: 18px; fill: currentColor; }
+        #pp { width: 36px; height: 36px; border-radius: 50%; background: var(--txt); }
+        #pp svg { width: 15px; height: 15px; fill: #000000; }
+
+        .prog { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 460px; }
+        .prog span { font-size: 10.5px; color: var(--dim); min-width: 30px; text-align: center; }
+        input[type=range] { -webkit-appearance: none; appearance: none; flex: 1; height: 4px; border-radius: 4px; background: #ffffff33; cursor: pointer; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--txt); }
+
+        .vol { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+        .vol input { max-width: 80px; }
+        .vol svg { width: 16px; height: 16px; fill: var(--dim); flex: none; }
+
+        .ov { position: fixed; inset: 0; background: #000000cc; backdrop-filter: blur(8px); display: grid; place-items: center; opacity: 0; pointer-events: none; transition: .3s; z-index: 80; padding: 18px; }
+        .ov.on { opacity: 1; pointer-events: auto; }
+        .modal { background: var(--bg2); border: 1px solid #ffffff29; border-radius: 18px; padding: 22px; width: min(440px, 92vw); transform: scale(.92); transition: .3s; box-shadow: 0 30px 80px #000000cc; }
+        .ov.on .modal { transform: scale(1); }
+        .modal h3 { margin-bottom: 8px; font-size: 17px; }
+        .modal p { color: var(--dim); font-size: 12.5px; line-height: 1.6; margin-bottom: 14px; }
+        .modal input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #ffffff29; background: #0d0d14; color: var(--txt); font-size: 13px; outline: none; margin-bottom: 12px; }
+        .mbtn { width: 100%; padding: 11px; border: 0; border-radius: 24px; background: var(--acc); color: #000000; font-weight: 800; cursor: pointer; font-size: 13px; }
+        .mbtn.g { background: #ffffff17; color: var(--txt); margin-top: 8px; }
+
+        #toast { position: fixed; bottom: calc(var(--bar) + 18px); left: 50%; transform: translate(-50%, 26px); background: var(--acc); color: #000000; padding: 10px 20px; border-radius: 26px; font-weight: 700; font-size: 12.5px; opacity: 0; transition: .3s; z-index: 95; pointer-events: none; max-width: 90vw; text-align: center; box-shadow: 0 10px 25px #000000aa; }
+        #toast.on { opacity: 1; transform: translate(-50%, 0); }
+        .mobile-nav { display: none; }
+        .empty { color: var(--dim); text-align: center; padding: 40px 18px; font-size: 13.5px; line-height: 1.8; }
 
-        /* Mobile Adjustments (Responsive) */
         @media(max-width: 768px) {
-            #app {
-                grid-template-columns: 1fr;
-                grid-template-rows: 1fr var(--bar) var(--m-nav);
-            }
-
-            aside {
-                display: none;
-            }
-
-            main {
-                padding: 14px 14px 30px;
-            }
-
-            .grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-
-            .card {
-                padding: 9px;
-            }
-
-            .card b {
-                font-size: 12.5px;
-            }
-
-            .fab {
-                display: none;
-            }
-
-            .vol {
-                display: none;
-            }
-
-            footer {
-                grid-template-columns: 1fr auto;
-                padding: 0 12px;
-                gap: 8px;
-            }
-
-            .ctr {
-                width: auto;
-            }
-
-            .prog {
-                display: none;
-            }
-
-            .btns {
-                gap: 12px;
-            }
-
-            #shf,
-            #rep {
-                display: none;
-            }
-
-            .mobile-nav {
-                grid-column: 1/-1;
-                background: #08080c;
-                border-top: 1px solid #ffffff14;
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                z-index: 10;
-            }
-
-            .m-item {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 3px;
-                color: var(--dim);
-                font-size: 10px;
-                font-weight: 600;
-                cursor: pointer;
-            }
-
-            .m-item.on {
-                color: var(--acc);
-            }
-
-            .m-item svg {
-                width: 20px;
-                height: 20px;
-                fill: currentColor;
-            }
-
-            #toast {
-                bottom: calc(var(--bar) + var(--m-nav) + 12px);
-            }
+            #app { grid-template-columns: 1fr; grid-template-rows: 1fr var(--bar) var(--m-nav); }
+            aside { display: none; }
+            main { padding: 14px 14px 30px; }
+            .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .card { padding: 9px; }
+            .card b { font-size: 12.5px; }
+            .fab, .vol, .prog, #shf, #rep { display: none; }
+            footer { grid-template-columns: 1fr auto; padding: 0 12px; gap: 8px; }
+            .ctr { width: auto; }
+            .btns { gap: 12px; }
+            .mobile-nav { grid-column: 1/-1; background: #08080c; border-top: 1px solid #ffffff14; display: flex; justify-content: space-around; align-items: center; z-index: 10; }
+            .m-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--dim); font-size: 10px; font-weight: 600; cursor: pointer; }
+            .m-item.on { color: var(--acc); }
+            .m-item svg { width: 20px; height: 20px; fill: currentColor; }
+            #toast { bottom: calc(var(--bar) + var(--m-nav) + 12px); }
         }
     </style>
 </head>
 
 <body>
     <div id="app">
-        <!-- Sidebar Desktop -->
         <aside>
             <div class="logo">◈ Wavely</div>
-            <div class="nav on" data-v="home">
-                <svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3z" /></svg>หน้าแรก
-            </div>
-            <div class="nav" data-v="lib">
-                <svg viewBox="0 0 24 24"><path d="M4 4h4v16H4zm6 0h4v16h-4zm7.6.5 3.9 15.5-3.9 1L13.7 5.5z" /></svg>คลังของฉัน
-            </div>
-            <div class="nav" data-v="fav">
-                <svg viewBox="0 0 24 24"><path d="m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.18z" /></svg>ที่ถูกใจ
-            </div>
+            <div class="nav on" data-v="home"><svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3z" /></svg>หน้าแรก</div>
+            <div class="nav" data-v="lib"><svg viewBox="0 0 24 24"><path d="M4 4h4v16H4zm6 0h4v16h-4zm7.6.5 3.9 15.5-3.9 1L13.7 5.5z" /></svg>คลังของฉัน</div>
+            <div class="nav" data-v="fav"><svg viewBox="0 0 24 24"><path d="m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.18z" /></svg>ที่ถูกใจ</div>
             <div class="sep"></div>
             <div class="lbl">หมวดหมู่</div>
             <div id="cats"></div>
             <button class="addbtn" id="btnImp">＋ เพิ่มเพลงจากลิงก์</button>
         </aside>
 
-        <!-- Main Content -->
         <main>
             <div class="top">
                 <div class="search">
-                    <svg id="btnSearch" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14" />
-                    </svg>
-                    <input id="q" placeholder="ค้นหาเพลงไร้โฆษณาผ่าน Invidious...">
+                    <svg id="btnSearch" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14" /></svg>
+                    <input id="q" placeholder="ค้นหาเพลงไร้โฆษณา...">
                 </div>
             </div>
             <div id="view"></div>
         </main>
 
-        <!-- Player Bar -->
         <footer>
             <div class="meta">
                 <img id="fImg" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' fill='%2320202c'/%3E%3Ctext x='30' y='38' font-size='24' fill='%231ed760' text-anchor='middle'%3E%E2%99%AA%3C/text%3E%3C/svg%3E">
                 <div style="min-width:0"><b id="fT">ยังไม่มีเพลง</b><small id="fA">เลือกเพลงเพื่อเริ่มฟัง</small></div>
-                <div class="heart" id="fav1">
-                    <svg viewBox="0 0 24 24"><path d="m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.18z" /></svg>
-                </div>
+                <div class="heart" id="fav1"><svg viewBox="0 0 24 24"><path d="m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.18z" /></svg></div>
             </div>
             <div class="ctr">
                 <div class="btns">
@@ -842,31 +176,20 @@
             </div>
         </footer>
 
-        <!-- Bottom Navigation Mobile -->
         <div class="mobile-nav">
-            <div class="m-item on" data-v="home">
-                <svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3z" /></svg>หน้าแรก
-            </div>
-            <div class="m-item" data-v="lib">
-                <svg viewBox="0 0 24 24"><path d="M4 4h4v16H4zm6 0h4v16h-4zm7.6.5 3.9 15.5-3.9 1L13.7 5.5z" /></svg>คลังของฉัน
-            </div>
-            <div class="m-item" data-v="fav">
-                <svg viewBox="0 0 24 24"><path d="m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.18z" /></svg>ที่ถูกใจ
-            </div>
-            <div class="m-item" id="mBtnImp">
-                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>เพิ่มเพลง
-            </div>
+            <div class="m-item on" data-v="home"><svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3z" /></svg>หน้าแรก</div>
+            <div class="m-item" data-v="lib"><svg viewBox="0 0 24 24"><path d="M4 4h4v16H4zm6 0h4v16h-4zm7.6.5 3.9 15.5-3.9 1L13.7 5.5z" /></svg>คลังของฉัน</div>
+            <div class="m-item" data-v="fav"><svg viewBox="0 0 24 24"><path d="m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.18z" /></svg>ที่ถูกใจ</div>
+            <div class="m-item" id="mBtnImp"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>เพิ่มเพลง</div>
         </div>
     </div>
 
-    <!-- Hidden HTML5 Audio Element -->
-    <audio id="audioPlayer"></audio>
+    <audio id="audioPlayer" crossorigin="anonymous"></audio>
 
-    <!-- Import Modal -->
     <div class="ov" id="ovImp">
         <div class="modal">
             <h3>🔗 เพิ่มเพลงจากลิงก์ YouTube</h3>
-            <p>วางลิงก์ <b>watch?v=</b> หรือ <b>youtu.be/</b> เพื่อฟังแบบไม่มีโฆษณา</p>
+            <p>วางลิงก์ <b>watch?v=</b> หรือ <b>youtu.be/</b> เพื่อฟังแบบไร้โฆษณา</p>
             <input id="impUrl" placeholder="https://www.youtube.com/watch?v=vxHVQtJj2uQ">
             <button class="mbtn" id="btnImpGo">เพิ่มและเล่นเลย</button>
             <button class="mbtn g" data-close="ovImp">ยกเลิก</button>
@@ -877,45 +200,20 @@
 
     <script>
         'use strict';
-        /* ============ INVIDIOUS INSTANCES (AUTOFALLBACK) ============ */
-        var INVIDIOUS_NODES = [
-            'https://invidious.nerdvpn.de',
-            'https://inv.tux.pizza',
-            'https://invidious.drgns.space',
-            'https://vid.puffyan.us'
-        ];
-        var currentNodeIdx = 0;
-
-        function getApiUrl(endpoint) {
-            return INVIDIOUS_NODES[currentNodeIdx] + '/api/v1' + endpoint;
-        }
-
         function $(i) { return document.getElementById(i) }
         function $$(s) { return Array.prototype.slice.call(document.querySelectorAll(s)) }
-        function esc(s) {
-            return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]
-            })
-        }
-        function fmt(s) {
-            if (!s || isNaN(s) || !isFinite(s)) return '0:00';
-            return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0')
-        }
+        function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] }) }
+        function fmt(s) { if (!s || isNaN(s) || !isFinite(s)) return '0:00'; return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0') }
         function thumb(id) { return 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg' }
         function load(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d } catch (e) { return d } }
         function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true } catch (e) { return false } }
-        function toast(m) {
-            var t = $('toast'); t.textContent = m; t.classList.add('on');
-            clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('on') }, 2600)
-        }
+        function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('on') }, 2600) }
 
-        /* ============ STATE ============ */
         var queue = load('wv_queue', []), cur = load('wv_cur_idx', -1);
         var audio = $('audioPlayer');
         var shuffle = false, repeat = false;
         var favs = load('wv_favs', []), mine = load('wv_mine', []);
 
-        /* ============ SEED DATA ============ */
         var SEED = [
             { id: 'vxHVQtJj2uQ', title: 'สาธุ (Sathu)', artist: 'ASIA7 Feat. ปลาย กนกพร', cat: 'tpop' },
             { id: 'OYPiXBIgvJ8', title: 'เพลงรัก', artist: 'Three Man Down', cat: 'tpop' },
@@ -925,15 +223,11 @@
             { id: 'F_v_Qj6watw', title: 'รักใครไม่ไหว', artist: 'Three Man Down', cat: 'sad' },
             { id: 'ZVA_RJJTNOo', title: 'ยอมถอย', artist: 'Three Man Down', cat: 'sad' },
             { id: 'ywtN9eWJRmE', title: 'ปล่อยให้เวลา', artist: 'Three Man Down', cat: 'sad' }
-        ].map(function (x) { return { src: 'inv', id: x.id, title: x.title, artist: x.artist, img: thumb(x.id), cat: x.cat } });
+        ].map(function (x) { return { id: x.id, title: x.title, artist: x.artist, img: thumb(x.id), cat: x.cat } });
 
-        var CATS = [
-            { k: 'tpop', n: '🎤 T-Pop / สตริง' },
-            { k: 'sad', n: '💔 อกหัก / เศร้า' }
-        ];
+        var CATS = [{ k: 'tpop', n: '🎤 T-Pop / สตริง' }, { k: 'sad', n: '💔 อกหัก / เศร้า' }];
         $('cats').innerHTML = CATS.map(function (c) { return '<div class="cat" data-k="' + c.k + '">' + c.n + '</div>' }).join('');
 
-        /* ============ INVIDIOUS AUDIO ENGINE ============ */
         function parseYT(u) {
             u = String(u || '').trim();
             var m = u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/);
@@ -942,33 +236,29 @@
             return null;
         }
 
-        async function fetchAudioStream(id, retryCount) {
-            retryCount = retryCount || 0;
-            if (retryCount >= INVIDIOUS_NODES.length) {
-                throw new Error('ไม่สามารถดึงข้อมูลเพลงได้จากทุก Server');
+        /* Direct Reliable Stream Sources (Auto Fallback System) */
+        async function fetchAudioStream(id) {
+            var APIs = [
+                'https://pipedapi.kavin.rocks/streams/' + id,
+                'https://api.piped.private.coffee/streams/' + id,
+                'https://pipedapi.tokhmi.xyz/streams/' + id
+            ];
+
+            for (var i = 0; i < APIs.length; i++) {
+                try {
+                    var res = await fetch(APIs[i]);
+                    if (!res.ok) continue;
+                    var data = await res.json();
+                    if (data.audioStreams && data.audioStreams.length) {
+                        data.audioStreams.sort(function(a, b) { return (b.bitrate || 0) - (a.bitrate || 0) });
+                        return data.audioStreams[0].url;
+                    }
+                } catch(e) {}
             }
-            try {
-                var res = await fetch(getApiUrl('/videos/' + id));
-                if (!res.ok) throw new Error('Node failed');
-                var data = await res.json();
-                
-                // หา Audio stream ที่ดีที่สุด
-                var audioStreams = data.adaptiveFormats.filter(function(f) {
-                    return f.type && f.type.startsWith('audio/');
-                });
-                if (!audioStreams.length) throw new Error('No audio stream');
-                
-                // เลือกรุ่นที่มี bit-rate สูงสุด
-                audioStreams.sort(function(a, b) { return (b.bitrate || 0) - (a.bitrate || 0) });
-                return audioStreams[0].url;
-            } catch (err) {
-                // สลับไปยัง Node ถัดไปถ้ามีปัญหา
-                currentNodeIdx = (currentNodeIdx + 1) % INVIDIOUS_NODES.length;
-                return fetchAudioStream(id, retryCount + 1);
-            }
+            // Fallback: Cobalt Proxy Direct Engine
+            return 'https://co.wuk.sh/api/json?url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + id);
         }
 
-        /* ============ CONTROLS ============ */
         function setProg(c, d) {
             $('cur').textContent = fmt(c); $('dur').textContent = fmt(d);
             var p = (d > 0) ? (c / d * 100) : 0; $('seek').value = p;
@@ -982,8 +272,7 @@
         async function playAt(i) {
             if (!queue.length || i < 0 || i >= queue.length) return;
             cur = i; var t = queue[i];
-            save('wv_cur_idx', cur);
-            save('wv_queue', queue);
+            save('wv_cur_idx', cur); save('wv_queue', queue);
 
             $('fImg').src = t.img; $('fT').textContent = t.title; $('fA').textContent = t.artist;
             $('fav1').classList.toggle('on', isFav(t));
@@ -993,15 +282,18 @@
             var card = $('card' + i); if (card) card.classList.add('now');
             document.title = '▶ ' + t.title;
 
-            toast('⚡ กำลังโหลดเพลงแบบไร้โฆษณา...');
+            toast('⚡ กำลังดึงสัญญาณเสียง...');
             try {
                 var streamUrl = await fetchAudioStream(t.id);
                 audio.src = streamUrl;
-                audio.play();
-                setIcon(true);
+                var p = audio.play();
+                if (p !== undefined) {
+                    p.then(function() { setIcon(true); })
+                     .catch(function() { setIcon(false); toast('⚠️ คลิกปุ่ม Play เพื่อเริ่มฟัง'); });
+                }
             } catch (e) {
-                toast('❌ ไม่สามารถดึงสัญญาณเสียงได้ — กำลังข้าม');
-                setTimeout(next, 1500);
+                toast('❌ ไม่สามารถดึงเพลงนี้ได้ — ข้ามไปเพลงถัดไป');
+                setTimeout(next, 1200);
             }
         }
 
@@ -1014,20 +306,11 @@
             }
         }
 
-        function next() {
-            if (!queue.length) return;
-            cur = shuffle ? Math.floor(Math.random() * queue.length) : (cur + 1) % queue.length; 
-            playAt(cur);
-        }
-        function prev() {
-            if (!queue.length) return;
-            cur = (cur - 1 + queue.length) % queue.length; 
-            playAt(cur);
-        }
+        function next() { if (!queue.length) return; cur = shuffle ? Math.floor(Math.random() * queue.length) : (cur + 1) % queue.length; playAt(cur); }
+        function prev() { if (!queue.length) return; cur = (cur - 1 + queue.length) % queue.length; playAt(cur); }
 
         audio.ontimeupdate = function () { setProg(audio.currentTime, audio.duration); };
         audio.onended = function () { repeat ? playAt(cur) : next(); };
-        audio.onerror = function () { setIcon(false); };
 
         $('pp').onclick = toggle;
         $('bNext').onclick = next;
@@ -1038,52 +321,36 @@
         };
 
         function applyVol() {
-            var v = Number($('vol').value);
-            audio.volume = v / 100;
+            var v = Number($('vol').value); audio.volume = v / 100;
             $('vol').style.background = 'linear-gradient(90deg,var(--txt) ' + v + '%,#ffffff33 ' + v + '%)';
         }
         $('vol').oninput = applyVol;
         $('shf').onclick = function () { shuffle = !shuffle; this.classList.toggle('act', shuffle); toast(shuffle ? '🔀 สุ่มเพลง: เปิด' : 'สุ่มเพลง: ปิด'); };
         $('rep').onclick = function () { repeat = !repeat; this.classList.toggle('act', repeat); toast(repeat ? '🔁 เล่นซ้ำ: เปิด' : 'เล่นซ้ำ: ปิด'); };
 
-        /* ================= SEARCH ENGINE ================= */
         async function handleSearch(val) {
-            val = val.trim();
-            if (!val) return;
+            val = val.trim(); if (!val) return;
+            var yid = parseYT(val); if (yid) { addLink(val); return; }
 
-            var yid = parseYT(val);
-            if (yid) { addLink(val); return; }
-
-            toast('🔍 กำลังค้นหาเพลง (ไร้โฆษณา)...');
+            toast('🔍 กำลังค้นหา...');
             try {
-                var res = await fetch(getApiUrl('/search?q=' + encodeURIComponent(val) + '&type=video'));
+                var res = await fetch('https://pipedapi.kavin.rocks/search?q=' + encodeURIComponent(val) + '&filter=music_videos');
                 if (res.ok) {
                     var data = await res.json();
-                    var results = data.map(function (item) {
-                        return {
-                            src: 'inv',
-                            id: item.videoId,
-                            title: item.title,
-                            artist: item.author,
-                            img: thumb(item.videoId)
-                        };
-                    });
+                    var results = data.items.map(function (item) {
+                        var id = parseYT(item.url);
+                        return { id: id, title: item.title, artist: item.uploaderName, img: thumb(id) };
+                    }).filter(function(x){ return x.id });
 
-                    if (results.length) {
-                        render(results, '🔍 ผลการค้นหาสำหรับ: "' + val + '"');
-                        return;
-                    }
+                    if (results.length) { render(results, '🔍 ผลการค้นหาสำหรับ: "' + val + '"'); return; }
                 }
-            } catch (e) {
-                currentNodeIdx = (currentNodeIdx + 1) % INVIDIOUS_NODES.length;
-            }
+            } catch (e) {}
             toast('❌ ไม่พบเพลงที่ค้นหา');
         }
 
         $('q').addEventListener('keydown', function (e) { if (e.key === 'Enter') handleSearch(this.value); });
         $('btnSearch').onclick = function () { handleSearch($('q').value); };
 
-        /* ============ FAVORITES ============ */
         function isFav(t) { return favs.some(function (f) { return f.id === t.id }) }
         function fav(i, el) {
             var t = queue[i]; if (!t) return;
@@ -1096,11 +363,8 @@
         }
         $('fav1').onclick = function () { if (cur > -1) fav(cur, null) };
 
-        /* ============ RENDER ============ */
         function render(arr, title) {
-            queue = arr || [];
-            save('wv_queue', queue);
-            var v = $('view');
+            queue = arr || []; save('wv_queue', queue); var v = $('view');
             if (!queue.length) { v.innerHTML = '<div class="empty">😶 ไม่พบรายการเพลง</div>'; return }
             var cards = queue.map(function (t, i) {
                 return '<div class="card' + (i === cur ? ' now' : '') + '" id="card' + i + '" data-i="' + i + '">'
@@ -1130,7 +394,6 @@
             var pa = $('playAll'); if (pa) pa.onclick = function () { playAt(0) };
         }
 
-        /* ============ LINK IMPORT ============ */
         function openImp() { $('ovImp').classList.add('on'); setTimeout(function () { $('impUrl').focus() }, 250) }
         $('btnImp').onclick = openImp;
         $('mBtnImp').onclick = openImp;
@@ -1140,21 +403,17 @@
         async function addLink(raw) {
             var id = parseYT(raw);
             if (!id) { toast('❌ ไม่พบเพลง หรือลิงก์ไม่ถูกต้อง'); return }
-            toast('🔍 กำลังดึงข้อมูลเพลง...');
+            toast('🔍 กำลังดึงข้อมูล...');
             try {
-                var res = await fetch(getApiUrl('/videos/' + id));
-                if (!res.ok) throw new Error();
-                var d = await res.json();
-                var t = { src: 'inv', id: id, title: d.title, artist: d.author, img: thumb(id), cat: 'mine' };
+                var t = { id: id, title: 'เพลงจากลิงก์ (' + id + ')', artist: 'YouTube Source', img: thumb(id), cat: 'mine' };
                 if (!mine.some(function (m) { return m.id === id })) { mine.unshift(t); save('wv_mine', mine) }
                 $('ovImp').classList.remove('on'); $('impUrl').value = '';
                 var rest = queue.filter(function (x) { return x.id !== id });
-                render([t].concat(rest), '🔗 เพิ่มและกำลังเล่น: ' + t.title);
+                render([t].concat(rest), '🔗 เพิ่มและกำลังเล่น');
                 playAt(0); toast('✅ เพิ่มเพลงเรียบร้อย');
-            } catch (e) { toast('❌ ไม่สามารถดึงข้อมูลเพลงนี้ได้') }
+            } catch (e) { toast('❌ ไม่สามารถเพิ่มเพลงนี้ได้') }
         }
 
-        /* ============ VIEWS NAVIGATION ============ */
         function switchTab(v) {
             $$('.nav, .m-item').forEach(function (n) { n.classList.toggle('on', n.dataset.v === v) });
             if (v === 'home') render(SEED, '🇹🇭 เพลงแนะนำ (No Ads)');
@@ -1174,7 +433,6 @@
             };
         });
 
-        /* ============ INIT ============ */
         applyVol();
         switchTab('home');
     </script>
