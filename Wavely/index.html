@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0b0b10">
-    <title>Wavely — Music Hub</title>
+    <title>Wavely — Music Hub (Ad-Free)</title>
     <style>
         * {
             margin: 0;
@@ -314,7 +314,7 @@
             background: #000000cc;
             backdrop-filter: blur(4px);
             letter-spacing: .5px;
-            color: #ff8095;
+            color: var(--acc);
         }
 
         .fab {
@@ -573,60 +573,6 @@
             flex: none;
         }
 
-        /* YouTube Container Hidden Player */
-        #ytBox {
-            position: fixed;
-            right: 16px;
-            bottom: calc(var(--bar) + 14px);
-            width: 240px;
-            z-index: 55;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px #000000dd;
-            border: 1px solid #ffffff29;
-            background: #000000;
-            transition: .35s;
-        }
-
-        #ytBox.hide {
-            transform: translateY(140%);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #ytBox .hd {
-            background: #12121a;
-            padding: 6px 10px;
-            font-size: 11px;
-            color: var(--dim);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #ytBox .hd b {
-            color: var(--yt);
-            font-size: 10px;
-        }
-
-        #ytBox .hd i {
-            cursor: pointer;
-            font-style: normal;
-            font-size: 16px;
-        }
-
-        #ytWrap {
-            width: 240px;
-            height: 135px;
-            background: #000000;
-        }
-
-        #ytFrame {
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
         /* Modals & Toast */
         .ov {
             position: fixed;
@@ -800,7 +746,6 @@
                 display: none;
             }
 
-            /* Mobile Navigation Bottom Bar */
             .mobile-nav {
                 grid-column: 1/-1;
                 background: #08080c;
@@ -830,17 +775,6 @@
                 width: 20px;
                 height: 20px;
                 fill: currentColor;
-            }
-
-            #ytBox {
-                right: 8px;
-                bottom: calc(var(--bar) + var(--m-nav) + 8px);
-                width: 170px;
-            }
-
-            #ytWrap {
-                width: 170px;
-                height: 96px;
             }
 
             #toast {
@@ -877,7 +811,7 @@
                     <svg id="btnSearch" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14" />
                     </svg>
-                    <input id="q" placeholder="ค้นหาชื่อเพลงในเว็บ หรือค้นหาจาก YouTube...">
+                    <input id="q" placeholder="ค้นหาเพลงไร้โฆษณาผ่าน Invidious...">
                 </div>
             </div>
             <div id="view"></div>
@@ -925,17 +859,14 @@
         </div>
     </div>
 
-    <!-- YouTube Frame Window -->
-    <div id="ytBox" class="hide">
-        <div class="hd"><b>▶ YOUTUBE PLAYER</b><i id="ytMin">−</i></div>
-        <div id="ytWrap"><div id="ytFrame"></div></div>
-    </div>
+    <!-- Hidden HTML5 Audio Element -->
+    <audio id="audioPlayer"></audio>
 
     <!-- Import Modal -->
     <div class="ov" id="ovImp">
         <div class="modal">
             <h3>🔗 เพิ่มเพลงจากลิงก์ YouTube</h3>
-            <p>วางลิงก์ <b>watch?v=</b> หรือ <b>youtu.be/</b> หรือใส่รหัสวิดีโอเพื่อเพิ่มลงในคลัง</p>
+            <p>วางลิงก์ <b>watch?v=</b> หรือ <b>youtu.be/</b> เพื่อฟังแบบไม่มีโฆษณา</p>
             <input id="impUrl" placeholder="https://www.youtube.com/watch?v=vxHVQtJj2uQ">
             <button class="mbtn" id="btnImpGo">เพิ่มและเล่นเลย</button>
             <button class="mbtn g" data-close="ovImp">ยกเลิก</button>
@@ -946,8 +877,18 @@
 
     <script>
         'use strict';
-        /* ============ EMBEDDED API KEY & HELPERS ============ */
-        var KEY = 'AIzaSyCIivyc_sewO4YG8no6I_KqE6aCJuwFN4s';
+        /* ============ INVIDIOUS INSTANCES (AUTOFALLBACK) ============ */
+        var INVIDIOUS_NODES = [
+            'https://invidious.nerdvpn.de',
+            'https://inv.tux.pizza',
+            'https://invidious.drgns.space',
+            'https://vid.puffyan.us'
+        ];
+        var currentNodeIdx = 0;
+
+        function getApiUrl(endpoint) {
+            return INVIDIOUS_NODES[currentNodeIdx] + '/api/v1' + endpoint;
+        }
 
         function $(i) { return document.getElementById(i) }
         function $$(s) { return Array.prototype.slice.call(document.querySelectorAll(s)) }
@@ -970,22 +911,21 @@
 
         /* ============ STATE ============ */
         var queue = load('wv_queue', []), cur = load('wv_cur_idx', -1);
-        var ytP = null, ytReady = false, ytInit = null, ytLoad = null, ytTick = null;
+        var audio = $('audioPlayer');
         var shuffle = false, repeat = false;
         var favs = load('wv_favs', []), mine = load('wv_mine', []);
-        var restoredTime = parseFloat(localStorage.getItem('wv_cur_time')) || 0;
 
         /* ============ SEED DATA ============ */
         var SEED = [
-            { id: 'vxHVQtJj2uQ', title: 'สาธุ (Sathu) |Official MV|', artist: 'ASIA7 Feat. ปลาย กนกพร', cat: 'tpop' },
-            { id: 'OYPiXBIgvJ8', title: 'เพลงรัก |Official MV|', artist: 'Three Man Down', cat: 'tpop' },
-            { id: '8U4HrSKu9AI', title: 'เริ่มใหม่ |Official MV|', artist: 'Three Man Down', cat: 'tpop' },
-            { id: 'IZaTSHohVjM', title: 'ก็แค่พูดมา |Official MV|', artist: 'Three Man Down Feat. THE TOYS', cat: 'tpop' },
-            { id: 'JBAuRoIRAs8', title: 'ถ้าเธอรักฉันจริง |Official MV|', artist: 'Three Man Down', cat: 'sad' },
-            { id: 'F_v_Qj6watw', title: 'รักใครไม่ไหว |Official MV|', artist: 'Three Man Down', cat: 'sad' },
-            { id: 'ZVA_RJJTNOo', title: 'ยอมถอย |Official MV|', artist: 'Three Man Down', cat: 'sad' },
-            { id: 'ywtN9eWJRmE', title: 'ปล่อยให้เวลา |Official MV|', artist: 'Three Man Down', cat: 'sad' }
-        ].map(function (x) { return { src: 'yt', id: x.id, title: x.title, artist: x.artist, img: thumb(x.id), cat: x.cat } });
+            { id: 'vxHVQtJj2uQ', title: 'สาธุ (Sathu)', artist: 'ASIA7 Feat. ปลาย กนกพร', cat: 'tpop' },
+            { id: 'OYPiXBIgvJ8', title: 'เพลงรัก', artist: 'Three Man Down', cat: 'tpop' },
+            { id: '8U4HrSKu9AI', title: 'เริ่มใหม่', artist: 'Three Man Down', cat: 'tpop' },
+            { id: 'IZaTSHohVjM', title: 'ก็แค่พูดมา', artist: 'Three Man Down Feat. THE TOYS', cat: 'tpop' },
+            { id: 'JBAuRoIRAs8', title: 'ถ้าเธอรักฉันจริง', artist: 'Three Man Down', cat: 'sad' },
+            { id: 'F_v_Qj6watw', title: 'รักใครไม่ไหว', artist: 'Three Man Down', cat: 'sad' },
+            { id: 'ZVA_RJJTNOo', title: 'ยอมถอย', artist: 'Three Man Down', cat: 'sad' },
+            { id: 'ywtN9eWJRmE', title: 'ปล่อยให้เวลา', artist: 'Three Man Down', cat: 'sad' }
+        ].map(function (x) { return { src: 'inv', id: x.id, title: x.title, artist: x.artist, img: thumb(x.id), cat: x.cat } });
 
         var CATS = [
             { k: 'tpop', n: '🎤 T-Pop / สตริง' },
@@ -993,19 +933,7 @@
         ];
         $('cats').innerHTML = CATS.map(function (c) { return '<div class="cat" data-k="' + c.k + '">' + c.n + '</div>' }).join('');
 
-        setInterval(function () {
-            if (cur < 0 || !queue[cur]) return;
-            if (ytP && ytP.getCurrentTime) {
-                var cTime = ytP.getCurrentTime() || 0;
-                if (cTime > 0) {
-                    localStorage.setItem('wv_cur_time', cTime);
-                    localStorage.setItem('wv_cur_idx', cur);
-                    save('wv_queue', queue);
-                }
-            }
-        }, 1000);
-
-        /* ============ YOUTUBE ENGINE ============ */
+        /* ============ INVIDIOUS AUDIO ENGINE ============ */
         function parseYT(u) {
             u = String(u || '').trim();
             var m = u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/);
@@ -1014,61 +942,30 @@
             return null;
         }
 
-        function loadYTApi() {
-            if (window.YT && window.YT.Player) return Promise.resolve();
-            if (ytLoad) return ytLoad;
-            ytLoad = new Promise(function (res, rej) {
-                window.onYouTubeIframeAPIReady = function () { res() };
-                var s = document.createElement('script');
-                s.src = 'https://www.youtube.com/iframe_api';
-                s.onerror = function () { rej(new Error('โหลด YouTube สคริปต์ล้มเหลว')) };
-                document.head.appendChild(s);
-            });
-            return ytLoad;
-        }
-
-        function ensureYT() {
-            if (ytP && ytReady) return Promise.resolve(ytP);
-            if (ytInit) return ytInit;
-            ytInit = loadYTApi().then(function () {
-                return new Promise(function (res) {
-                    var vars = { playsinline: 1, rel: 0, modestbranding: 1, enablejsapi: 1, autoplay: 1 };
-                    ytP = new YT.Player('ytFrame', {
-                        width: '100%', height: '100%', playerVars: vars, events: {
-                            onReady: function () { ytReady = true; try { ytP.setVolume(Number($('vol').value)) } catch (e) { } res(ytP) },
-                            onStateChange: onYtState, onError: onYtError
-                        }
-                    });
-                });
-            });
-            return ytInit;
-        }
-
-        function onYtState(e) {
-            setIcon(e.data === 1);
-            if (e.data === 1 && restoredTime > 0) {
-                ytP.seekTo(restoredTime, true);
-                restoredTime = 0;
+        async function fetchAudioStream(id, retryCount) {
+            retryCount = retryCount || 0;
+            if (retryCount >= INVIDIOUS_NODES.length) {
+                throw new Error('ไม่สามารถดึงข้อมูลเพลงได้จากทุก Server');
             }
-            if (e.data === 0) { repeat ? playAt(cur) : next() }
-        }
-
-        function onYtError() {
-            toast('เพลงนี้ไม่สามารถเล่นได้ — กำลังข้าม');
-            setTimeout(next, 1200);
-        }
-
-        function playYT(id, startSec) {
-            $('ytBox').classList.remove('hide');
-            ensureYT().then(function (p) {
-                p.loadVideoById({ videoId: id, startSeconds: startSec || 0 });
-                try { p.setVolume(Number($('vol').value)) } catch (e) { }
-                clearInterval(ytTick);
-                ytTick = setInterval(function () {
-                    if (!ytP || !ytP.getDuration) return;
-                    setProg(ytP.getCurrentTime() || 0, ytP.getDuration() || 0);
-                }, 400);
-            }).catch(function (err) { toast('เกิดข้อผิดพลาดในการเล่นวิดีโอ') });
+            try {
+                var res = await fetch(getApiUrl('/videos/' + id));
+                if (!res.ok) throw new Error('Node failed');
+                var data = await res.json();
+                
+                // หา Audio stream ที่ดีที่สุด
+                var audioStreams = data.adaptiveFormats.filter(function(f) {
+                    return f.type && f.type.startsWith('audio/');
+                });
+                if (!audioStreams.length) throw new Error('No audio stream');
+                
+                // เลือกรุ่นที่มี bit-rate สูงสุด
+                audioStreams.sort(function(a, b) { return (b.bitrate || 0) - (a.bitrate || 0) });
+                return audioStreams[0].url;
+            } catch (err) {
+                // สลับไปยัง Node ถัดไปถ้ามีปัญหา
+                currentNodeIdx = (currentNodeIdx + 1) % INVIDIOUS_NODES.length;
+                return fetchAudioStream(id, retryCount + 1);
+            }
         }
 
         /* ============ CONTROLS ============ */
@@ -1077,10 +974,12 @@
             var p = (d > 0) ? (c / d * 100) : 0; $('seek').value = p;
             $('seek').style.background = 'linear-gradient(90deg,var(--acc) ' + p + '%,#ffffff33 ' + p + '%)';
         }
+
         function setIcon(playing) {
             $('ppI').innerHTML = playing ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
         }
-        function playAt(i, startSec) {
+
+        async function playAt(i) {
             if (!queue.length || i < 0 || i >= queue.length) return;
             cur = i; var t = queue[i];
             save('wv_cur_idx', cur);
@@ -1094,12 +993,22 @@
             var card = $('card' + i); if (card) card.classList.add('now');
             document.title = '▶ ' + t.title;
 
-            playYT(t.id, startSec);
+            toast('⚡ กำลังโหลดเพลงแบบไร้โฆษณา...');
+            try {
+                var streamUrl = await fetchAudioStream(t.id);
+                audio.src = streamUrl;
+                audio.play();
+                setIcon(true);
+            } catch (e) {
+                toast('❌ ไม่สามารถดึงสัญญาณเสียงได้ — กำลังข้าม');
+                setTimeout(next, 1500);
+            }
         }
 
         function toggle() {
-            if (ytP && ytP.getPlayerState) {
-                ytP.getPlayerState() === 1 ? ytP.pauseVideo() : ytP.playVideo();
+            if (audio.src) {
+                if (audio.paused) { audio.play(); setIcon(true); } 
+                else { audio.pause(); setIcon(false); }
             } else if (queue.length) {
                 playAt(cur > -1 ? cur : 0);
             }
@@ -1107,30 +1016,35 @@
 
         function next() {
             if (!queue.length) return;
-            cur = shuffle ? Math.floor(Math.random() * queue.length) : (cur + 1) % queue.length; playAt(cur);
+            cur = shuffle ? Math.floor(Math.random() * queue.length) : (cur + 1) % queue.length; 
+            playAt(cur);
         }
         function prev() {
             if (!queue.length) return;
-            cur = (cur - 1 + queue.length) % queue.length; playAt(cur);
+            cur = (cur - 1 + queue.length) % queue.length; 
+            playAt(cur);
         }
+
+        audio.ontimeupdate = function () { setProg(audio.currentTime, audio.duration); };
+        audio.onended = function () { repeat ? playAt(cur) : next(); };
+        audio.onerror = function () { setIcon(false); };
 
         $('pp').onclick = toggle;
         $('bNext').onclick = next;
         $('bPrev').onclick = prev;
         $('seek').oninput = function (e) {
             var v = Number(e.target.value);
-            if (ytP && ytP.getDuration) { var d = ytP.getDuration(); if (d) ytP.seekTo(d * v / 100, true) }
+            if (audio.duration) audio.currentTime = audio.duration * (v / 100);
         };
 
         function applyVol() {
             var v = Number($('vol').value);
-            try { if (ytP && ytP.setVolume) ytP.setVolume(v) } catch (e) { }
+            audio.volume = v / 100;
             $('vol').style.background = 'linear-gradient(90deg,var(--txt) ' + v + '%,#ffffff33 ' + v + '%)';
         }
         $('vol').oninput = applyVol;
         $('shf').onclick = function () { shuffle = !shuffle; this.classList.toggle('act', shuffle); toast(shuffle ? '🔀 สุ่มเพลง: เปิด' : 'สุ่มเพลง: ปิด'); };
         $('rep').onclick = function () { repeat = !repeat; this.classList.toggle('act', repeat); toast(repeat ? '🔁 เล่นซ้ำ: เปิด' : 'เล่นซ้ำ: ปิด'); };
-        $('ytMin').onclick = function () { $('ytBox').classList.add('hide') };
 
         /* ================= SEARCH ENGINE ================= */
         async function handleSearch(val) {
@@ -1140,44 +1054,30 @@
             var yid = parseYT(val);
             if (yid) { addLink(val); return; }
 
-            // 1. ค้นหาในเพลงเครื่อง/ที่มีอยู่เดิม
-            var allLocal = SEED.concat(mine).concat(favs);
-            var localResults = allLocal.filter(function (s) {
-                return s.title.toLowerCase().indexOf(val.toLowerCase()) > -1 ||
-                    s.artist.toLowerCase().indexOf(val.toLowerCase()) > -1;
-            });
-
-            // 2. ค้นหาผ่าน YouTube API
-            toast('🔍 กำลังค้นหาเพลงจาก YouTube...');
+            toast('🔍 กำลังค้นหาเพลง (ไร้โฆษณา)...');
             try {
-                var res = await fetch('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&type=video&q='
-                    + encodeURIComponent(val) + '&key=' + KEY);
+                var res = await fetch(getApiUrl('/search?q=' + encodeURIComponent(val) + '&type=video'));
                 if (res.ok) {
                     var data = await res.json();
-                    var ytResults = data.items.map(function (item) {
+                    var results = data.map(function (item) {
                         return {
-                            src: 'yt',
-                            id: item.id.videoId,
-                            title: item.snippet.title,
-                            artist: item.snippet.channelTitle,
-                            img: item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : thumb(item.id.videoId)
+                            src: 'inv',
+                            id: item.videoId,
+                            title: item.title,
+                            artist: item.author,
+                            img: thumb(item.videoId)
                         };
                     });
 
-                    var combined = localResults.concat(ytResults);
-                    if (combined.length) {
-                        render(combined, '🔍 ผลการค้นหาสำหรับ: "' + val + '"');
+                    if (results.length) {
+                        render(results, '🔍 ผลการค้นหาสำหรับ: "' + val + '"');
                         return;
                     }
                 }
-            } catch (e) { console.log('API Search Error') }
-
-            if (localResults.length) {
-                render(localResults, '🔍 ผลการค้นหาภายในเว็บ: "' + val + '"');
-            } else {
-                toast('🔍 ดึงข้อมูลเพิ่มเติม...');
-                addLink(val);
+            } catch (e) {
+                currentNodeIdx = (currentNodeIdx + 1) % INVIDIOUS_NODES.length;
             }
+            toast('❌ ไม่พบเพลงที่ค้นหา');
         }
 
         $('q').addEventListener('keydown', function (e) { if (e.key === 'Enter') handleSearch(this.value); });
@@ -1205,7 +1105,7 @@
             var cards = queue.map(function (t, i) {
                 return '<div class="card' + (i === cur ? ' now' : '') + '" id="card' + i + '" data-i="' + i + '">'
                     + '<div class="ph"><img loading="lazy" src="' + esc(t.img) + '" alt="">'
-                    + '<div class="tag">YOUTUBE</div>'
+                    + '<div class="tag">NO ADS</div>'
                     + '<div class="fab"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>'
                     + '<b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '</small></div>';
             }).join('');
@@ -1240,25 +1140,24 @@
         async function addLink(raw) {
             var id = parseYT(raw);
             if (!id) { toast('❌ ไม่พบเพลง หรือลิงก์ไม่ถูกต้อง'); return }
-            toast('🔍 กำลังตรวจสอบเพลง...');
+            toast('🔍 กำลังดึงข้อมูลเพลง...');
             try {
-                var o = await fetch('https://www.youtube.com/oembed?format=json&url='
-                    + encodeURIComponent('https://www.youtube.com/watch?v=' + id));
-                if (!o.ok) { toast('❌ ลิงก์นี้เล่นไม่ได้'); return; }
-                var d = await o.json();
-                var t = { src: 'yt', id: id, title: d.title, artist: d.author_name, img: thumb(id), cat: 'mine' };
+                var res = await fetch(getApiUrl('/videos/' + id));
+                if (!res.ok) throw new Error();
+                var d = await res.json();
+                var t = { src: 'inv', id: id, title: d.title, artist: d.author, img: thumb(id), cat: 'mine' };
                 if (!mine.some(function (m) { return m.id === id })) { mine.unshift(t); save('wv_mine', mine) }
                 $('ovImp').classList.remove('on'); $('impUrl').value = '';
                 var rest = queue.filter(function (x) { return x.id !== id });
                 render([t].concat(rest), '🔗 เพิ่มและกำลังเล่น: ' + t.title);
-                playAt(0); toast('✅ เพิ่มเพลงแล้ว');
-            } catch (e) { toast('❌ ไม่สามารถดึงข้อมูลเพลงได้') }
+                playAt(0); toast('✅ เพิ่มเพลงเรียบร้อย');
+            } catch (e) { toast('❌ ไม่สามารถดึงข้อมูลเพลงนี้ได้') }
         }
 
         /* ============ VIEWS NAVIGATION ============ */
         function switchTab(v) {
             $$('.nav, .m-item').forEach(function (n) { n.classList.toggle('on', n.dataset.v === v) });
-            if (v === 'home') render(SEED, '🇹🇭 เพลงแนะนำ');
+            if (v === 'home') render(SEED, '🇹🇭 เพลงแนะนำ (No Ads)');
             if (v === 'lib') render(mine, '📂 คลังของฉัน');
             if (v === 'fav') render(favs, '💚 เพลงที่ถูกใจ');
         }
@@ -1276,10 +1175,8 @@
         });
 
         /* ============ INIT ============ */
+        applyVol();
         switchTab('home');
-        if (cur > -1 && queue[cur] && restoredTime > 0) {
-            playAt(cur, Math.floor(restoredTime));
-        }
     </script>
 </body>
 
