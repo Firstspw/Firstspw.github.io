@@ -4,6 +4,12 @@
   --neon-pink: #ff2d78;
   --neon-cyan: #00f5ff;
   --neon-gold: #f7c32e;
+  --neon-purple: #a64fff;
+  --neon-green: #00ff9c;
+  --neon-orange: #ff8c00;
+  --neon-red: #ff3b3b;
+  --neon-blue: #3b82f6;
+  --neon-white: #ffffff;
   --dark: #050508;
   --glass: rgba(255,255,255,0.04);
   --glass-border: rgba(255,255,255,0.10);
@@ -210,9 +216,7 @@ body::after {
     var(--neon-cyan),
     var(--neon-pink),
     var(--neon-gold),
-    var(--neon-cyan),
-    var(--neon-gold),
-    var(--neon-pink)
+    var(--neon-cyan)
   );
   animation: spinRing 3s linear infinite;
   z-index: 0;
@@ -376,6 +380,12 @@ body::after {
 .button-container a:nth-child(1) { --btn-accent: var(--neon-cyan); }
 .button-container a:nth-child(2) { --btn-accent: var(--neon-gold); }
 .button-container a:nth-child(3) { --btn-accent: var(--neon-pink); }
+.button-container a:nth-child(4) { --btn-accent: var(--neon-purple); }
+.button-container a:nth-child(5) { --btn-accent: var(--neon-green); }
+.button-container a:nth-child(6) { --btn-accent: var(--neon-orange); }
+.button-container a:nth-child(7) { --btn-accent: var(--neon-red); }
+.button-container a:nth-child(8) { --btn-accent: var(--neon-blue); }
+.button-container a:nth-child(9) { --btn-accent: var(--neon-white); }
 
 /* Corner decorators */
 .btn-corner {
