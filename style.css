@@ -210,7 +210,9 @@ body::after {
     var(--neon-cyan),
     var(--neon-pink),
     var(--neon-gold),
-    var(--neon-cyan)
+    var(--neon-cyan),
+    var(--neon-gold),
+    var(--neon-pink)
   );
   animation: spinRing 3s linear infinite;
   z-index: 0;
