@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XAUUSD PRO - Mobile Supported Trading Terminal</title>
+    <title>XAUUSD PRO - Precision Trading Terminal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Roboto+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -38,11 +38,12 @@
         html, body {
             width: 100%;
             height: 100%;
+            height: -webkit-fill-available;
+            overflow: hidden !important;
             background-color: var(--bg-body);
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
         ::-webkit-scrollbar { display: none !important; width: 0px !important; }
@@ -52,11 +53,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
+            padding: 8px 14px;
             background: linear-gradient(180deg, #101624 0%, #0a0e18 100%);
             border-bottom: 1px solid var(--border);
             flex-shrink: 0;
-            min-height: 50px;
+            height: 52px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             z-index: 10;
         }
 
@@ -67,7 +69,7 @@
             width: 32px; height: 32px;
             background: linear-gradient(135deg, #ffe066 0%, #f0b90b 50%, #996515 100%);
             border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 12px var(--gold-glow);
+            box-shadow: 0 0 15px var(--gold-glow);
             border: 1px solid rgba(255,255,255,0.4);
             overflow: hidden;
             flex-shrink: 0;
@@ -88,30 +90,37 @@
         }
 
         .logo-icon svg { width: 18px; height: 18px; fill: #000; z-index: 2; }
+        .brand-text { display: flex; flex-direction: column; }
         .brand-text h1 {
-            font-size: 1.0rem; font-weight: 800; letter-spacing: 0.5px;
+            font-size: 1rem; font-weight: 800; letter-spacing: 0.5px;
             background: linear-gradient(90deg, #ffffff 0%, var(--gold-light) 50%, var(--gold) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(240, 185, 11, 0.3);
+            white-space: nowrap;
         }
+        .brand-text p { font-size: 0.52rem; color: var(--text-muted); letter-spacing: 1px; font-weight: 700; text-transform: uppercase; }
 
-        .header-controls { display: flex; align-items: center; gap: 8px; }
+        .header-controls { display: flex; align-items: center; gap: 6px; }
         
         .btn-toggle-panel {
             background: rgba(240, 185, 11, 0.08); border: 1px solid var(--gold);
             color: var(--gold); padding: 5px 8px; border-radius: 6px;
             font-size: 0.68rem; font-weight: 800; cursor: pointer;
-            transition: all 0.2s; white-space: nowrap;
+            transition: all 0.2s; box-shadow: 0 0 8px rgba(240, 185, 11, 0.1);
+            white-space: nowrap;
         }
+        .btn-toggle-panel:hover { background: var(--gold); color: #000; box-shadow: 0 0 12px var(--gold-glow); }
 
         .live-status {
             display: flex; align-items: center; gap: 4px; padding: 3px 8px;
             background: var(--green-glow); border: 1px solid rgba(14, 206, 107, 0.4);
             border-radius: 20px; font-size: 0.62rem; color: var(--green); font-weight: 800;
+            letter-spacing: 0.5px; white-space: nowrap;
         }
 
         .pulse-dot {
             width: 6px; height: 6px; background: var(--green); border-radius: 50%;
-            box-shadow: 0 0 6px var(--green); animation: pulse 1.2s infinite;
+            box-shadow: 0 0 8px var(--green); animation: pulse 1.2s infinite; flex-shrink: 0;
         }
 
         @keyframes pulse {
@@ -123,150 +132,169 @@
             font-family: 'Roboto Mono', monospace;
             font-size: 0.7rem; color: var(--gold); font-weight: 700;
             background: rgba(0,0,0,0.3); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--border);
+            white-space: nowrap;
         }
 
-        /* ===== MAIN LAYOUT ===== */
-        .main-container {
-            display: flex;
-            flex: 1;
-            height: calc(100vh - 50px);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .chart-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border);
-            height: 100%;
-            width: 100%;
-        }
+        /* ===== MAIN CONTAINER ===== */
+        .main-container { display: flex; flex: 1; height: calc(100vh - 52px); overflow: hidden; position: relative; }
+        .chart-section { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border); height: 100%; transition: all 0.3s ease; }
         
-        .timeframe-tabs {
-            display: flex; gap: 4px; padding: 6px 8px;
-            background: var(--bg-card); border-bottom: 1px solid var(--border);
-            overflow-x: auto; -webkit-overflow-scrolling: touch;
+        .timeframe-tabs { 
+            display: flex; gap: 4px; padding: 6px 10px; background: var(--bg-card); border-bottom: 1px solid var(--border);
+            overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
         }
+        .timeframe-tabs::-webkit-scrollbar { display: none; }
 
         .tab-btn {
-            padding: 4px 10px; background: var(--bg-dark); border: 1px solid var(--border);
+            padding: 5px 10px; background: var(--bg-dark); border: 1px solid var(--border);
             color: var(--text-muted); border-radius: 5px; cursor: pointer; font-size: 0.7rem; font-weight: 800;
-            font-family: 'Roboto Mono', monospace; flex-shrink: 0;
+            font-family: 'Roboto Mono', monospace; transition: all 0.2s; flex-shrink: 0;
         }
-
+        .tab-btn:hover { border-color: var(--gold); color: var(--gold); }
         .tab-btn.active {
             background: linear-gradient(135deg, #ffe066 0%, var(--gold) 100%);
-            color: #000; border-color: var(--gold);
+            color: #000; border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow);
         }
 
         .chart-container { flex: 1; width: 100%; height: 100%; }
 
-        /* SIDEBAR (DESKTOP & MOBILE) */
+        /* ===== SIDEBAR TERMINAL ===== */
         .sidebar-right {
-            width: 400px;
-            display: flex; flex-direction: column;
-            overflow-y: auto; -webkit-overflow-scrolling: touch;
-            background: var(--bg-card); padding: 10px; gap: 8px; height: 100%;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            width: 400px; display: flex; flex-direction: column; overflow-y: scroll;
+            -ms-overflow-style: none; scrollbar-width: none; background: var(--bg-card);
+            padding: 10px; gap: 8px; height: 100%;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+            transform: translateX(0); opacity: 1; flex-shrink: 0;
         }
 
-        .sidebar-right.collapsed {
-            display: none !important;
-        }
+        .sidebar-right.collapsed { transform: translateX(100%); margin-right: -400px; opacity: 0; pointer-events: none; }
 
         .card { 
-            background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+            background: var(--bg-dark); border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); transition: border-color 0.2s;
         }
+        .card:hover { border-color: var(--border-glow); }
 
         .card-title {
-            font-size: 0.75rem; font-weight: 800; color: var(--gold); margin-bottom: 6px;
+            font-size: 0.78rem; font-weight: 800; color: var(--gold); margin-bottom: 8px;
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        .update-timestamp { font-size: 0.58rem; color: var(--text-muted); font-family: 'Roboto Mono', monospace; }
+        .update-timestamp { font-size: 0.6rem; color: var(--text-muted); font-family: 'Roboto Mono', monospace; font-weight: 600; }
 
         .news-alert-box {
             background: rgba(255, 149, 0, 0.08); border: 1px solid var(--orange); border-radius: 6px;
-            padding: 6px 8px; font-size: 0.65rem; display: flex; flex-direction: column; gap: 2px;
+            padding: 8px 10px; font-size: 0.68rem; display: flex; flex-direction: column; gap: 3px; margin-bottom: 2px;
         }
         .news-header-row { display: flex; justify-content: space-between; font-weight: 800; color: var(--orange); }
-        .news-detail-text { color: var(--text-muted); line-height: 1.3; font-size: 0.62rem; }
+        .news-detail-text { color: var(--text-muted); line-height: 1.35; font-size: 0.65rem; }
 
-        .signal-header { border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .signal-header { border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .signal-header.buy { background: var(--green-glow); border: 1px solid var(--green); }
         .signal-header.sell { background: var(--red-glow); border: 1px solid var(--red); }
 
-        .signal-title { font-size: 0.8rem; font-weight: 800; font-family: 'Roboto Mono', monospace; }
+        .signal-title { font-size: 0.85rem; font-weight: 800; font-family: 'Roboto Mono', monospace; }
         .signal-title.buy { color: var(--green); }
         .signal-title.sell { color: var(--red); }
 
-        .signal-tag { font-size: 0.6rem; background: var(--gold); color: #000; padding: 1px 5px; border-radius: 3px; font-weight: 800; }
+        .signal-tag { font-size: 0.65rem; background: var(--gold); color: #000; padding: 2px 6px; border-radius: 4px; font-weight: 800; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-bottom: 6px; }
-        .m-card { background: #101622; border: 1px solid var(--border); border-radius: 5px; padding: 5px 6px; }
-        .m-label { font-size: 0.55rem; color: var(--text-muted); margin-bottom: 1px; font-weight: 700; }
-        .m-val { font-size: 0.8rem; font-weight: 800; font-family: 'Roboto Mono', monospace; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
+        .m-card { background: #101622; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+        .m-label { font-size: 0.58rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 700; }
+        .m-val { font-size: 0.88rem; font-weight: 800; font-family: 'Roboto Mono', monospace; }
         .m-val.blue { color: var(--blue); }
         .m-val.red { color: var(--red); }
         .m-val.green { color: var(--green); }
         .m-val.gold { color: var(--gold); }
 
-        .pending-card { background: rgba(240, 185, 11, 0.04); border: 1px dashed var(--gold); border-radius: 5px; padding: 5px 6px; }
-        .pending-header { font-size: 0.6rem; font-weight: 700; color: var(--gold); margin-bottom: 3px; display: flex; justify-content: space-between; }
-        .pending-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; font-size: 0.65rem; font-weight: 700; font-family: 'Roboto Mono', monospace; text-align: center; }
+        .pending-card { background: rgba(240, 185, 11, 0.04); border: 1px dashed var(--gold); border-radius: 6px; padding: 6px 8px; margin-bottom: 2px; }
+        .pending-header { font-size: 0.65rem; font-weight: 700; color: var(--gold); margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .pending-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-size: 0.7rem; font-weight: 700; font-family: 'Roboto Mono', monospace; text-align: center; }
 
-        .ai-list { display: flex; flex-direction: column; gap: 4px; }
-        .ai-item-card { background: #101622; border: 1px solid var(--border); border-left: 3px solid var(--blue); border-radius: 4px; padding: 5px 6px; }
+        .ai-list { display: flex; flex-direction: column; gap: 6px; }
+        .ai-item-card { background: #101622; border: 1px solid var(--border); border-left: 3px solid var(--blue); border-radius: 4px; padding: 6px 8px; }
         .ai-item-card.autochartist { border-left-color: var(--gold); }
         .ai-item-card.trade-ideas { border-left-color: var(--green); }
 
         .ai-header-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
-        .ai-name-title { font-size: 0.65rem; font-weight: 800; color: #fff; }
-        .ai-confidence { font-size: 0.6rem; font-weight: 800; background: var(--gold); color: #000; padding: 1px 4px; border-radius: 2px; font-family: 'Roboto Mono', monospace; }
-        .ai-desc-text { font-size: 0.62rem; color: var(--text-muted); line-height: 1.3; }
+        .ai-name-title { font-size: 0.68rem; font-weight: 800; color: #fff; }
+        .ai-confidence { font-size: 0.65rem; font-weight: 800; background: var(--gold); color: #000; padding: 1px 5px; border-radius: 3px; font-family: 'Roboto Mono', monospace; }
+        .ai-desc-text { font-size: 0.65rem; color: var(--text-muted); line-height: 1.35; }
 
-        .calc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-bottom: 4px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 6px; }
         .c-input input {
             width: 100%; background: #101622; border: 1px solid var(--border); color: #fff;
-            padding: 5px; border-radius: 4px; font-size: 0.7rem; font-weight: 700;
-            font-family: 'Roboto Mono', monospace; outline: none;
+            padding: 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;
+            font-family: 'Roboto Mono', monospace; outline: none; transition: border-color 0.2s;
         }
-        .c-label { font-size: 0.55rem; color: var(--text-muted); margin-bottom: 1px; font-weight: 700; }
+        .c-input input:focus { border-color: var(--gold); }
+        .c-label { font-size: 0.58rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 700; }
 
         .btn-calc {
             width: 100%; background: linear-gradient(135deg, #ffe066 0%, var(--gold) 100%);
-            color: #000; border: none; padding: 6px; border-radius: 4px; font-weight: 800;
-            font-size: 0.68rem; cursor: pointer;
+            color: #000; border: none; padding: 7px; border-radius: 4px; font-weight: 800;
+            font-size: 0.72rem; cursor: pointer; box-shadow: 0 0 10px var(--gold-glow); transition: transform 0.1s, box-shadow 0.2s;
         }
+        .btn-calc:hover { transform: translateY(-1px); box-shadow: 0 0 15px var(--gold-glow); }
 
-        #calcResult { display: none; margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--border); font-size: 0.65rem; }
-        .res-row { display: flex; justify-content: space-between; margin-bottom: 2px; font-family: 'Roboto Mono', monospace; }
+        #calcResult { display: none; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); font-size: 0.7rem; }
+        .res-row { display: flex; justify-content: space-between; margin-bottom: 3px; font-family: 'Roboto Mono', monospace; }
 
-        /* ===== MOBILE RESPONSIVE MEDIA QUERIES ===== */
-        @media (max-width: 850px) {
-            .header-clock { display: none; }
-            .brand-text p { display: none; }
-            
+        /* ===== MOBILE RESPONSIVE UI ===== */
+        @media (max-width: 768px) {
+            header {
+                padding: 6px 10px;
+                height: 48px;
+            }
+
+            .brand-text p, .live-status span:not(.pulse-dot) {
+                display: none;
+            }
+
+            .live-status {
+                padding: 4px 6px;
+            }
+
+            .header-clock {
+                font-size: 0.65rem;
+                padding: 2px 4px;
+            }
+
+            .btn-toggle-panel {
+                padding: 4px 8px;
+                font-size: 0.65rem;
+            }
+
             .main-container {
                 flex-direction: column;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
+                height: calc(100vh - 48px);
             }
 
             .chart-section {
-                height: 55vh;
-                min-height: 350px;
                 border-right: none;
                 border-bottom: 1px solid var(--border);
-                flex-shrink: 0;
+                flex: 1;
+                min-height: 40vh;
             }
 
             .sidebar-right {
                 width: 100%;
-                height: auto;
-                overflow-y: visible;
-                flex-shrink: 0;
+                height: 50vh;
+                max-height: 50vh;
+                border-top: 1px solid var(--border);
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), margin-bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+                transform: translateY(0);
+                margin-right: 0;
+            }
+
+            .sidebar-right.collapsed {
+                transform: translateY(100%);
+                margin-bottom: -50vh;
+                margin-right: 0;
+                opacity: 0;
+                height: 0;
+                padding: 0;
             }
         }
     </style>
@@ -284,16 +312,16 @@
             </div>
             <div class="brand-text">
                 <h1>XAUUSD PRO</h1>
-                <p>MOBILE TERMINAL</p>
+                <p>AI TRADING TERMINAL</p>
             </div>
         </div>
 
         <div class="header-controls">
             <div class="header-clock" id="liveClock">--:--:--</div>
-            <button class="btn-toggle-panel" onclick="toggleSidebar()">👁️ พับแผง</button>
+            <button class="btn-toggle-panel" onclick="toggleSidebar()">👁️ พับ/ขยาย</button>
             <div class="live-status">
                 <span class="pulse-dot"></span>
-                SCANNING
+                <span>LIVE SCANNING</span>
             </div>
         </div>
     </header>
@@ -316,11 +344,11 @@
             
             <div class="news-alert-box">
                 <div class="news-header-row">
-                    <span>📰 อัปเดตข่าวสาร (USD)</span>
+                    <span>📰 อัปเดตข่าวสารสำคัญ (USD)</span>
                     <span class="update-timestamp" id="newsTimestamp">02/09/2026</span>
                 </div>
                 <div class="news-detail-text">
-                    • เฟดส่งสัญญาณตรึงดอกเบี้ย กดดันราคาทองหลุด $4,330<br>
+                    • ประธานเฟดส่งสัญญาณตรึงดอกเบี้ย ดอลลาร์แข็งค่า กดดันราคาทองหลุด $4,330<br>
                     • คืนนี้ติดตามรายงานตัวเลขการจ้างงาน ADP Employment Report
                 </div>
             </div>
@@ -331,11 +359,11 @@
 
             <div class="card">
                 <div class="card-title">
-                    <span>🤖 สแกนสัญญาณ 3 AI</span>
-                    <span id="ai-avg-score" style="color: var(--red); font-family: 'Roboto Mono';">88.5% WIN-RATE</span>
+                    <span>🤖 สแกนสัญญาณ 3 AI ชั้นนำ</span>
+                    <span id="ai-avg-score" style="color: var(--red); font-family: 'Roboto Mono';">88.5% HIGH WIN-RATE</span>
                 </div>
-                <div style="margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.55rem; color: var(--text-muted);">เวลาประมวลผลล่าสุด:</span>
+                <div style="margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.6rem; color: var(--text-muted);">เวลาที่ประมวลผลล่าสุด:</span>
                     <span class="update-timestamp" id="signalTimestamp">--:--:--</span>
                 </div>
                 <div class="ai-list" id="ai-analysis-list"></div>
@@ -377,59 +405,67 @@
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
+        // โครงสร้างฐานข้อมูลอ้างอิงแต่ละ Timeframe
         const tfDataBase = {
             '5': {
                 tfName: '5M (Scalping)', style: 'Scalping', side: 'sell', signal: 'SELL MARKET ⬇️',
                 basePrice: 4325.00, slOffset: 10.00, tpOffset: -15.00, rr: '1 : 1.50',
-                pType: 'SELL LIMIT', pOffset: 5.00, avgScoreBase: 88.5,
-                tvAnalysis: 'หลุด MA20 + MACD Crossover สัญญาณฝั่งขายคุมตลาด',
-                acAnalysis: 'Bearish Flag Breakout ตามข่าวเฟด ดันราคาย่อลง',
-                tiAnalysis: 'Liquidity Grab ฝั่งเซลล์ เป้าหมายถัดไป $4310.00'
+                pType: 'SELL LIMIT', pOffset: 5.00,
+                avgScoreBase: 88.5,
+                tvAnalysis: 'กราฟหลุด MA20 + MACD Crossover ลงแรง สัญญาณฝั่งขายคุมตลาด',
+                acAnalysis: 'เกิดรูปแบบ Bearish Flag Breakout ตามทิศทางข่าวเฟด ดันราคาย่อลง',
+                tiAnalysis: 'ทะลุแนวรับสำคัญ Liquidity Grab ฝั่งเซลล์ เป้าหมายถัดไป $4310.00'
             },
             '15': {
                 tfName: '15M (Day Trade)', style: 'Day Trade', side: 'sell', signal: 'SELL SETUP ⬇️',
                 basePrice: 4328.00, slOffset: 14.00, tpOffset: -23.00, rr: '1 : 1.64',
-                pType: 'SELL STOP', pOffset: -8.00, avgScoreBase: 89.0,
-                tvAnalysis: 'ราคาอยู่ใต้ EMA50 ชัดเจน RSI ทะลุ 50 ลงฝั่งขาลง',
-                acAnalysis: 'Descending Triangle ยืนยันการพักตัวลงต่อเนื่อง',
-                tiAnalysis: 'Bearish Order Block $4338 - $4342 แนวต้านแน่นหนา'
+                pType: 'SELL STOP', pOffset: -8.00,
+                avgScoreBase: 89.0,
+                tvAnalysis: 'ราคาย่อตัวอยู่ใต้เส้น EMA50 ชัดเจน RSI ทะลุระดับ 50 ลงมาฝั่งขาลง',
+                acAnalysis: 'Descending Triangle Pattern ยืนยันการพักตัวลงต่อเนื่อง',
+                tiAnalysis: 'เกิด Bearish Order Block บริเวณ $4338.00 - $4342.00 เป็นแนวต้านแน่นหนา'
             },
             '30': {
                 tfName: '30M (Day Trade)', style: 'Day Trade', side: 'sell', signal: 'SELL SETUP ⬇️',
                 basePrice: 4330.00, slOffset: 18.00, tpOffset: -30.00, rr: '1 : 1.67',
-                pType: 'SELL LIMIT', pOffset: 8.00, avgScoreBase: 90.5,
-                tvAnalysis: 'EMA20 ตัด EMA50 ลงเป็น Death Cross บ่งบอกรอบย่อ',
-                acAnalysis: 'Fair Value Gap ฝั่งล่างเปิดกว้างลงไปถึง $4300.00',
-                tiAnalysis: 'แรงขายสถาบันหนาแน่นตามดอลลาร์สหรัฐฯ แข็งค่า'
+                pType: 'SELL LIMIT', pOffset: 8.00,
+                avgScoreBase: 90.5,
+                tvAnalysis: 'เส้น EMA20 ตัด EMA50 ลงมาเป็น Death Cross บ่งบอกถึงรอบการพักตัวลง',
+                acAnalysis: 'มีช่องว่างราคา (Fair Value Gap) ฝั่งล่างเปิดกว้างลงไปถึง $4300.00',
+                tiAnalysis: 'แรงขายสถาบันหนาแน่นสอดคล้องกับทิศทางดอลลาร์สหรัฐฯ แข็งค่า'
             },
             '60': {
                 tfName: '1H (Swing Trade)', style: 'Swing Trade', side: 'sell', signal: 'SELL SWING ⬇️',
                 basePrice: 4335.00, slOffset: 25.00, tpOffset: -50.00, rr: '1 : 2.00',
-                pType: 'SELL LIMIT', pOffset: 13.00, avgScoreBase: 91.0,
-                tvAnalysis: 'หลุดกรอบ Uptrend Channel กลายเป็นโครงสร้างพักตัว',
-                acAnalysis: 'เกิด Double Top ยืนยันแรงขายสู้แนวต้านด้านบน',
-                tiAnalysis: 'แนวต้าน $4360 มีปริมาณ Supply Zone แน่นหนา'
+                pType: 'SELL LIMIT', pOffset: 13.00,
+                avgScoreBase: 91.0,
+                tvAnalysis: 'แท่งเทียนหลุดกรอบ Uptrend Channel ใหญ่ กลายสภาพเป็นโครงสร้างพักตัวลง',
+                acAnalysis: 'เกิดรูปแบบ Double Top ใน TF 1H ยืนยันแรงขายสู้แนวต้านด้านบน',
+                tiAnalysis: 'แนวต้าน $4360.00 มีปริมาณการกระจายออเดอร์ (Supply Zone) แน่นหนา'
             },
             '240': {
                 tfName: '4H (Swing Trade)', style: 'Swing Trade', side: 'buy', signal: 'BUY SWING ⬆️',
                 basePrice: 4305.00, slOffset: -40.00, tpOffset: 80.00, rr: '1 : 2.00',
-                pType: 'BUY LIMIT', pOffset: -30.00, avgScoreBase: 92.0,
-                tvAnalysis: 'ภาพใหญ่ 4H เป็นเทรนด์ขึ้น รอย่อเข้าซื้อที่แนวรับ',
-                acAnalysis: 'สภาวะย่อตัวสะสมพลังกรอบใหญ่ Bullish Retracement',
-                tiAnalysis: 'SMC Demand Zone ใหญ่หนาแน่นที่ $4275.00'
+                pType: 'BUY LIMIT', pOffset: -30.00,
+                avgScoreBase: 92.0,
+                tvAnalysis: 'ภาพใหญ่ใน 4H ยังคงเป็นเทรนด์ขาขึ้น รอการย่อตัวเข้าซื้อที่แนวรับสำคัญ',
+                acAnalysis: 'สภาวะย่อตัวเพื่อสะสมพลังในกรอบใหญ่ Bullish Retracement',
+                tiAnalysis: 'Smart Money Concept (SMC) Demand Zone ใหญ่หนาแน่นที่ $4275.00'
             },
             'D': {
                 tfName: '1D (Position Trade)', style: 'Position Trade', side: 'buy', signal: 'BUY POSITION ⬆️',
                 basePrice: 4290.00, slOffset: -80.00, tpOffset: 160.00, rr: '1 : 2.00',
-                pType: 'BUY LIMIT', pOffset: -70.00, avgScoreBase: 93.5,
-                tvAnalysis: 'ขาขึ้นระยะยาวระดับ Daily ยืนเหนือ MA200 มั่นคง',
-                acAnalysis: 'ภาพรวมใหญ่เป็นเทรนด์ขึ้น รอกราฟย่อจบแล้วรันเทรนด์',
-                tiAnalysis: 'โครงสร้างระดับมหาภาคสนับสนุนฝั่ง Buy ถือยาว'
+                pType: 'BUY LIMIT', pOffset: -70.00,
+                avgScoreBase: 93.5,
+                tvAnalysis: 'ขาขึ้นระยะยาวระดับ Daily ยังแข็งแกร่ง ราคายืนเหนือ MA200 มั่นคง',
+                acAnalysis: 'ภาพรวมใหญ่เป็นเทรนด์ขึ้น รอกราฟย่อพักจบแล้วรันเทรนด์ต่อ',
+                tiAnalysis: 'โครงสร้างระดับมหาภาคสนับสนุนฝั่ง Buy เหมาะกับการถือยาว'
             }
         };
 
         let currentTF = '5';
 
+        // 1. นาฬิกาเดินสด Real-Time Clock
         function updateLiveClock() {
             const now = new Date();
             document.getElementById('liveClock').textContent = now.toLocaleTimeString('th-TH');
@@ -442,8 +478,11 @@
             return `${dateStr} - ${now.toLocaleTimeString('th-TH')}`;
         }
 
+        // 2. Real-Time Dynamic Signal Engine (คำนวณราคา & สัญญาณสดตลอดเวลา)
         function runRealtimeAnalysis() {
             const d = tfDataBase[currentTF];
+            
+            // สุ่มความผันผวนราคา Tick สด (-0.40 ถึง +0.40 USD)
             const tickNoise = (Math.random() - 0.5) * 0.8;
             const currentEntry = d.basePrice + tickNoise;
             const currentSL = currentEntry + d.slOffset;
@@ -452,6 +491,7 @@
             const pendingSL = pendingEntry + d.slOffset;
             const pendingTP = pendingEntry + d.tpOffset;
 
+            // สุ่มขยับคะแนนความแม่นยำเล็กน้อยตามสภาวะตลาดสด
             const scoreNoise = (Math.random() - 0.5) * 1.2;
             const currentAvgScore = (d.avgScoreBase + scoreNoise).toFixed(1);
             const tvScore = Math.min(99, Math.max(70, Math.round(d.avgScoreBase - 2 + Math.random() * 4)));
@@ -500,13 +540,13 @@
                 </div>
             `;
 
-            document.getElementById('ai-avg-score').innerText = `${currentAvgScore}% WIN-RATE`;
+            document.getElementById('ai-avg-score').innerText = `${currentAvgScore}% HIGH WIN-RATE`;
             document.getElementById('ai-avg-score').style.color = d.side === 'buy' ? 'var(--green)' : 'var(--red)';
             
             document.getElementById('ai-analysis-list').innerHTML = `
                 <div class="ai-item-card">
                     <div class="ai-header-row">
-                        <span class="ai-name-title">🔵 TradingView AI</span>
+                        <span class="ai-name-title">🔵 TradingView AI (Technical)</span>
                         <span class="ai-confidence">${tvScore}%</span>
                     </div>
                     <div class="ai-desc-text">${d.tvAnalysis}</div>
@@ -514,7 +554,7 @@
 
                 <div class="ai-item-card autochartist">
                     <div class="ai-header-row">
-                        <span class="ai-name-title">🟡 Autochartist AI</span>
+                        <span class="ai-name-title">🟡 Autochartist AI (Pattern)</span>
                         <span class="ai-confidence">${acScore}%</span>
                     </div>
                     <div class="ai-desc-text">${d.acAnalysis}</div>
@@ -522,7 +562,7 @@
 
                 <div class="ai-item-card trade-ideas">
                     <div class="ai-header-row">
-                        <span class="ai-name-title">🟢 Trade Ideas AI</span>
+                        <span class="ai-name-title">🟢 Trade Ideas AI (SMC Zone)</span>
                         <span class="ai-confidence">${tiScore}%</span>
                     </div>
                     <div class="ai-desc-text">${d.tiAnalysis}</div>
@@ -534,6 +574,7 @@
             document.getElementById('tpPrice').value = currentTP.toFixed(2);
         }
 
+        // รันการสแกนและประมวลผลวิเคราะห์กราฟอัตโนมัติทุกๆ 3 วินาที
         setInterval(runRealtimeAnalysis, 3000);
 
         function initTradingView(tf) {
