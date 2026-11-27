@@ -22,6 +22,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- QRCode.js for Instant Mobile Cross-Device Sharing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body {
             font-family: 'Prompt', 'Sarabun', sans-serif;
@@ -75,16 +77,19 @@
             <!-- Brand Logo -->
             <div class="flex items-center gap-3 cursor-pointer select-none" onclick="switchTab('public')">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-slate-950 shadow-md shadow-sky-500/20">
-                    <i data-lucide="shield-check" class="w-6 h-6 stroke-[2.2]"></i>
+                    <i data-lucide="share-2" class="w-6 h-6 stroke-[2.2]"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
                         <h1 class="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-300 via-sky-400 to-blue-500 leading-tight">
                             CloudVault TH
                         </h1>
-                        <span class="px-1.5 py-0.5 text-[10px] font-bold bg-sky-500/15 text-sky-300 border border-sky-500/30 rounded-md">SAFE</span>
+                        <span id="live-sync-pill" class="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 rounded-md flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                            LIVE
+                        </span>
                     </div>
-                    <p class="text-[11px] text-slate-400 hidden sm:block">ฝากไฟล์และแชร์ลิงก์ ควบคุมสิทธิ์เปิด/ปิดสาธารณะได้ 100%</p>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">แชร์ไฟล์และลิงก์ Real-time ข้ามเครื่อง เปิด/ปิดสาธารณะได้ทันที</p>
                 </div>
             </div>
 
@@ -129,7 +134,7 @@
             <div class="grid grid-cols-3 gap-2.5 sm:gap-3 w-full lg:w-auto">
                 <div class="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 text-center">
                     <div class="text-lg sm:text-2xl font-bold text-sky-400" id="stat-public">0</div>
-                    <div class="text-[11px] text-slate-400 mt-0.5">สาธารณะรวม</div>
+                    <div class="text-[11px] text-slate-400 mt-0.5">สาธารณะ (ทุกเครื่อง)</div>
                 </div>
                 <div class="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 text-center">
                     <div class="text-lg sm:text-2xl font-bold text-blue-400" id="stat-mine">0</div>
@@ -478,9 +483,96 @@
             </div>
             <div class="px-5 py-3.5 bg-slate-900 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <span id="preview-meta" class="text-xs text-slate-400 truncate"></span>
-                <a id="preview-download-btn" href="#" download class="touch-target px-5 py-2.5 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm">
-                    <i data-lucide="download" class="w-4 h-4 stroke-[2.2]"></i> ดาวน์โหลดไฟล์ลงเครื่อง
-                </a>
+                <div class="flex items-center gap-2">
+                    <button id="preview-share-btn" type="button" class="touch-target px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 text-xs sm:text-sm font-semibold rounded-xl flex items-center justify-center gap-1.5">
+                        <i data-lucide="share-2" class="w-4 h-4"></i> แชร์ให้เพื่อน
+                    </button>
+                    <a id="preview-download-btn" href="#" download class="touch-target px-5 py-2.5 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm">
+                        <i data-lucide="download" class="w-4 h-4 stroke-[2.2]"></i> ดาวน์โหลดไฟล์ลงเครื่อง
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3.5 Direct Item Share & Deep Link Modal (New: QR Code + Direct Link + Web Share) -->
+    <div id="share-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-xs flex items-end sm:items-center justify-center sm:p-4">
+        <div class="bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 pb-safe">
+            <div class="sm:hidden w-12 h-1.5 bg-slate-700 rounded-full mx-auto -mt-2 mb-4"></div>
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 flex items-center justify-center">
+                        <i data-lucide="share-2" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-100">แชร์ให้เพื่อน / เปิดข้ามเครื่อง</h3>
+                        <p id="share-modal-subtitle" class="text-xs text-slate-400 truncate max-w-[220px]"></p>
+                    </div>
+                </div>
+                <button onclick="closeShareModal()" class="touch-target flex items-center justify-center text-slate-400 hover:text-white bg-slate-800 rounded-xl">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- QR Code Container -->
+            <div class="bg-white p-4 rounded-2xl w-fit mx-auto mb-4 shadow-lg">
+                <div id="share-qrcode-box" class="flex items-center justify-center"></div>
+            </div>
+            <p class="text-[11px] text-center text-slate-400 mb-4">สแกน QR Code ด้วยกล้องมือถือเครื่องอื่นเพื่อเปิดรายการนี้ทันที</p>
+
+            <!-- Direct Deep Link Input -->
+            <div class="mb-4">
+                <label class="block text-[11px] font-bold text-slate-300 mb-1.5">ลิงก์ตรงสำหรับแชร์ (Deep Link)</label>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="share-direct-url" readonly
+                        class="touch-target flex-1 px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-sky-300 focus:outline-none">
+                    <button type="button" onclick="copyShareModalLink()" class="touch-target px-4 py-2.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0">
+                        <i data-lucide="copy" class="w-4 h-4"></i> คัดลอก
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2.5">
+                <button type="button" onclick="closeShareModal()" class="touch-target flex-1 py-3 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors">
+                    ปิดหน้าต่าง
+                </button>
+                <button type="button" id="share-native-btn" onclick="triggerNativeShare()" class="touch-target flex-1 py-3 text-sm font-bold text-slate-950 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 rounded-2xl shadow-md shadow-sky-500/20 flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4 stroke-[2.2]"></i>
+                    <span>ส่งให้เพื่อน (LINE / แอป)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3.6 Shared Item Landing Modal (Opens automatically when someone opens ?item=<id>) -->
+    <div id="shared-landing-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
+        <div class="bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-sky-500/40 pb-safe">
+            <div class="sm:hidden w-12 h-1.5 bg-slate-700 rounded-full mx-auto -mt-2 mb-4"></div>
+            <div class="flex items-start justify-between gap-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <div id="landing-icon-box" class="w-12 h-12 rounded-2xl bg-sky-500/15 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0">
+                        <i data-lucide="file-text" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 rounded-full">รายการที่ถูกแชร์ให้คุณ</span>
+                        <h3 id="landing-title" class="text-base sm:text-lg font-bold text-slate-100 mt-1 break-words"></h3>
+                    </div>
+                </div>
+                <button onclick="closeSharedLandingModal()" class="touch-target flex items-center justify-center text-slate-400 hover:text-white bg-slate-800 rounded-xl shrink-0">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <p id="landing-desc" class="text-xs sm:text-sm text-slate-300 bg-slate-950/80 border border-slate-800 rounded-2xl p-3.5 mb-4 leading-relaxed"></p>
+
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-5 px-1">
+                <span id="landing-author"></span>
+                <span id="landing-meta" class="font-mono text-sky-300"></span>
+            </div>
+
+            <div id="landing-actions" class="flex flex-col sm:flex-row gap-2.5">
+                <!-- Populated dynamically based on file or link -->
             </div>
         </div>
     </div>
@@ -698,7 +790,7 @@
                     currentUser = auth.currentUser;
                     useCloudDb = true;
 
-                    document.getElementById('storage-status-text').textContent = 'เชื่อมต่อฐานข้อมูล Cloud ถาวร & เข้ารหัสแล้ว';
+                    document.getElementById('storage-status-text').textContent = 'ซิงค์ Cloud Real-time ทุกเครื่อง (เปิดสาธารณะแล้วเห็นร่วมกันทันที)';
                     const uidEl = document.getElementById('current-user-id');
                     if (uidEl) uidEl.textContent = currentUser ? currentUser.uid : 'Guest';
 
@@ -715,17 +807,114 @@
                 }
                 currentUser = { uid: deviceUid };
 
-                document.getElementById('storage-status-text').textContent = 'บันทึกข้อมูลถาวรบนอุปกรณ์ (Offline-Ready)';
+                const livePill = document.getElementById('live-sync-pill');
+                if (livePill) livePill.classList.add('hidden');
+                document.getElementById('storage-status-text').textContent = 'โหมดออฟไลน์บนเครื่องนี้ (เชื่อมต่อ Cloud ไม่สำเร็จ)';
                 const uidEl = document.getElementById('current-user-id');
                 if (uidEl) uidEl.textContent = currentUser.uid;
 
                 allItems = loadLocalItems();
                 updateStats();
                 renderItems();
+                checkDeepLinkOnLoad();
             }
         }
 
-        // --- Firestore Real-time Sync (Clean Empty State - No Auto-Seeding) ---
+        // --- Deep Link URL Handler (?item=<id> or #item-<id>) ---
+        let deepLinkHandled = false;
+        let activeSharePayload = null;
+
+        function getDeepLinkItemId() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('item')) return params.get('item');
+            if (params.get('vault')) return params.get('vault');
+            if (window.location.hash && window.location.hash.startsWith('#item-')) {
+                return window.location.hash.replace('#item-', '');
+            }
+            return null;
+        }
+
+        function checkDeepLinkOnLoad() {
+            if (deepLinkHandled) return;
+            const targetId = getDeepLinkItemId();
+            if (!targetId) return;
+
+            deepLinkHandled = true;
+            const item = allItems.find(i => i.id === targetId);
+
+            if (!item) {
+                showToast('ไม่พบรายการที่แชร์ (อาจถูกลบโดยเจ้าของแล้ว)', 'error');
+                return;
+            }
+
+            if (item.isPublic !== true && !isItemOwnedByMe(item)) {
+                showToast('รายการนี้ถูกเจ้าของ "ปิดสาธารณะ (Private)" แล้ว ไม่สามารถเข้าถึงได้', 'error');
+                return;
+            }
+
+            openSharedLandingModal(item);
+        }
+
+        function openSharedLandingModal(item) {
+            const isFile = item.type === 'file';
+            const iconBox = document.getElementById('landing-icon-box');
+            iconBox.innerHTML = isFile
+                ? '<i data-lucide="file-text" class="w-6 h-6"></i>'
+                : '<i data-lucide="link-2" class="w-6 h-6"></i>';
+
+            document.getElementById('landing-title').textContent = item.title || 'ไม่มีชื่อรายการ';
+            document.getElementById('landing-desc').textContent = item.description || 'ไม่มีคำอธิบายเพิ่มเติม';
+            document.getElementById('landing-author').textContent = `แชร์โดย: ${item.author || 'ไม่ระบุตัวตน'}`;
+            document.getElementById('landing-meta').textContent = isFile ? (item.fileSize || item.fileName || '') : 'ลิงก์ภายนอก';
+
+            const actionsEl = document.getElementById('landing-actions');
+            actionsEl.innerHTML = '';
+
+            if (isFile) {
+                const previewBtn = document.createElement('button');
+                previewBtn.type = 'button';
+                previewBtn.className = 'touch-target flex-1 py-3 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold rounded-2xl border border-slate-700 flex items-center justify-center gap-2';
+                previewBtn.innerHTML = '<i data-lucide="eye" class="w-4 h-4 text-sky-400"></i><span>ดูตัวอย่างไฟล์</span>';
+                previewBtn.onclick = () => {
+                    closeSharedLandingModal();
+                    previewFile(item.id);
+                };
+
+                const dlBtn = document.createElement('a');
+                dlBtn.href = item.url;
+                dlBtn.download = item.fileName || item.title || 'download';
+                dlBtn.className = 'touch-target flex-1 py-3 px-4 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 text-sm font-bold rounded-2xl shadow-md flex items-center justify-center gap-2';
+                dlBtn.innerHTML = '<i data-lucide="download" class="w-4 h-4 stroke-[2.2]"></i><span>ดาวน์โหลดทันที</span>';
+                dlBtn.onclick = () => showToast('กำลังดาวน์โหลดไฟล์ลงเครื่อง...', 'success');
+
+                actionsEl.appendChild(previewBtn);
+                actionsEl.appendChild(dlBtn);
+            } else {
+                const openBtn = document.createElement('button');
+                openBtn.type = 'button';
+                openBtn.className = 'touch-target flex-1 py-3 px-4 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 text-sm font-bold rounded-2xl shadow-md flex items-center justify-center gap-2';
+                openBtn.innerHTML = '<i data-lucide="arrow-up-right" class="w-4 h-4 stroke-[2.2]"></i><span>เปิดลิงก์ใช้งาน</span>';
+                openBtn.onclick = () => {
+                    closeSharedLandingModal();
+                    openSafeRedirect(item.url);
+                };
+                actionsEl.appendChild(openBtn);
+            }
+
+            document.getElementById('shared-landing-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        window.closeSharedLandingModal = function() {
+            document.getElementById('shared-landing-modal').classList.add('hidden');
+            // Clean URL query param without reloading page
+            if (window.history && window.history.replaceState) {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        };
+
+        // --- Firestore Real-time Sync (Shared Across All Devices & Users) ---
         function subscribeToFirestore() {
             if (!currentUser || !db) return;
 
@@ -741,12 +930,14 @@
                 allItems = items;
                 updateStats();
                 renderItems();
+                checkDeepLinkOnLoad();
             }, (error) => {
                 console.error('Firestore sync error:', error);
                 showToast('สลับไปใช้โหมดข้อมูลสำรองบนเครื่องชั่วคราว', 'info');
                 allItems = loadLocalItems();
                 updateStats();
                 renderItems();
+                checkDeepLinkOnLoad();
             });
         }
 
@@ -974,9 +1165,9 @@
             // Share / Copy Button
             const shareBtn = document.createElement('button');
             shareBtn.type = 'button';
-            shareBtn.className = `touch-target px-3 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1 text-xs font-semibold border ${isPublic ? 'bg-slate-800 hover:bg-slate-700 text-sky-300 border-slate-700' : 'bg-slate-900 text-slate-600 border-slate-800 cursor-not-allowed'}`;
-            shareBtn.title = isPublic ? 'แชร์หรือคัดลอกลิงก์' : 'ปิดสาธารณะอยู่ (ไม่สามารถแชร์ให้คนอื่นได้)';
-            shareBtn.innerHTML = '<i data-lucide="share-2" class="w-4 h-4"></i>';
+            shareBtn.className = `touch-target px-3.5 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold border ${isPublic ? 'bg-slate-800 hover:bg-slate-700 text-sky-300 border-slate-700' : 'bg-slate-900 text-slate-600 border-slate-800 cursor-not-allowed'}`;
+            shareBtn.title = isPublic ? 'แชร์ให้เพื่อน / QR Code' : 'ปิดสาธารณะอยู่ (ไม่สามารถแชร์ให้คนอื่นได้)';
+            shareBtn.innerHTML = '<i data-lucide="share-2" class="w-4 h-4"></i><span>แชร์</span>';
             shareBtn.onclick = () => shareOrCopyItem(item.id);
             actionRow.appendChild(shareBtn);
 
@@ -1336,11 +1527,13 @@
             const contentEl = document.getElementById('preview-content');
             const metaEl = document.getElementById('preview-meta');
             const dlBtn = document.getElementById('preview-download-btn');
+            const sharePreviewBtn = document.getElementById('preview-share-btn');
 
             titleEl.textContent = item.title;
             metaEl.textContent = `${item.fileName} (${item.fileSize})`;
             dlBtn.href = item.url;
             dlBtn.download = item.fileName || item.title;
+            sharePreviewBtn.onclick = () => shareOrCopyItem(item.id);
 
             contentEl.innerHTML = '';
 
@@ -1380,38 +1573,8 @@
                 fallbackDiv.innerHTML = `
                     <div class="w-16 h-16 bg-sky-500/15 text-sky-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-sky-500/25">
                         <i data-lucide="file-check" class="w-8 h-8"></i>
-                    </div>
-                    <p class="text-sm font-bold text-slate-200">ไฟล์พร้อมสำหรับดาวน์โหลด</p>
-                    <p class="text-xs text-slate-400 mt-1">ไฟล์นามสกุลนี้ไม่รองรับการพรีวิวบนเบราว์เซอร์ กรุณากดปุ่ม "ดาวน์โหลดไฟล์ลงเครื่อง" ด้านล่าง</p>
-                `;
-                contentEl.appendChild(fallbackDiv);
-                lucide.createIcons();
-            }
-
-            modal.classList.remove('hidden');
-        };
-
-        window.closePreviewModal = function() {
-            document.getElementById('preview-modal').classList.add('hidden');
-        };
-
-        // --- Safe External Redirect Warning ---
-        window.openSafeRedirect = function(url) {
-            if (!isValidSafeUrl(url)) {
-                showToast('ตรวจพบลิงก์ที่ไม่ปลอดภัย ระบบไม่อนุญาตให้เปิดลิงก์นี้', 'error');
-                return;
-            }
-            document.getElementById('redirect-target-url').textContent = url;
-            document.getElementById('redirect-confirm-btn').href = url;
-            document.getElementById('redirect-modal').classList.remove('hidden');
-        };
-
-        window.closeRedirectModal = function() {
-            document.getElementById('redirect-modal').classList.add('hidden');
-        };
-
-        // --- Mobile Web Share API + Clipboard Fallback ---
-        window.shareOrCopyItem = async function(itemId) {
+        // --- Direct Item Share Modal (Deep Link + QR Code + Web Share API) ---
+        window.shareOrCopyItem = function(itemId) {
             const item = allItems.find(i => i.id === itemId);
             if (!item) return;
 
@@ -1420,31 +1583,61 @@
                 return;
             }
 
-            const shareUrl = item.type === 'link'
-                ? item.url
-                : `${window.location.origin}${window.location.pathname}?vault=${item.id}`;
+            const deepLinkUrl = `${window.location.origin}${window.location.pathname}?item=${encodeURIComponent(item.id)}`;
+            activeSharePayload = {
+                title: item.title,
+                text: item.description ? `${item.title} - ${item.description}` : `แชร์จาก CloudVault TH: ${item.title}`,
+                url: deepLinkUrl
+            };
+
+            document.getElementById('share-modal-subtitle').textContent = item.title;
+            document.getElementById('share-direct-url').value = deepLinkUrl;
+
+            // Generate QR Code
+            const qrContainer = document.getElementById('share-qrcode-box');
+            qrContainer.innerHTML = '';
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrContainer, {
+                    text: deepLinkUrl,
+                    width: 168,
+                    height: 168,
+                    colorDark: '#090d16',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            }
+
+            document.getElementById('share-modal').classList.remove('hidden');
+            lucide.createIcons();
+        };
+
+        window.closeShareModal = function() {
+            document.getElementById('share-modal').classList.add('hidden');
+        };
+
+        window.copyShareModalLink = function() {
+            const input = document.getElementById('share-direct-url');
+            if (!input || !input.value) return;
+
+            input.select();
+            input.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            showToast('คัดลอกลิงก์แชร์เรียบร้อย! ส่งให้เพื่อนเปิดได้ทันที', 'success');
+        };
+
+        window.triggerNativeShare = async function() {
+            if (!activeSharePayload) return;
 
             if (navigator.share) {
                 try {
-                    await navigator.share({
-                        title: item.title,
-                        text: item.description || `แชร์จาก CloudVault TH: ${item.title}`,
-                        url: shareUrl
-                    });
+                    await navigator.share(activeSharePayload);
                     return;
                 } catch (err) {
                     if (err.name === 'AbortError') return;
                 }
             }
-
-            const tempInput = document.createElement('textarea');
-            tempInput.value = shareUrl;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-
-            showToast('คัดลอกลิงก์แชร์ลงคลิปบอร์ดเรียบร้อยแล้ว!', 'success');
+            // Fallback to clipboard copy on desktop browsers without Web Share API
+            copyShareModalLink();
         };
 
         // --- Navigation & Filters ---
