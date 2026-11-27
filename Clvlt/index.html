@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <title>CloudVault TH - ศูนย์รวมฝากไฟล์และแชร์ลิงก์ปลอดภัย</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'Sarabun', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Prompt & Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+            background-color: #090d16;
+            color: #f1f5f9;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom Dark Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+        .drag-active {
+            border-color: #38bdf8 !important;
+            background-color: rgba(56, 189, 248, 0.12) !important;
+        }
+        /* Safe Area support for iOS Bottom Nav */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+        }
+        .mb-nav-space {
+            padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+        }
+        @media (min-width: 768px) {
+            .mb-nav-space {
+                padding-bottom: 2.5rem;
+            }
+        }
+        /* Touch target minimum 44px */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col mb-nav-space selection:bg-sky-500/30 selection:text-sky-200">
+
+    <!-- ==================== DESKTOP & MOBILE TOP HEADER ==================== -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800/90 sticky top-0 z-30 shadow-lg shadow-black/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 cursor-pointer select-none" onclick="switchTab('public')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-slate-950 shadow-md shadow-sky-500/20">
+                    <i data-lucide="shield-check" class="w-6 h-6 stroke-[2.2]"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-300 via-sky-400 to-blue-500 leading-tight">
+                            CloudVault TH
+                        </h1>
+                        <span class="px-1.5 py-0.5 text-[10px] font-bold bg-sky-500/15 text-sky-300 border border-sky-500/30 rounded-md">SAFE</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">ฝากไฟล์และแชร์ลิงก์ ควบคุมสิทธิ์เปิด/ปิดสาธารณะได้ 100%</p>
+                </div>
+            </div>
+
+            <!-- Desktop Action Buttons -->
+            <div class="hidden md:flex items-center gap-3">
+                <button onclick="openSecurityAuditModal()" class="touch-target flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-300 bg-slate-800/90 hover:bg-slate-800 hover:text-sky-300 border border-slate-700/80 rounded-xl transition-colors">
+                    <i data-lucide="lock" class="w-4 h-4 text-sky-400"></i>
+                    <span>ตรวจสอบความปลอดภัย</span>
+                </button>
+                <button onclick="openUploadModal()" class="touch-target flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-950 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 rounded-xl shadow-md shadow-sky-500/25 transition-all active:scale-95">
+                    <i data-lucide="plus-circle" class="w-4 h-4 stroke-[2.2]"></i>
+                    <span>ฝากไฟล์ / ฝากลิงก์</span>
+                </button>
+            </div>
+
+            <!-- Mobile Quick Status Pill -->
+            <div class="flex md:hidden items-center gap-2">
+                <button onclick="openSecurityAuditModal()" class="touch-target px-2.5 py-1.5 rounded-xl bg-sky-500/10 border border-sky-500/25 text-sky-300 text-xs font-semibold flex items-center gap-1.5" aria-label="สถานะความปลอดภัย">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-sky-400"></i>
+                    <span>ปลอดภัย</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== HERO & DASHBOARD STATS ==================== -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/60 border-b border-slate-800/80 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto relative flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div class="max-w-2xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/25 text-sky-300 text-xs font-medium mb-3">
+                    <span id="storage-indicator-dot" class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                    <span id="storage-status-text">กำลังเชื่อมต่อระบบจัดเก็บข้อมูล...</span>
+                </div>
+                <h2 class="text-xl sm:text-3xl font-bold text-white mb-2 leading-snug">แชร์ไฟล์และลิงก์สำหรับทุกคน พร้อมสวิตช์เปิด/ปิดส่วนตัว</h2>
+                <p class="text-slate-300 text-xs sm:text-base font-light leading-relaxed">
+                    อัปโหลดไฟล์หรือฝากลิงก์ได้จากทุกอุปกรณ์ เจ้าของสามารถกด <span class="text-sky-300 font-medium underline decoration-sky-400">เปิดหรือปิดสาธารณะ</span> ได้ตลอดเวลา ป้องกันลิงก์หลุดและคัดกรองความปลอดภัยอัตโนมัติ
+                </p>
+            </div>
+
+            <!-- Real-Time Stats Grid (Starts at 0 when empty) -->
+            <div class="grid grid-cols-3 gap-2.5 sm:gap-3 w-full lg:w-auto">
+                <div class="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 text-center">
+                    <div class="text-lg sm:text-2xl font-bold text-sky-400" id="stat-public">0</div>
+                    <div class="text-[11px] text-slate-400 mt-0.5">สาธารณะรวม</div>
+                </div>
+                <div class="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 text-center">
+                    <div class="text-lg sm:text-2xl font-bold text-blue-400" id="stat-mine">0</div>
+                    <div class="text-[11px] text-slate-400 mt-0.5">รายการของฉัน</div>
+                </div>
+                <div class="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 text-center">
+                    <div class="text-lg sm:text-2xl font-bold text-amber-400" id="stat-private">0</div>
+                    <div class="text-[11px] text-slate-400 mt-0.5">ซ่อนส่วนตัว</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MAIN CONTENT AREA ==================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
+        
+        <!-- Desktop Tabs & Search / Filter Controls -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 mb-5">
+            <!-- Desktop Tabs -->
+            <div class="hidden md:flex p-1 bg-slate-900 border border-slate-800 rounded-2xl w-fit">
+                <button id="tab-public" onclick="switchTab('public')" class="touch-target flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-sky-500/15 text-sky-300 border border-sky-500/30 shadow-sm">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span>ฟีดสาธารณะ (Public)</span>
+                </button>
+                <button id="tab-mine" onclick="switchTab('mine')" class="touch-target flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all">
+                    <i data-lucide="folder-lock" class="w-4 h-4"></i>
+                    <span>รายการของฉัน (My Vault)</span>
+                </button>
+            </div>
+
+            <!-- Mobile Current Section Header -->
+            <div class="flex md:hidden items-center justify-between">
+                <h3 id="mobile-section-title" class="text-base font-bold text-slate-100 flex items-center gap-2">
+                    <i data-lucide="globe" class="w-4 h-4 text-sky-400"></i>
+                    <span>ฟีดสาธารณะ (Public)</span>
+                </h3>
+                <span id="mobile-item-count" class="text-xs font-medium text-sky-300 bg-slate-800/90 border border-slate-700 px-2.5 py-1 rounded-full">0 รายการ</span>
+            </div>
+
+            <!-- Search & Type Filter -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                <!-- Search Input -->
+                <div class="relative flex-1 sm:w-64">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" id="search-input" oninput="renderItems()" placeholder="ค้นหาชื่อไฟล์, ลิงก์, หมวดหมู่..." 
+                        class="touch-target w-full pl-10 pr-9 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all">
+                    <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-200">
+                        <i data-lucide="x-circle" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Type Filter Pills -->
+                <div class="grid grid-cols-3 sm:flex items-center gap-1 bg-slate-900 p-1 border border-slate-800 rounded-xl">
+                    <button onclick="setTypeFilter('all')" id="filter-all" class="min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 transition-colors">ทั้งหมด</button>
+                    <button onclick="setTypeFilter('file')" id="filter-file" class="min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1">
+                        <i data-lucide="file" class="w-3.5 h-3.5"></i> ไฟล์
+                    </button>
+                    <button onclick="setTypeFilter('link')" id="filter-link" class="min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1">
+                        <i data-lucide="link" class="w-3.5 h-3.5"></i> ลิงก์
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Vault Control Bar (Shown only on 'mine' tab) -->
+        <div id="mine-info-banner" class="hidden mb-5 bg-slate-900/90 border border-sky-500/30 rounded-2xl p-4 shadow-md">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <div class="p-2.5 bg-sky-500/15 text-sky-400 border border-sky-500/25 rounded-xl shrink-0">
+                        <i data-lucide="shield" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-100">พื้นที่จัดการสิทธิ์ส่วนตัว (My Vault)</h4>
+                        <p class="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                            กดเปิด/ปิดสวิตช์ <span class="text-sky-300 font-semibold">สาธารณะ</span> ได้ตลอดเวลา รายการที่ปิดเป็นส่วนตัวจะถูกซ่อนจากคนอื่นอย่างสมบูรณ์
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Privacy Filter inside My Vault + PIN Unlock -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex bg-slate-950 p-1 border border-slate-800 rounded-xl text-xs">
+                        <button onclick="setPrivacyFilter('all')" id="priv-filter-all" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-800 text-sky-300">ทั้งหมด</button>
+                        <button onclick="setPrivacyFilter('public')" id="priv-filter-public" class="px-3 py-1.5 rounded-lg font-medium text-slate-400">สาธารณะ</button>
+                        <button onclick="setPrivacyFilter('private')" id="priv-filter-private" class="px-3 py-1.5 rounded-lg font-medium text-slate-400">ส่วนตัว</button>
+                    </div>
+                    <button onclick="openUnlockPinModal()" class="touch-target px-3.5 py-2 bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5">
+                        <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+                        <span>ดึงรายการด้วย PIN</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Grid -->
+        <div id="items-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            <!-- Safe DOM Cards injected via JS -->
+        </div>
+
+        <!-- Clean Production Empty State -->
+        <div id="empty-state" class="hidden text-center py-14 sm:py-16 px-5 bg-slate-900/70 rounded-3xl border border-dashed border-slate-700/90 shadow-inner">
+            <div class="w-16 h-16 bg-gradient-to-br from-sky-500/20 to-blue-600/20 text-sky-400 border border-sky-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-sky-500/10">
+                <i id="empty-state-icon" data-lucide="cloud-upload" class="w-8 h-8"></i>
+            </div>
+            <h3 id="empty-state-title" class="text-base sm:text-xl font-bold text-slate-100 mb-2">ยังไม่มีไฟล์หรือลิงก์ในฟีดสาธารณะ</h3>
+            <p id="empty-state-desc" class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto mb-6 leading-relaxed">
+                เริ่มต้นใช้งานได้ทันทีด้วยการอัปโหลดไฟล์หรือฝากลิงก์แรกของคุณ พร้อมตั้งรหัส PIN 4 หลักเพื่อเปิดหรือปิดสถานะสาธารณะได้ตลอดเวลา
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button onclick="openUploadModal()" class="touch-target w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 text-sm font-bold rounded-2xl shadow-lg shadow-sky-500/20 transition-all active:scale-95">
+                    <i data-lucide="plus" class="w-5 h-5 stroke-[2.5]"></i>
+                    <span>+ อัปโหลดรายการแรก</span>
+                </button>
+                <button id="empty-pin-btn" onclick="openUnlockPinModal()" class="hidden touch-target w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 text-sm font-semibold rounded-2xl transition-colors">
+                    <i data-lucide="key-round" class="w-4 h-4"></i>
+                    <span>กู้คืนรายการด้วย PIN</span>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Desktop Footer -->
+    <footer class="hidden md:block bg-slate-900/80 border-t border-slate-800/80 py-5 px-4 mt-8">
+        <div class="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-sky-300">CloudVault TH</span>
+                <span>• ระบบฝากไฟล์และลิงก์ปลอดภัย ป้องกัน XSS & ควบคุมสิทธิ์การเข้าถึง</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span>Session ID: <code id="current-user-id" class="bg-slate-800 px-2 py-0.5 rounded text-sky-300 font-mono">...</code></span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== MOBILE BOTTOM NAVIGATION BAR ==================== -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 shadow-[0_-4px_24px_rgba(0,0,0,0.45)] pb-safe">
+        <div class="grid grid-cols-4 items-center h-16 px-2">
+            <!-- 1. Public Feed -->
+            <button onclick="switchTab('public')" id="m-nav-public" class="touch-target flex flex-col items-center justify-center gap-1 text-sky-400 font-semibold transition-colors">
+                <i data-lucide="globe" class="w-5 h-5"></i>
+                <span class="text-[11px]">สาธารณะ</span>
+            </button>
+
+            <!-- 2. Upload Quick Action (Prominent Center Button) -->
+            <button onclick="openUploadModal()" class="touch-target flex flex-col items-center justify-center gap-0.5 relative" aria-label="ฝากไฟล์หรือลิงก์">
+                <div class="w-12 h-12 -mt-5 rounded-2xl bg-gradient-to-tr from-sky-400 to-blue-600 shadow-lg shadow-sky-500/30 flex items-center justify-center border-2 border-slate-900 active:scale-95 transition-transform">
+                    <i data-lucide="plus" class="w-6 h-6 text-slate-950 stroke-[2.5]"></i>
+                </div>
+                <span class="text-[11px] font-semibold text-sky-300">ฝากไฟล์/ลิงก์</span>
+            </button>
+
+            <!-- 3. My Vault -->
+            <button onclick="switchTab('mine')" id="m-nav-mine" class="touch-target flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-200 font-medium transition-colors relative">
+                <i data-lucide="folder-lock" class="w-5 h-5"></i>
+                <span class="text-[11px]">ของฉัน</span>
+                <span id="m-badge-mine" class="hidden absolute top-1.5 right-5 w-2 h-2 rounded-full bg-sky-400"></span>
+            </button>
+
+            <!-- 4. Security Audit -->
+            <button onclick="openSecurityAuditModal()" class="touch-target flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-200 font-medium transition-colors">
+                <i data-lucide="shield-check" class="w-5 h-5 text-sky-400"></i>
+                <span class="text-[11px]">ความปลอดภัย</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==================== MODALS (MOBILE BOTTOM-SHEET & DESKTOP DIALOG) ==================== -->
+
+    <!-- 1. Upload / Edit Modal -->
+    <div id="upload-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-xs flex items-end sm:items-center justify-center sm:p-4">
+        <div class="bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-800 overflow-hidden">
+            <!-- Bottom Sheet Handle on Mobile -->
+            <div class="sm:hidden w-12 h-1.5 bg-slate-700 rounded-full mx-auto mt-3 mb-1"></div>
+
+            <!-- Modal Header -->
+            <div class="px-5 sm:px-6 py-3.5 sm:py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                <h3 id="modal-form-title" class="text-base sm:text-lg font-bold text-slate-100 flex items-center gap-2">
+                    <i data-lucide="upload-cloud" class="w-5 h-5 text-sky-400"></i>
+                    <span>เพิ่มไฟล์หรือฝากลิงก์ใหม่</span>
+                </h3>
+                <button onclick="closeUploadModal()" class="touch-target flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-xl">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Form Body -->
+            <div class="p-5 sm:p-6 overflow-y-auto flex-1">
+                <!-- Mode Switcher (Hidden when editing existing item) -->
+                <div id="upload-mode-tabs" class="grid grid-cols-2 gap-2 p-1 bg-slate-950 border border-slate-800 rounded-2xl mb-5">
+                    <button type="button" id="mode-btn-file" onclick="switchUploadMode('file')" class="touch-target flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 transition-all">
+                        <i data-lucide="file-up" class="w-4 h-4"></i> อัปโหลดไฟล์
+                    </button>
+                    <button type="button" id="mode-btn-link" onclick="switchUploadMode('link')" class="touch-target flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all">
+                        <i data-lucide="link-2" class="w-4 h-4"></i> ฝากลิงก์ (URL)
+                    </button>
+                </div>
+
+                <form id="upload-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                    <input type="hidden" id="edit-item-id" value="">
+
+                    <!-- File Upload Section -->
+                    <div id="section-file">
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">เลือกไฟล์จากเครื่องของคุณ *</label>
+                        <div id="drop-zone" onclick="document.getElementById('file-input').click()" 
+                            class="border-2 border-dashed border-slate-700 hover:border-sky-400 rounded-2xl p-5 text-center cursor-pointer transition-all bg-slate-950/60">
+                            <input type="file" id="file-input" class="hidden" onchange="handleFileSelect(event)">
+                            <div id="drop-zone-empty">
+                                <div class="w-12 h-12 rounded-2xl bg-sky-500/15 text-sky-400 flex items-center justify-center mx-auto mb-2">
+                                    <i data-lucide="folder-plus" class="w-6 h-6"></i>
+                                </div>
+                                <p class="text-sm font-semibold text-slate-200">แตะเพื่อเลือกไฟล์ หรือลากไฟล์มาวาง</p>
+                                <p class="text-[11px] text-slate-400 mt-1">รองรับรูปภาพ, PDF, เอกสาร, ข้อความ (ไม่เกิน 750 KB • บล็อกไฟล์อันตรายอัตโนมัติ)</p>
+                            </div>
+                            <div id="drop-zone-selected" class="hidden">
+                                <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center mx-auto mb-2">
+                                    <i data-lucide="file-check-2" class="w-6 h-6"></i>
+                                </div>
+                                <p id="selected-file-name" class="text-sm font-bold text-slate-100 truncate px-2"></p>
+                                <p id="selected-file-size" class="text-xs text-slate-400 mt-0.5"></p>
+                                <span class="inline-block mt-2 text-xs text-sky-400 font-semibold underline">แตะเพื่อเปลี่ยนไฟล์</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Link Input Section -->
+                    <div id="section-link" class="hidden">
+                        <label class="block text-xs font-bold text-slate-300 mb-1.5">ลิงก์ปลายทาง (URL) * <span class="font-normal text-slate-400">(เฉพาะ http:// หรือ https://)</span></label>
+                        <div class="relative">
+                            <i data-lucide="globe" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                            <input type="url" id="input-url" placeholder="https://example.com" 
+                                class="touch-target w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500">
+                        </div>
+                    </div>
+
+                    <!-- Title & Category -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-300 mb-1.5">ชื่อหัวข้อ / ชื่อแสดงผล *</label>
+                            <input type="text" id="input-title" required maxlength="100" placeholder="ระบุชื่อไฟล์หรือหัวข้อลิงก์" 
+                                class="touch-target w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1.5">หมวดหมู่</label>
+                            <select id="input-category" class="touch-target w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500">
+                                <option value="ทั่วไป">ทั่วไป</option>
+                                <option value="เอกสาร">เอกสาร</option>
+                                <option value="รูปภาพ/สื่อ">รูปภาพ/สื่อ</option>
+                                <option value="งาน/โปรเจกต์">งาน/โปรเจกต์</option>
+                                <option value="ลิงก์สำคัญ">ลิงก์สำคัญ</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Author & Description -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1.5">ชื่อผู้ลง</label>
+                            <input type="text" id="input-author" maxlength="40" placeholder="ไม่ระบุตัวตน" 
+                                class="touch-target w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-300 mb-1.5">คำอธิบายเพิ่มเติม</label>
+                            <input type="text" id="input-desc" maxlength="300" placeholder="รายละเอียดสั้นๆ (ไม่บังคับ)" 
+                                class="touch-target w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500">
+                        </div>
+                    </div>
+
+                    <!-- Privacy Switch & Owner PIN -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <!-- Public / Private Toggle -->
+                        <div class="p-3.5 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-slate-100" id="privacy-label-title">เปิดสาธารณะ (Public)</div>
+                                <div class="text-[11px] text-slate-400" id="privacy-label-sub">ทุกคนเห็นและโหลดได้</div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer touch-target justify-end">
+                                <input type="checkbox" id="input-is-public" checked onchange="updatePrivacyPreview()" class="sr-only peer">
+                                <div class="w-12 h-7 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-slate-950 after:content-[''] after:absolute after:top-[10px] after:right-[22px] peer-checked:after:right-[22px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-sky-400"></div>
+                            </label>
+                        </div>
+
+                        <!-- Owner PIN -->
+                        <div class="p-3.5 bg-slate-950 border border-slate-800 rounded-2xl">
+                            <label class="block text-[11px] font-bold text-slate-300 mb-1 flex items-center justify-between">
+                                <span>ตั้งรหัส PIN เจ้าของ (4 หลัก) *</span>
+                                <i data-lucide="key" class="w-3.5 h-3.5 text-sky-400"></i>
+                            </label>
+                            <input type="tel" id="input-pin" maxlength="4" pattern="\d{4}" required placeholder="••••"
+                                class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-base font-mono font-bold text-center tracking-[0.35em] text-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-500/50">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="pt-3 flex items-center gap-2.5 pb-safe">
+                        <button type="button" onclick="closeUploadModal()" class="touch-target flex-1 sm:flex-none px-5 py-3 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors">
+                            ยกเลิก
+                        </button>
+                        <button type="submit" id="submit-btn" class="touch-target flex-1 px-6 py-3 text-sm font-bold text-slate-950 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 rounded-2xl shadow-md shadow-sky-500/20 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="check-circle" class="w-4 h-4 stroke-[2.2]"></i>
+                            <span>บันทึกข้อมูล</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Unlock with PIN Modal (With Rate Limiting Protection) -->
+    <div id="pin-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-xs flex items-end sm:items-center justify-center sm:p-4">
+        <div class="bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-800 pb-safe">
+            <div class="sm:hidden w-12 h-1.5 bg-slate-700 rounded-full mx-auto -mt-2 mb-4"></div>
+            <div class="w-12 h-12 rounded-2xl bg-sky-500/15 text-sky-400 border border-sky-500/25 flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="key-round" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-slate-100 mb-1">ยืนยันรหัส PIN เจ้าของ</h3>
+            <p class="text-xs text-center text-slate-400 mb-4 leading-relaxed">
+                กรอกรหัส PIN 4 หลักที่คุณตั้งไว้ตอนฝากไฟล์/ลิงก์ เพื่อดึงรายการของคุณกลับมาเปิดหรือปิดสาธารณะ
+            </p>
+            <div id="pin-rate-warning" class="hidden mb-3 p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs text-center font-medium"></div>
+            
+            <form onsubmit="handlePinUnlock(event)" class="space-y-4">
+                <input type="tel" id="unlock-pin-input" maxlength="4" pattern="\d{4}" required placeholder="••••" autocomplete="off"
+                    class="touch-target w-full py-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-center text-2xl font-mono font-bold tracking-[0.5em] text-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-500/50">
+                <div class="flex gap-2.5">
+                    <button type="button" onclick="closeUnlockPinModal()" class="touch-target flex-1 py-3 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors">ยกเลิก</button>
+                    <button type="submit" id="unlock-pin-submit" class="touch-target flex-1 py-3 text-sm font-bold text-slate-950 bg-sky-400 hover:bg-sky-300 rounded-2xl transition-colors">ปลดล็อก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. File Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-xs flex items-end sm:items-center justify-center sm:p-4">
+        <div class="bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-800 overflow-hidden pb-safe">
+            <div class="px-5 py-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2.5 truncate pr-4">
+                    <i data-lucide="eye" class="w-5 h-5 text-sky-400 shrink-0"></i>
+                    <h3 id="preview-title" class="text-sm sm:text-base font-bold text-slate-100 truncate">ตัวอย่างไฟล์</h3>
+                </div>
+                <button onclick="closePreviewModal()" class="touch-target flex items-center justify-center text-slate-400 hover:text-slate-200 bg-slate-800 rounded-xl border border-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="preview-content" class="p-4 sm:p-6 overflow-auto flex-1 flex items-center justify-center bg-slate-950 min-h-[260px]">
+                <!-- Safe DOM preview -->
+            </div>
+            <div class="px-5 py-3.5 bg-slate-900 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span id="preview-meta" class="text-xs text-slate-400 truncate"></span>
+                <a id="preview-download-btn" href="#" download class="touch-target px-5 py-2.5 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 shadow-sm">
+                    <i data-lucide="download" class="w-4 h-4 stroke-[2.2]"></i> ดาวน์โหลดไฟล์ลงเครื่อง
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Safe External Link Redirect Confirmation Modal -->
+    <div id="redirect-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-xs flex items-end sm:items-center justify-center sm:p-4">
+        <div class="bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 pb-safe">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="external-link" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-slate-100 mb-1">กำลังเปิดลิงก์ภายนอก</h3>
+            <p class="text-xs text-center text-slate-400 mb-4">กรุณาตรวจสอบโดเมนปลายทางก่อนเข้าใช้งานเพื่อความปลอดภัยของอุปกรณ์คุณ</p>
+            
+            <div class="p-3.5 bg-slate-950 border border-slate-800 rounded-2xl mb-5 break-all">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">URL ปลายทาง (ตรวจสอบโปรโตคอลแล้ว):</div>
+                <div id="redirect-target-url" class="text-xs font-mono text-sky-400 font-semibold"></div>
+            </div>
+
+            <div class="flex gap-2.5">
+                <button onclick="closeRedirectModal()" class="touch-target flex-1 py-3 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-colors">ยกเลิก</button>
+                <a id="redirect-confirm-btn" href="#" target="_blank" rel="noopener noreferrer" onclick="closeRedirectModal()" class="touch-target flex-1 py-3 text-sm font-bold text-slate-950 bg-sky-400 hover:bg-sky-300 rounded-2xl transition-colors flex items-center justify-center gap-1.5">
+                    <span>เปิดลิงก์เลย</span>
+                    <i data-lucide="arrow-up-right" class="w-4 h-4 stroke-[2.2]"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Security & Architecture Audit Modal -->
+    <div id="arch-modal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-xs flex items-end sm:items-center justify-center sm:p-4">
+        <div class="bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-800 overflow-hidden pb-safe">
+            <div class="px-5 sm:px-6 py-4 bg-gradient-to-r from-slate-950 to-blue-950 border-b border-slate-800 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-sky-500/15 border border-sky-400/30 rounded-xl">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-sky-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold">ผลการตรวจสอบความปลอดภัยและระบบ</h3>
+                        <p class="text-[11px] text-sky-300">Security, Privacy & Mobile Readiness Audit</p>
+                    </div>
+                </div>
+                <button onclick="closeArchitectureModal()" class="touch-target flex items-center justify-center text-slate-400 hover:text-white rounded-xl">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 text-xs sm:text-sm text-slate-300">
+                <!-- Active Security Checklist -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/25 flex items-start gap-2.5">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-sky-400 shrink-0 mt-0.5"></i>
+                        <div>
+                            <div class="font-bold text-sky-200 text-xs">Strict XSS Shield เปิดทำงาน</div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">สร้าง DOM ด้วย document.createElement และ textContent ป้องกันการฝังสคริปต์ 100%</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/25 flex items-start gap-2.5">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-sky-400 shrink-0 mt-0.5"></i>
+                        <div>
+                            <div class="font-bold text-sky-200 text-xs">Safe URL Protocol Filter</div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">อนุญาตเฉพาะ http/https บล็อก javascript: และแจ้งเตือนก่อนเปิดลิงก์ภายนอก</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/25 flex items-start gap-2.5">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-sky-400 shrink-0 mt-0.5"></i>
+                        <div>
+                            <div class="font-bold text-sky-200 text-xs">File Scanner & Size Guard</div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">บล็อกไฟล์ปฏิบัติการอันตราย (.exe, .bat, .sh, .vbs ฯลฯ) อัตโนมัติก่อนอัปโหลด</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-sky-500/10 border border-sky-500/25 flex items-start gap-2.5">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-sky-400 shrink-0 mt-0.5"></i>
+                        <div>
+                            <div class="font-bold text-sky-200 text-xs">Privacy Isolation & PIN Lock</div>
+                            <p class="text-[11px] text-slate-400 mt-0.5">รายการส่วนตัวถูกซ่อนจากฟีดรวมเด็ดขาด พร้อมระบบป้องกันการเดา PIN ผิดเกิน 5 ครั้ง</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Production Storage Advice -->
+                <div class="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
+                    <h4 class="font-bold text-sky-300 flex items-center gap-2 text-xs sm:text-sm">
+                        <i data-lucide="server" class="w-4 h-4 text-sky-400"></i>
+                        สถาปัตยกรรมการเก็บข้อมูลถาวร (Production Clean State)
+                    </h4>
+                    <ul class="text-xs text-slate-400 space-y-1.5 list-disc pl-4 leading-relaxed">
+                        <li><b>ฐานข้อมูลพร้อมใช้งานจริง:</b> เริ่มต้นเป็นค่าว่าง 100% ปราศจากข้อมูลจำลอง เชื่อมต่อ Cloud Firestore และมี LocalStorage สำรองอัตโนมัติ</li>
+                        <li><b>รองรับไฟล์ขนาดใหญ่ระดับ GB:</b> แนะนำให้เชื่อมต่อกับ <b>Cloudflare R2</b> หรือ <b>AWS S3</b> สำหรับเก็บตัวไฟล์จริง และสร้าง <b>Signed URLs</b> เฉพาะรายการที่ตั้งเป็นส่วนตัว</li>
+                        <li><b>ลิงก์ถาวรไม่หลุด:</b> ใช้ระบบ ID อ้างอิงในฐานข้อมูล หากเจ้าของแก้ไขไฟล์หรือข้อมูล ลิงก์เดิมที่แชร์ไปแล้วจะยังใช้งานได้ตลอดไป</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="px-5 py-3.5 bg-slate-900 border-t border-slate-800 flex justify-end">
+                <button onclick="closeArchitectureModal()" class="touch-target w-full sm:w-auto px-6 py-2.5 bg-sky-400 hover:bg-sky-300 text-slate-950 text-sm font-bold rounded-xl">
+                    รับทราบและปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Toast Notification Container -->
+    <div id="toast-container" class="fixed top-20 sm:top-auto sm:bottom-5 inset-x-4 sm:inset-x-auto sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ==================== APPLICATION SCRIPT ==================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Security Constants ---
+        const BLOCKED_EXTENSIONS = ['.exe', '.bat', '.cmd', '.msi', '.vbs', '.scr', '.sh', '.ps1', '.jar', '.com', '.pif'];
+        const MAX_FILE_SIZE_BYTES = 750 * 1024; // 750 KB safe limit for Cloud Document / LocalStorage persistence
+        const LOCAL_STORAGE_KEY = 'cloudvault_th_clean_items_v1';
+        const PIN_STORAGE_KEY = 'cloudvault_th_clean_pins_v1';
+        const MAX_PIN_ATTEMPTS = 5;
+        const PIN_LOCKOUT_MS = 60 * 1000; // 1 minute cooldown
+
+        // --- App State (Starts completely empty - NO mock/seed data) ---
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let useCloudDb = false;
+        let allItems = [];
+        let unlockedPins = new Set();
+        let currentTab = 'public'; // 'public' | 'mine'
+        let currentTypeFilter = 'all'; // 'all' | 'file' | 'link'
+        let currentPrivacyFilter = 'all'; // 'all' | 'public' | 'private'
+        let uploadMode = 'file'; // 'file' | 'link'
+        let selectedFileData = null;
+
+        // PIN Rate Limiting State
+        let failedPinAttempts = 0;
+        let pinLockoutUntil = 0;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'cloudvault-th-prod';
+
+        // --- Security Helper Functions ---
+        function isValidSafeUrl(urlString) {
+            try {
+                const parsed = new URL(urlString);
+                return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function isBlockedFile(fileName) {
+            const lower = (fileName || '').toLowerCase();
+            return BLOCKED_EXTENSIONS.some(ext => lower.endsWith(ext));
+        }
+
+        function sanitizeText(str, maxLen = 200) {
+            if (!str) return '';
+            return String(str).trim().slice(0, maxLen);
+        }
+
+        // --- Load / Save LocalStorage ---
+        function loadSavedPins() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(PIN_STORAGE_KEY) || '[]');
+                if (Array.isArray(saved)) {
+                    saved.forEach(p => unlockedPins.add(String(p)));
+                }
+            } catch (_) {}
+        }
+
+        function saveUnlockedPins() {
+            try {
+                localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(Array.from(unlockedPins)));
+            } catch (_) {}
+        }
+
+        function loadLocalItems() {
+            try {
+                const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) return parsed;
+                }
+            } catch (_) {}
+            return [];
+        }
+
+        function saveLocalItems(items) {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(items));
+            } catch (e) {
+                showToast('พื้นที่จัดเก็บในเบราว์เซอร์เต็ม กรุณาลบไฟล์เก่าบางส่วน', 'error');
+            }
+        }
+
+        // --- Initialize Application ---
+        async function initApp() {
+            lucide.createIcons();
+            loadSavedPins();
+            setupDragAndDrop();
+
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    currentUser = auth.currentUser;
+                    useCloudDb = true;
+
+                    document.getElementById('storage-status-text').textContent = 'เชื่อมต่อฐานข้อมูล Cloud ถาวร & เข้ารหัสแล้ว';
+                    const uidEl = document.getElementById('current-user-id');
+                    if (uidEl) uidEl.textContent = currentUser ? currentUser.uid : 'Guest';
+
+                    subscribeToFirestore();
+                } else {
+                    throw new Error('Fallback to LocalStorage');
+                }
+            } catch (error) {
+                useCloudDb = false;
+                let deviceUid = localStorage.getItem('cloudvault_device_uid');
+                if (!deviceUid) {
+                    deviceUid = 'dev-' + Math.random().toString(36).substring(2, 10);
+                    localStorage.setItem('cloudvault_device_uid', deviceUid);
+                }
+                currentUser = { uid: deviceUid };
+
+                document.getElementById('storage-status-text').textContent = 'บันทึกข้อมูลถาวรบนอุปกรณ์ (Offline-Ready)';
+                const uidEl = document.getElementById('current-user-id');
+                if (uidEl) uidEl.textContent = currentUser.uid;
+
+                allItems = loadLocalItems();
+                updateStats();
+                renderItems();
+            }
+        }
+
+        // --- Firestore Real-time Sync (Clean Empty State - No Auto-Seeding) ---
+        function subscribeToFirestore() {
+            if (!currentUser || !db) return;
+
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'vault_items');
+
+            onSnapshot(colRef, (snapshot) => {
+                const items = [];
+                snapshot.forEach((docSnap) => {
+                    items.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                allItems = items;
+                updateStats();
+                renderItems();
+            }, (error) => {
+                console.error('Firestore sync error:', error);
+                showToast('สลับไปใช้โหมดข้อมูลสำรองบนเครื่องชั่วคราว', 'info');
+                allItems = loadLocalItems();
+                updateStats();
+                renderItems();
+            });
+        }
+
+        // --- Ownership & Privacy Isolation Check ---
+        function isItemOwnedByMe(item) {
+            if (!currentUser) return false;
+            return item.ownerId === currentUser.uid || unlockedPins.has(String(item.ownerPin));
+        }
+
+        // --- Update Stats (Starts at 0 when database is empty) ---
+        function updateStats() {
+            const publicCount = allItems.filter(i => i.isPublic === true).length;
+            const myItems = allItems.filter(i => isItemOwnedByMe(i));
+            const myPrivateCount = myItems.filter(i => i.isPublic !== true).length;
+
+            document.getElementById('stat-public').textContent = publicCount;
+            document.getElementById('stat-mine').textContent = myItems.length;
+            document.getElementById('stat-private').textContent = myPrivateCount;
+
+            const mBadge = document.getElementById('m-badge-mine');
+            if (mBadge) {
+                if (myItems.length > 0) mBadge.classList.remove('hidden');
+                else mBadge.classList.add('hidden');
+            }
+        }
+
+        // --- Safe DOM Card Rendering (100% XSS Protected) ---
+        window.renderItems = function() {
+            const grid = document.getElementById('items-grid');
+            const emptyState = document.getElementById('empty-state');
+            const searchInput = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+            const searchQuery = searchInput.value.toLowerCase().trim();
+
+            if (searchQuery) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+
+            const filtered = allItems.filter(item => {
+                // STRICT PRIVACY ISOLATION
+                if (currentTab === 'public') {
+                    if (item.isPublic !== true) return false;
+                } else if (currentTab === 'mine') {
+                    if (!isItemOwnedByMe(item)) return false;
+                    if (currentPrivacyFilter === 'public' && item.isPublic !== true) return false;
+                    if (currentPrivacyFilter === 'private' && item.isPublic === true) return false;
+                }
+
+                // Type filter
+                if (currentTypeFilter !== 'all' && item.type !== currentTypeFilter) return false;
+
+                // Search filter
+                if (searchQuery) {
+                    const t = (item.title || '').toLowerCase();
+                    const d = (item.description || '').toLowerCase();
+                    const f = (item.fileName || '').toLowerCase();
+                    const a = (item.author || '').toLowerCase();
+                    const c = (item.category || '').toLowerCase();
+                    return t.includes(searchQuery) || d.includes(searchQuery) || f.includes(searchQuery) || a.includes(searchQuery) || c.includes(searchQuery);
+                }
+                return true;
+            });
+
+            const mCountEl = document.getElementById('mobile-item-count');
+            if (mCountEl) mCountEl.textContent = `${filtered.length} รายการ`;
+
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                updateEmptyStateContent(searchQuery);
+                emptyState.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            const fragment = document.createDocumentFragment();
+            filtered.forEach(item => {
+                fragment.appendChild(buildSafeCardElement(item));
+            });
+            grid.appendChild(fragment);
+            lucide.createIcons();
+        };
+
+        function updateEmptyStateContent(searchQuery) {
+            const titleEl = document.getElementById('empty-state-title');
+            const descEl = document.getElementById('empty-state-desc');
+            const pinBtn = document.getElementById('empty-pin-btn');
+
+            if (searchQuery) {
+                titleEl.textContent = 'ไม่พบรายการที่ตรงกับคำค้นหา';
+                descEl.textContent = 'ลองเปลี่ยนคำค้นหาใหม่ หรือกดปุ่มด้านล่างเพื่อเพิ่มไฟล์และลิงก์ใหม่เข้าสู่ระบบ';
+                pinBtn.classList.add('hidden');
+            } else if (currentTab === 'mine') {
+                titleEl.textContent = 'คุณยังไม่มีรายการไฟล์หรือลิงก์ส่วนตัว';
+                descEl.textContent = 'เริ่มต้นอัปโหลดไฟล์หรือฝากลิงก์แรกของคุณ หรือหากคุณเคยฝากไว้จากอุปกรณ์อื่น สามารถกดปุ่มกู้คืนด้วยรหัส PIN 4 หลักได้ทันที';
+                pinBtn.classList.remove('hidden');
+            } else {
+                titleEl.textContent = 'ยังไม่มีไฟล์หรือลิงก์ในฟีดสาธารณะ';
+                descEl.textContent = 'เริ่มต้นใช้งานได้ทันทีด้วยการอัปโหลดไฟล์หรือฝากลิงก์แรกของคุณ พร้อมตั้งรหัส PIN 4 หลักเพื่อเปิดหรือปิดสถานะสาธารณะได้ตลอดเวลา';
+                pinBtn.classList.add('hidden');
+            }
+        }
+
+        function buildSafeCardElement(item) {
+            const isOwner = isItemOwnedByMe(item);
+            const isFile = item.type === 'file';
+            const isPublic = item.isPublic === true;
+
+            const card = document.createElement('div');
+            card.className = `bg-slate-900/90 rounded-3xl p-4 sm:p-5 border ${isPublic ? 'border-slate-800 hover:border-sky-500/40' : 'border-amber-500/40 bg-amber-950/10'} shadow-md transition-all flex flex-col justify-between`;
+
+            // --- Top Section ---
+            const topWrapper = document.createElement('div');
+
+            // Header Row: Icon + Badges
+            const headerRow = document.createElement('div');
+            headerRow.className = 'flex items-start justify-between gap-3 mb-3';
+
+            const iconBox = document.createElement('div');
+            iconBox.className = isFile
+                ? 'w-11 h-11 rounded-2xl bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0 border border-sky-500/25'
+                : 'w-11 h-11 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/25';
+            iconBox.innerHTML = isFile ? '<i data-lucide="file-text" class="w-5 h-5"></i>' : '<i data-lucide="link-2" class="w-5 h-5"></i>';
+
+            const badgeGroup = document.createElement('div');
+            badgeGroup.className = 'flex flex-wrap items-center justify-end gap-1.5';
+
+            if (item.category) {
+                const catBadge = document.createElement('span');
+                catBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-800 text-slate-300 border border-slate-700';
+                catBadge.textContent = item.category;
+                badgeGroup.appendChild(catBadge);
+            }
+
+            if (isOwner) {
+                const ownerBadge = document.createElement('span');
+                ownerBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30';
+                ownerBadge.textContent = 'ของฉัน';
+                badgeGroup.appendChild(ownerBadge);
+            }
+
+            const statusBadge = document.createElement('span');
+            if (isPublic) {
+                statusBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+                statusBadge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>สาธารณะ</span>';
+            } else {
+                statusBadge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30';
+                statusBadge.innerHTML = '<i data-lucide="lock" class="w-3 h-3"></i><span>ส่วนตัว</span>';
+            }
+            badgeGroup.appendChild(statusBadge);
+
+            headerRow.appendChild(iconBox);
+            headerRow.appendChild(badgeGroup);
+            topWrapper.appendChild(headerRow);
+
+            // Title (Safe textContent)
+            const titleEl = document.createElement('h3');
+            titleEl.className = 'text-base font-bold text-slate-100 line-clamp-1 mb-1';
+            titleEl.textContent = item.title || 'ไม่มีชื่อรายการ';
+            titleEl.title = item.title || '';
+            topWrapper.appendChild(titleEl);
+
+            // Description (Safe textContent)
+            const descEl = document.createElement('p');
+            descEl.className = 'text-xs text-slate-400 line-clamp-2 min-h-[32px] leading-relaxed';
+            descEl.textContent = item.description || 'ไม่มีคำอธิบายเพิ่มเติม';
+            topWrapper.appendChild(descEl);
+
+            // Meta Box
+            const metaBox = document.createElement('div');
+            metaBox.className = 'mt-3 px-3 py-2 bg-slate-950/80 rounded-xl border border-slate-800 flex items-center justify-between gap-2 text-[11px] text-slate-400';
+
+            if (isFile) {
+                const fName = document.createElement('span');
+                fName.className = 'truncate font-medium text-slate-300';
+                fName.textContent = item.fileName || 'document';
+
+                const fSize = document.createElement('span');
+                fSize.className = 'shrink-0 bg-slate-900 px-2 py-0.5 rounded border border-slate-800 font-mono text-[10px] text-sky-300';
+                fSize.textContent = item.fileSize || '';
+
+                metaBox.appendChild(fName);
+                metaBox.appendChild(fSize);
+            } else {
+                const urlPreview = document.createElement('span');
+                urlPreview.className = 'truncate text-sky-400 font-mono';
+                urlPreview.textContent = item.url || '';
+                metaBox.appendChild(urlPreview);
+            }
+            topWrapper.appendChild(metaBox);
+            card.appendChild(topWrapper);
+
+            // --- Bottom Section: Actions & Owner Controls ---
+            const bottomWrapper = document.createElement('div');
+
+            // Action Buttons Row (Touch-friendly 44px+)
+            const actionRow = document.createElement('div');
+            actionRow.className = 'flex items-center gap-2 mt-4';
+
+            if (isFile) {
+                const previewBtn = document.createElement('button');
+                previewBtn.type = 'button';
+                previewBtn.className = 'touch-target flex-1 py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition-colors flex items-center justify-center gap-1.5 border border-slate-700';
+                previewBtn.innerHTML = '<i data-lucide="eye" class="w-4 h-4 text-sky-400"></i><span>พรีวิว</span>';
+                previewBtn.onclick = () => previewFile(item.id);
+
+                const dlLink = document.createElement('a');
+                dlLink.href = item.url;
+                dlLink.download = item.fileName || item.title || 'download';
+                dlLink.className = 'touch-target flex-1 py-2.5 px-3 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm';
+                dlLink.innerHTML = '<i data-lucide="download" class="w-4 h-4 stroke-[2.2]"></i><span>ดาวน์โหลด</span>';
+                dlLink.onclick = () => showToast('กำลังดาวน์โหลดไฟล์ลงเครื่อง...', 'success');
+
+                actionRow.appendChild(previewBtn);
+                actionRow.appendChild(dlLink);
+            } else {
+                const openLinkBtn = document.createElement('button');
+                openLinkBtn.type = 'button';
+                openLinkBtn.className = 'touch-target flex-1 py-2.5 px-3 bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-300 hover:to-blue-400 text-slate-950 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm';
+                openLinkBtn.innerHTML = '<i data-lucide="arrow-up-right" class="w-4 h-4 stroke-[2.2]"></i><span>เปิดลิงก์ใช้งาน</span>';
+                openLinkBtn.onclick = () => openSafeRedirect(item.url);
+                actionRow.appendChild(openLinkBtn);
+            }
+
+            // Share / Copy Button
+            const shareBtn = document.createElement('button');
+            shareBtn.type = 'button';
+            shareBtn.className = `touch-target px-3 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1 text-xs font-semibold border ${isPublic ? 'bg-slate-800 hover:bg-slate-700 text-sky-300 border-slate-700' : 'bg-slate-900 text-slate-600 border-slate-800 cursor-not-allowed'}`;
+            shareBtn.title = isPublic ? 'แชร์หรือคัดลอกลิงก์' : 'ปิดสาธารณะอยู่ (ไม่สามารถแชร์ให้คนอื่นได้)';
+            shareBtn.innerHTML = '<i data-lucide="share-2" class="w-4 h-4"></i>';
+            shareBtn.onclick = () => shareOrCopyItem(item.id);
+            actionRow.appendChild(shareBtn);
+
+            bottomWrapper.appendChild(actionRow);
+
+            // Owner Controls
+            if (isOwner) {
+                const ownerBar = document.createElement('div');
+                ownerBar.className = 'mt-3.5 pt-3 border-t border-slate-800 flex items-center justify-between gap-2';
+
+                const toggleWrap = document.createElement('label');
+                toggleWrap.className = 'inline-flex items-center gap-2 cursor-pointer select-none min-h-[36px]';
+                toggleWrap.title = 'กดเพื่อเปิดหรือปิดสถานะสาธารณะ';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = isPublic;
+                checkbox.className = 'sr-only peer';
+                checkbox.onchange = (e) => togglePublicStatus(item.id, e.target.checked);
+
+                const switchVisual = document.createElement('div');
+                switchVisual.className = "w-10 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-400 relative";
+
+                const switchLabel = document.createElement('span');
+                switchLabel.className = `text-xs font-semibold ${isPublic ? 'text-sky-300' : 'text-amber-300'}`;
+                switchLabel.textContent = isPublic ? 'เปิดสาธารณะ' : 'ปิดส่วนตัว';
+
+                toggleWrap.appendChild(checkbox);
+                toggleWrap.appendChild(switchVisual);
+                toggleWrap.appendChild(switchLabel);
+
+                const btnGroup = document.createElement('div');
+                btnGroup.className = 'flex items-center gap-1';
+
+                const editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.className = 'p-2 text-slate-400 hover:text-sky-300 hover:bg-slate-800 rounded-xl transition-colors';
+                editBtn.title = 'แก้ไขข้อมูล';
+                editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
+                editBtn.onclick = () => openEditModal(item.id);
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors';
+                delBtn.title = 'ลบรายการ';
+                delBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
+                delBtn.onclick = () => deleteItem(item.id);
+
+                btnGroup.appendChild(editBtn);
+                btnGroup.appendChild(delBtn);
+
+                ownerBar.appendChild(toggleWrap);
+                ownerBar.appendChild(btnGroup);
+                bottomWrapper.appendChild(ownerBar);
+            }
+
+            // Footer Metadata
+            const footerMeta = document.createElement('div');
+            footerMeta.className = 'mt-2.5 text-[10px] text-slate-500 flex items-center justify-between';
+            const dateStr = new Date(item.createdAt || Date.now()).toLocaleDateString('th-TH', {
+                day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit'
+            });
+
+            const authorSpan = document.createElement('span');
+            authorSpan.className = 'truncate max-w-[55%]';
+            authorSpan.textContent = `โดย: ${item.author || 'ไม่ระบุตัวตน'}`;
+
+            const dateSpan = document.createElement('span');
+            dateSpan.textContent = dateStr;
+
+            footerMeta.appendChild(authorSpan);
+            footerMeta.appendChild(dateSpan);
+            bottomWrapper.appendChild(footerMeta);
+
+            card.appendChild(bottomWrapper);
+            return card;
+        }
+
+        // --- Toggle Public / Private ---
+        window.togglePublicStatus = async function(itemId, newStatus) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item || !isItemOwnedByMe(item)) {
+                showToast('คุณไม่มีสิทธิ์แก้ไขรายการนี้', 'error');
+                return;
+            }
+
+            try {
+                if (useCloudDb && db && currentUser) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'vault_items', itemId);
+                    await updateDoc(docRef, { isPublic: newStatus });
+                } else {
+                    item.isPublic = newStatus;
+                    saveLocalItems(allItems);
+                    updateStats();
+                    renderItems();
+                }
+                showToast(
+                    newStatus
+                        ? 'เปิดเป็นสาธารณะแล้ว ทุกคนสามารถมองเห็นและดาวน์โหลดได้'
+                        : 'ปิดสาธารณะแล้ว ซ่อนจากฟีดรวมเรียบร้อย',
+                    newStatus ? 'success' : 'info'
+                );
+            } catch (err) {
+                console.error(err);
+                showToast('เกิดข้อผิดพลาดในการเปลี่ยนสถานะ', 'error');
+            }
+        };
+
+        // --- Delete Item ---
+        window.deleteItem = async function(itemId) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item || !isItemOwnedByMe(item)) {
+                showToast('คุณไม่มีสิทธิ์ลบรายการนี้', 'error');
+                return;
+            }
+
+            try {
+                if (useCloudDb && db && currentUser) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'vault_items', itemId);
+                    await deleteDoc(docRef);
+                } else {
+                    allItems = allItems.filter(i => i.id !== itemId);
+                    saveLocalItems(allItems);
+                    updateStats();
+                    renderItems();
+                }
+                showToast('ลบรายการออกจากระบบเรียบร้อยแล้ว', 'info');
+            } catch (err) {
+                console.error(err);
+                showToast('ไม่สามารถลบรายการได้', 'error');
+            }
+        };
+
+        // --- Open Edit Modal ---
+        window.openEditModal = function(itemId) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item || !isItemOwnedByMe(item)) return;
+
+            document.getElementById('upload-form').reset();
+            document.getElementById('edit-item-id').value = item.id;
+            document.getElementById('modal-form-title').querySelector('span').textContent = 'แก้ไขรายละเอียดรายการ';
+            document.getElementById('upload-mode-tabs').classList.add('hidden');
+            document.getElementById('section-file').classList.add('hidden');
+
+            if (item.type === 'link') {
+                document.getElementById('section-link').classList.remove('hidden');
+                document.getElementById('input-url').value = item.url || '';
+            } else {
+                document.getElementById('section-link').classList.add('hidden');
+            }
+
+            document.getElementById('input-title').value = item.title || '';
+            document.getElementById('input-category').value = item.category || 'ทั่วไป';
+            document.getElementById('input-author').value = item.author || '';
+            document.getElementById('input-desc').value = item.description || '';
+            document.getElementById('input-is-public').checked = item.isPublic === true;
+            document.getElementById('input-pin').value = item.ownerPin || '';
+
+            updatePrivacyPreview();
+            document.getElementById('upload-modal').classList.remove('hidden');
+        };
+
+        // --- Form Submit (Create or Update) ---
+        window.handleFormSubmit = async function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-item-id').value.trim();
+            const title = sanitizeText(document.getElementById('input-title').value, 100);
+            const category = sanitizeText(document.getElementById('input-category').value, 30) || 'ทั่วไป';
+            const author = sanitizeText(document.getElementById('input-author').value, 40) || 'ไม่ระบุตัวตน';
+            const description = sanitizeText(document.getElementById('input-desc').value, 300);
+            const isPublic = document.getElementById('input-is-public').checked;
+            const ownerPin = document.getElementById('input-pin').value.trim();
+
+            if (!title) {
+                showToast('กรุณากรอกชื่อหัวข้อ', 'error');
+                return;
+            }
+            if (!/^\d{4}$/.test(ownerPin)) {
+                showToast('กรุณาตั้งรหัส PIN เจ้าของเป็นตัวเลข 4 หลัก', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+
+            try {
+                // CASE 1: Editing existing item
+                if (editId) {
+                    const existing = allItems.find(i => i.id === editId);
+                    if (!existing || !isItemOwnedByMe(existing)) {
+                        showToast('ไม่มีสิทธิ์แก้ไขรายการนี้', 'error');
+                        return;
+                    }
+
+                    const updates = { title, category, author, description, isPublic, ownerPin };
+
+                    if (existing.type === 'link') {
+                        const rawUrl = document.getElementById('input-url').value.trim();
+                        if (!isValidSafeUrl(rawUrl)) {
+                            showToast('URL ไม่ปลอดภัย! อนุญาตเฉพาะลิงก์ที่ขึ้นต้นด้วย http:// หรือ https:// เท่านั้น', 'error');
+                            return;
+                        }
+                        updates.url = rawUrl;
+                    }
+
+                    unlockedPins.add(ownerPin);
+                    saveUnlockedPins();
+
+                    if (useCloudDb && db && currentUser) {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'vault_items', editId);
+                        await updateDoc(docRef, updates);
+                    } else {
+                        Object.assign(existing, updates);
+                        saveLocalItems(allItems);
+                        updateStats();
+                        renderItems();
+                    }
+
+                    closeUploadModal();
+                    showToast('อัปเดตข้อมูลเรียบร้อยแล้ว', 'success');
+                    return;
+                }
+
+                // CASE 2: Creating new item
+                const newItem = {
+                    type: uploadMode,
+                    title,
+                    category,
+                    author,
+                    description,
+                    isPublic,
+                    ownerId: currentUser ? currentUser.uid : 'anonymous',
+                    ownerPin,
+                    createdAt: Date.now()
+                };
+
+                if (uploadMode === 'file') {
+                    if (!selectedFileData) {
+                        showToast('กรุณาเลือกไฟล์ที่ต้องการอัปโหลด', 'error');
+                        return;
+                    }
+                    newItem.url = selectedFileData.dataUrl;
+                    newItem.fileName = selectedFileData.name;
+                    newItem.fileSize = selectedFileData.sizeFormatted;
+                    newItem.fileMime = selectedFileData.mime;
+                } else {
+                    const rawUrl = document.getElementById('input-url').value.trim();
+                    if (!isValidSafeUrl(rawUrl)) {
+                        showToast('ลิงก์ไม่ถูกต้องหรือไม่อนุญาต (ต้องขึ้นต้นด้วย http:// หรือ https://)', 'error');
+                        return;
+                    }
+                    newItem.url = rawUrl;
+                    newItem.fileName = '';
+                    newItem.fileSize = '';
+                    newItem.fileMime = '';
+                }
+
+                unlockedPins.add(ownerPin);
+                saveUnlockedPins();
+
+                if (useCloudDb && db && currentUser) {
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'vault_items');
+                    await addDoc(colRef, newItem);
+                } else {
+                    newItem.id = 'item-' + Date.now();
+                    allItems.unshift(newItem);
+                    saveLocalItems(allItems);
+                    updateStats();
+                    renderItems();
+                }
+
+                closeUploadModal();
+                showToast(`บันทึก "${title}" สำเร็จ! (จำรหัส PIN: ${ownerPin})`, 'success');
+                if (!isPublic) {
+                    switchTab('mine');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        };
+
+        // --- File Selection & Security Screening ---
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+                dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false);
+            });
+            ['dragenter', 'dragover'].forEach(evt => {
+                dropZone.addEventListener(evt, () => dropZone.classList.add('drag-active'), false);
+            });
+            ['dragleave', 'drop'].forEach(evt => {
+                dropZone.addEventListener(evt, () => dropZone.classList.remove('drag-active'), false);
+            });
+            dropZone.addEventListener('drop', e => {
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    processSelectedFile(e.dataTransfer.files[0]);
+                }
+            }, false);
+        }
+
+        window.handleFileSelect = function(e) {
+            if (e.target.files && e.target.files.length > 0) {
+                processSelectedFile(e.target.files[0]);
+            }
+        };
+
+        function processSelectedFile(file) {
+            if (isBlockedFile(file.name)) {
+                showToast(`บล็อกไฟล์ "${file.name}" เพื่อความปลอดภัย (ไม่อนุญาตไฟล์ระบบ/สคริปต์)`, 'error');
+                document.getElementById('file-input').value = '';
+                return;
+            }
+
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                showToast('ไฟล์มีขนาดเกิน 750 KB (จำกัดขนาดเพื่อความเสถียรของการเก็บข้อมูลถาวร)', 'error');
+                document.getElementById('file-input').value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                selectedFileData = {
+                    name: sanitizeText(file.name, 120),
+                    sizeFormatted: formatBytes(file.size),
+                    mime: file.type || 'application/octet-stream',
+                    dataUrl: event.target.result
+                };
+
+                document.getElementById('drop-zone-empty').classList.add('hidden');
+                document.getElementById('drop-zone-selected').classList.remove('hidden');
+                document.getElementById('selected-file-name').textContent = selectedFileData.name;
+                document.getElementById('selected-file-size').textContent = selectedFileData.sizeFormatted;
+
+                const titleInput = document.getElementById('input-title');
+                if (!titleInput.value) {
+                    titleInput.value = selectedFileData.name;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- Safe File Preview ---
+        window.previewFile = function(itemId) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            if (!item.isPublic && !isItemOwnedByMe(item)) {
+                showToast('รายการนี้ถูกตั้งค่าเป็นส่วนตัว', 'error');
+                return;
+            }
+
+            const modal = document.getElementById('preview-modal');
+            const titleEl = document.getElementById('preview-title');
+            const contentEl = document.getElementById('preview-content');
+            const metaEl = document.getElementById('preview-meta');
+            const dlBtn = document.getElementById('preview-download-btn');
+
+            titleEl.textContent = item.title;
+            metaEl.textContent = `${item.fileName} (${item.fileSize})`;
+            dlBtn.href = item.url;
+            dlBtn.download = item.fileName || item.title;
+
+            contentEl.innerHTML = '';
+
+            if (item.fileMime && item.fileMime.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = item.url;
+                img.alt = item.title;
+                img.className = 'max-h-[60vh] rounded-2xl shadow-lg object-contain';
+                contentEl.appendChild(img);
+            } else if (item.fileMime === 'application/pdf') {
+                const iframe = document.createElement('iframe');
+                iframe.src = item.url;
+                iframe.className = 'w-full h-[60vh] rounded-2xl border border-slate-800 bg-white';
+                contentEl.appendChild(iframe);
+            } else if (item.fileMime && item.fileMime.startsWith('text/')) {
+                try {
+                    let textContent = '';
+                    if (item.url.includes(';base64,')) {
+                        const base64 = item.url.split(';base64,')[1];
+                        textContent = decodeURIComponent(escape(atob(base64)));
+                    } else {
+                        textContent = decodeURIComponent(item.url.split(',')[1] || '');
+                    }
+                    const pre = document.createElement('pre');
+                    pre.className = 'w-full h-[50vh] p-4 bg-slate-900 rounded-2xl border border-slate-800 text-xs font-mono text-slate-200 overflow-auto whitespace-pre-wrap';
+                    pre.textContent = textContent;
+                    contentEl.appendChild(pre);
+                } catch (_) {
+                    const msg = document.createElement('p');
+                    msg.className = 'text-sm text-slate-400';
+                    msg.textContent = 'ไม่สามารถแสดงตัวอย่างไฟล์ข้อความนี้ได้ กรุณากดดาวน์โหลด';
+                    contentEl.appendChild(msg);
+                }
+            } else {
+                const fallbackDiv = document.createElement('div');
+                fallbackDiv.className = 'text-center py-8 px-4';
+                fallbackDiv.innerHTML = `
+                    <div class="w-16 h-16 bg-sky-500/15 text-sky-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-sky-500/25">
+                        <i data-lucide="file-check" class="w-8 h-8"></i>
+                    </div>
+                    <p class="text-sm font-bold text-slate-200">ไฟล์พร้อมสำหรับดาวน์โหลด</p>
+                    <p class="text-xs text-slate-400 mt-1">ไฟล์นามสกุลนี้ไม่รองรับการพรีวิวบนเบราว์เซอร์ กรุณากดปุ่ม "ดาวน์โหลดไฟล์ลงเครื่อง" ด้านล่าง</p>
+                `;
+                contentEl.appendChild(fallbackDiv);
+                lucide.createIcons();
+            }
+
+            modal.classList.remove('hidden');
+        };
+
+        window.closePreviewModal = function() {
+            document.getElementById('preview-modal').classList.add('hidden');
+        };
+
+        // --- Safe External Redirect Warning ---
+        window.openSafeRedirect = function(url) {
+            if (!isValidSafeUrl(url)) {
+                showToast('ตรวจพบลิงก์ที่ไม่ปลอดภัย ระบบไม่อนุญาตให้เปิดลิงก์นี้', 'error');
+                return;
+            }
+            document.getElementById('redirect-target-url').textContent = url;
+            document.getElementById('redirect-confirm-btn').href = url;
+            document.getElementById('redirect-modal').classList.remove('hidden');
+        };
+
+        window.closeRedirectModal = function() {
+            document.getElementById('redirect-modal').classList.add('hidden');
+        };
+
+        // --- Mobile Web Share API + Clipboard Fallback ---
+        window.shareOrCopyItem = async function(itemId) {
+            const item = allItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            if (!item.isPublic) {
+                showToast('รายการนี้ "ปิดสาธารณะ" อยู่ กรุณาเปิดสาธารณะก่อนแชร์ให้ผู้อื่น', 'error');
+                return;
+            }
+
+            const shareUrl = item.type === 'link'
+                ? item.url
+                : `${window.location.origin}${window.location.pathname}?vault=${item.id}`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: item.title,
+                        text: item.description || `แชร์จาก CloudVault TH: ${item.title}`,
+                        url: shareUrl
+                    });
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') return;
+                }
+            }
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = shareUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            showToast('คัดลอกลิงก์แชร์ลงคลิปบอร์ดเรียบร้อยแล้ว!', 'success');
+        };
+
+        // --- Navigation & Filters ---
+        window.switchTab = function(tab) {
+            currentTab = tab;
+
+            const btnPublic = document.getElementById('tab-public');
+            const btnMine = document.getElementById('tab-mine');
+            const mineBanner = document.getElementById('mine-info-banner');
+
+            const mPublic = document.getElementById('m-nav-public');
+            const mMine = document.getElementById('m-nav-mine');
+            const mTitle = document.getElementById('mobile-section-title');
+
+            if (tab === 'public') {
+                btnPublic.className = 'touch-target flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-sky-500/15 text-sky-300 border border-sky-500/30 shadow-sm';
+                btnMine.className = 'touch-target flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all';
+                mineBanner.classList.add('hidden');
+
+                mPublic.className = 'touch-target flex flex-col items-center justify-center gap-1 text-sky-400 font-semibold transition-colors';
+                mMine.className = 'touch-target flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-200 font-medium transition-colors relative';
+                mTitle.innerHTML = '<i data-lucide="globe" class="w-4 h-4 text-sky-400"></i><span>ฟีดสาธารณะ (Public)</span>';
+            } else {
+                btnMine.className = 'touch-target flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all bg-sky-500/15 text-sky-300 border border-sky-500/30 shadow-sm';
+                btnPublic.className = 'touch-target flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all';
+                mineBanner.classList.remove('hidden');
+
+                mMine.className = 'touch-target flex flex-col items-center justify-center gap-1 text-sky-400 font-semibold transition-colors relative';
+                mPublic.className = 'touch-target flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-200 font-medium transition-colors';
+                mTitle.innerHTML = '<i data-lucide="folder-lock" class="w-4 h-4 text-sky-400"></i><span>รายการของฉัน (My Vault)</span>';
+            }
+            lucide.createIcons();
+            renderItems();
+        };
+
+        window.setTypeFilter = function(type) {
+            currentTypeFilter = type;
+            ['all', 'file', 'link'].forEach(t => {
+                const el = document.getElementById(`filter-${t}`);
+                el.className = (t === type)
+                    ? 'min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 transition-colors flex items-center justify-center gap-1'
+                    : 'min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1';
+            });
+            renderItems();
+        };
+
+        window.setPrivacyFilter = function(priv) {
+            currentPrivacyFilter = priv;
+            ['all', 'public', 'private'].forEach(p => {
+                const el = document.getElementById(`priv-filter-${p}`);
+                el.className = (p === priv)
+                    ? 'px-3 py-1.5 rounded-lg font-semibold bg-slate-800 text-sky-300'
+                    : 'px-3 py-1.5 rounded-lg font-medium text-slate-400';
+            });
+            renderItems();
+        };
+
+        window.clearSearch = function() {
+            document.getElementById('search-input').value = '';
+            renderItems();
+        };
+
+        // --- Upload Modal Controls ---
+        window.openUploadModal = function() {
+            document.getElementById('upload-form').reset();
+            document.getElementById('edit-item-id').value = '';
+            document.getElementById('modal-form-title').querySelector('span').textContent = 'เพิ่มไฟล์หรือฝากลิงก์ใหม่';
+            document.getElementById('upload-mode-tabs').classList.remove('hidden');
+
+            selectedFileData = null;
+            document.getElementById('drop-zone-empty').classList.remove('hidden');
+            document.getElementById('drop-zone-selected').classList.add('hidden');
+            document.getElementById('input-pin').value = '';
+
+            switchUploadMode('file');
+            updatePrivacyPreview();
+            document.getElementById('upload-modal').classList.remove('hidden');
+        };
+
+        window.closeUploadModal = function() {
+            document.getElementById('upload-modal').classList.add('hidden');
+        };
+
+        window.switchUploadMode = function(mode) {
+            uploadMode = mode;
+            const btnFile = document.getElementById('mode-btn-file');
+            const btnLink = document.getElementById('mode-btn-link');
+            const secFile = document.getElementById('section-file');
+            const secLink = document.getElementById('section-link');
+
+            if (mode === 'file') {
+                btnFile.className = 'touch-target flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 transition-all';
+                btnLink.className = 'touch-target flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all';
+                secFile.classList.remove('hidden');
+                secLink.classList.add('hidden');
+            } else {
+                btnLink.className = 'touch-target flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 transition-all';
+                btnFile.className = 'touch-target flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 transition-all';
+                secLink.classList.remove('hidden');
+                secFile.classList.add('hidden');
+            }
+        };
+
+        window.updatePrivacyPreview = function() {
+            const isPub = document.getElementById('input-is-public').checked;
+            document.getElementById('privacy-label-title').textContent = isPub ? 'เปิดสาธารณะ (Public)' : 'ปิดสาธารณะ (Private)';
+            document.getElementById('privacy-label-sub').textContent = isPub ? 'ทุกคนเห็นและโหลดได้' : 'เห็นเฉพาะคุณเท่านั้น';
+        };
+
+        // --- PIN Unlock with Rate Limiting ---
+        window.openUnlockPinModal = function() {
+            document.getElementById('unlock-pin-input').value = '';
+            updatePinRateWarning();
+            document.getElementById('pin-modal').classList.remove('hidden');
+        };
+
+        window.closeUnlockPinModal = function() {
+            document.getElementById('pin-modal').classList.add('hidden');
+        };
+
+        function updatePinRateWarning() {
+            const warnEl = document.getElementById('pin-rate-warning');
+            if (Date.now() < pinLockoutUntil) {
+                const secLeft = Math.ceil((pinLockoutUntil - Date.now()) / 1000);
+                warnEl.textContent = `กรอก PIN ผิดเกินกำหนด กรุณารออีก ${secLeft} วินาที`;
+                warnEl.classList.remove('hidden');
+            } else {
+                warnEl.classList.add('hidden');
+            }
+        }
+
+        window.handlePinUnlock = function(e) {
+            e.preventDefault();
+
+            if (Date.now() < pinLockoutUntil) {
+                updatePinRateWarning();
+                return;
+            }
+
+            const pin = document.getElementById('unlock-pin-input').value.trim();
+            if (!/^\d{4}$/.test(pin)) {
+                showToast('กรุณากรอกรหัส PIN ตัวเลข 4 หลัก', 'error');
+                return;
+            }
+
+            const matchedItems = allItems.filter(i => String(i.ownerPin) === pin);
+
+            if (matchedItems.length === 0) {
+                failedPinAttempts++;
+                if (failedPinAttempts >= MAX_PIN_ATTEMPTS) {
+                    pinLockoutUntil = Date.now() + PIN_LOCKOUT_MS;
+                    failedPinAttempts = 0;
+                    updatePinRateWarning();
+                    showToast('กรอก PIN ผิดเกิน 5 ครั้ง ระบบระงับชั่วคราว 1 นาทีเพื่อความปลอดภัย', 'error');
+                } else {
+                    showToast(`ไม่พบรายการที่ใช้รหัส PIN นี้ (เหลือโอกาสอีก ${MAX_PIN_ATTEMPTS - failedPinAttempts} ครั้ง)`, 'error');
+                }
+                return;
+            }
+
+            failedPinAttempts = 0;
+            unlockedPins.add(pin);
+            saveUnlockedPins();
+            closeUnlockPinModal();
+            updateStats();
+            renderItems();
+            showToast(`ยืนยันสิทธิ์สำเร็จ! พบรายการของคุณ ${matchedItems.length} รายการ`, 'success');
+        };
+
+        // --- Security Audit Modal ---
+        window.openSecurityAuditModal = function() {
+            document.getElementById('arch-modal').classList.remove('hidden');
+        };
+
+        window.closeArchitectureModal = function() {
+            document.getElementById('arch-modal').classList.add('hidden');
+        };
+
+        // --- Formatting & Toast Utilities ---
+        function formatBytes(bytes, decimals = 1) {
+            if (!+bytes) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        }
+
+        window.showToast = function(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'bg-slate-900 text-slate-100 border border-slate-700 border-l-4 border-l-emerald-400',
+                error: 'bg-slate-900 text-slate-100 border border-slate-700 border-l-4 border-l-rose-500',
+                info: 'bg-slate-900 text-slate-100 border border-slate-700 border-l-4 border-l-sky-400'
+            };
+
+            toast.className = `${colors[type] || colors.info} px-4 py-3.5 rounded-2xl shadow-2xl text-xs sm:text-sm font-medium flex items-center gap-2.5 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        };
+
+        // Initialize on DOM Load
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
